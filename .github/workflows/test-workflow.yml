@@ -1,0 +1,41 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  AWS_REGION: "eu-north-1"
+
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  AssumeRoleAndCallIdentity:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::474892472306:role/TEST-AWS-GitHubActions-OIDC_role
+            #role-session-name: "GitHub:${{ github.event.pull_request.user.login }}-PR:${{ github.event.pull_request.number }}-Repo:${{ github.event.repository.name }}-Branch:${{ github.event.pull_request.base.ref }}"
+          role-session-name: "GitHub-${{ github.event.pull_request.user.login }}-PR-${{ github.event.pull_request.number }}-Repo-${{ github.event.repository.name }}"
+          output-credentials: true
+
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
+
+      - name: get caller identity
+        run: aws sts get-caller-identity
