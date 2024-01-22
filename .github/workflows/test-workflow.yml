@@ -28,8 +28,9 @@ jobs:
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::474892472306:role/AWS-GitHubActions-OIDC_role
-            #role-session-name: "GitHub:${{ github.event.pull_request.user.login }}-PR:${{ github.event.pull_request.number }}-Repo:${{ github.event.repository.name }}-Branch:${{ github.event.pull_request.base.ref }}"
-          role-session-name: "GitHub-${{ github.event.pull_request.user.login }}-PR-${{ github.event.pull_request.number }}-Repo-${{ github.event.repository.name }}"
+          #role-session-name: "GitHub:${{ github.event.pull_request.user.login }}-PR:${{ github.event.pull_request.number }}-Repo:${{ github.event.repository.name }}-Branch:${{ github.event.pull_request.base.ref }}"
+          #role-session-name: "GitHub-${{ github.event.pull_request.user.login }}-PR-${{ github.event.pull_request.number }}-Repo-${{ github.event.repository.name }}"
+          role-session-name: "GithubActionsSession"
           output-credentials: true
 
       - name: Run a multi-line script
