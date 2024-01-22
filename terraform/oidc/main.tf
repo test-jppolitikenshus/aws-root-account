@@ -28,7 +28,7 @@ resource "aws_iam_role" "oidc_role" {
           StringEquals = {
             "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
             "token.actions.githubusercontent.com:sub" = "repo:test-jppolitikenshus/aws-root-account:ref:refs/heads/main" # Main
-            #"token.actions.githubusercontent.com:sub" = "repo:${local.github_org}/aws-root-account:pull_request" # PR  
+            #"token.actions.githubusercontent.com:sub" = "repo:${local.github_org}/aws-root-account:pull_request" # PR
           }
         }
       },
