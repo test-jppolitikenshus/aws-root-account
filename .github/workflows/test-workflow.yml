@@ -31,7 +31,8 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::474892472306:role/AWS-GitHubActions-OIDC_role
           #role-session-name: "GitHub-${{ github.event.pull_request.user.login }}-PR-${{ github.event.pull_request.number }}-Repo-${{ github.event.repository.name }}-Branch:${{ github.event.pull_request.base.ref }}"
-          role-session-name: "GitHubAction-Creator-${{ github.event.pull_request.user.login }}-PR-${{ github.event.pull_request.number }}-Pusher-${{ github.event.push.pusher.name }}-Owner-${{ github.event.repository.owner.login }}-Repo-${{ github.event.repository.name }}-Branch-${{ github.event.pull_request.base.ref }}"
+          # too long (max64) role-session-name: "GitHubAction-Creator-${{ github.event.pull_request.user.login }}-PR-${{ github.event.pull_request.number }}-Pusher-${{ github.event.push.pusher.name }}-Owner-${{ github.event.repository.owner.login }}-Repo-${{ github.event.repository.name }}-Branch-${{ github.event.pull_request.base.ref }}"
+          role-session-name: "GHA-${{ github.event.pull_request.user.login }}-${{ github.event.pull_request.number }}-${{ github.event.push.pusher.name }}-${{ github.event.repository.owner.login }}-${{ github.event.repository.name }}-${{ github.event.pull_request.base.ref }}"
           output-credentials: true
 
       - name: Run a multi-line script
