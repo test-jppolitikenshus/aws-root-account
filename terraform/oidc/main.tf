@@ -25,8 +25,10 @@ resource "aws_iam_role" "oidc_role" {
           Federated = "arn:aws:iam::${local.aws_root_account}:oidc-provider/token.actions.githubusercontent.com"
         },
         Condition = {
-          StringEquals = {
+          StringEquals = { # no wildcard
             "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+          },
+          StringLike = { # wildcard ok
             "token.actions.githubusercontent.com:sub" = "repo:test-jppolitikenshus/aws-root-account:*"
             #"token.actions.githubusercontent.com:sub" = "repo:test-jppolitikenshus/aws-root-account:ref:refs/heads/main" # Main
             #"token.actions.githubusercontent.com:sub" = "repo:${local.github_org}/aws-root-account:pull_request" # PR
