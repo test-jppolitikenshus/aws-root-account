@@ -27,7 +27,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: arn:aws:iam::474892472306:role/TEST-AWS-GitHubActions-OIDC_role
+          role-to-assume: arn:aws:iam::474892472306:role/AWS-GitHubActions-OIDC_role
             #role-session-name: "GitHub:${{ github.event.pull_request.user.login }}-PR:${{ github.event.pull_request.number }}-Repo:${{ github.event.repository.name }}-Branch:${{ github.event.pull_request.base.ref }}"
           role-session-name: "GitHub-${{ github.event.pull_request.user.login }}-PR-${{ github.event.pull_request.number }}-Repo-${{ github.event.repository.name }}"
           output-credentials: true
