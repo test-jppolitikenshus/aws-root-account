@@ -4,14 +4,6 @@ locals {
   #  access to github organisation is GitHub CLI (gh auth login)
   github_org = "test-jppolitikenshus"
 
-  # aws account id
-  aws_root_account = "474892472306" #aws-test-master:474892472306)
-
-  # authenticate to above account, maybe something like:
-  #  aws-sso -STest-JPPol exec -- bash --rcfile ~/.bash_profile
-  #  terraform init
-  #  terraform plan
-
   # GitHub usernames for the Platform team maintainers
   # NB: Terraform shows a perputal difference in roles if someone is an organisation owner
   # and will attempt to change them from `maintainer` to `member`, so owners should go in here.
@@ -41,7 +33,5 @@ locals {
   # Everyone
   everyone = concat(local.maintainers, local.all_members)
 
-  # Testing secret scanning
-  this_is_a_secret = "sagt5e4weasrvdthe"
 }
 
