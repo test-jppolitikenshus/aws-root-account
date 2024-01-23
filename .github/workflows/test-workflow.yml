@@ -5,10 +5,10 @@ name: CI
 on:
   #pull_request:
   #  branches: [ "main" ]
-  push:
-    branches: [ "main" ]
-  #pull_request_review:
-  #  types: [submitted]
+  #push:
+  #  branches: [ "main" ]
+  pull_request_review:
+    types: [submitted]
   #workflow_dispatch:
 
 env:
@@ -21,7 +21,7 @@ permissions:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   AssumeRoleAndCallIdentity:
-    #if: github.event.review.state == 'approved'
+    if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
 
     steps:
