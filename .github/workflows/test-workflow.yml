@@ -34,9 +34,9 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::474892472306:role/AWS-GitHubActions-OIDC_role
           role-session-name: "GHA-\  # max 64 characters
-            ${{ github.event.pull_request.user.login }}-\
-            ${{ github.event.pull_request.number }}-\
-            ${{ github.actor }}"
+            u-${{ github.event.pull_request.user.login }}-\
+            pr-${{ github.event.pull_request.number }}-\
+            a-${{ github.actor }}"
           #user: "${{ github.event.pull_request.user.login }}"
           #pr:   "${{ github.event.pull_request.number }}"
           #aprv: "${{ github.actor }}"
