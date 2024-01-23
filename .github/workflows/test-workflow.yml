@@ -42,6 +42,7 @@ jobs:
           test-push1: "asdf-${{ github.event.push.commits.author.name }}"
           test-push2: "asdf-${{ github.event.push.commits.committer.name }}"
           test-push3: "asdf-${{ github.actor }}"
+          test-push4: "${{ github.actor }} || ${{ github.event.pull_request.user.login }}"
           test-ownr: "asdf-${{ github.event.repository.owner.login }}"
           test-repo: "asdf-${{ github.event.repository.name }}"
           test-brch: "asdf-${{ github.event.pull_request.base.ref }}"
