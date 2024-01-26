@@ -17,6 +17,7 @@ locals {
 
   # GitHub usernames for team members who don't need full AWS access
   members = [
+    "test-kristoffer"
   ]
 
   # Security engineers performing reviews on the platform or member accounts
