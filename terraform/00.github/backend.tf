@@ -9,6 +9,7 @@ terraform {
 
     dynamodb_table = "jppol-root-test-terraform-state-lock"
   }
+
   required_providers {
     github = {
       source  = "integrations/github"
