@@ -1,21 +1,13 @@
 terraform {
   required_version = "< 1.6.0"
-  required_providers {
-    local = { version = "2.4.1" }
-    aws   = { version = "5.33.0" }
-    time  = { version = "0.10.0" }
-  }
+
   backend "s3" {
     region  = "eu-north-1"
-    bucket  = "pt-test-terraform-state"
-    key     = "terraform.tfstate"
+    bucket  = "jppol-root-test-terraform-state"
+    key     = "aws-root-account/02.tfstate-backend"
     profile = ""
     encrypt = "true"
 
-    dynamodb_table = "pt-test-terraform-state-lock"
+    dynamodb_table = "jppol-root-test-terraform-state-lock"
   }
 }
-
-
-
-
