@@ -1,5 +1,14 @@
 terraform {
   required_version = "<1.6"
+  backend "s3" {
+    region  = "eu-north-1"
+    bucket  = "jppol-root-test-terraform-state"
+    key     = "aws-root-account/01.d"
+    profile = ""
+    encrypt = "true"
+
+    dynamodb_table = "jppol-root-test-terraform-state-lock"
+  }
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -8,12 +17,11 @@ terraform {
   }
 }
 
-provider "aws" {
-  default_tags {
-    tags = {
-      owner     = local.github_org
-      terraform = "true"
-    }
-  }
-}
-
+#provider "aws" {
+#  default_tags {
+#    tags = {
+#      owner     = local.github_org
+#      terraform = "true"
+#    }
+#  }
+#}

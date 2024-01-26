@@ -3,12 +3,13 @@
 # be bootstrapped according to the simple yet essential procedure in
 # https://github.com/cloudposse/terraform-aws-tfstate-backend#usage
 module "terraform_state_backend" {
-  source      = "github.com/test-jppolitikenshus/cloudv2-platform-terraform-aws-tfstate-backend?ref=1.4.0"
-  namespace   = "jppol"
-  environment = "root" # root, core, something
-  stage       = "test" # test, dev, prod
-  name        = "terraform"
-  attributes  = ["state"]
+  source               = "github.com/test-jppolitikenshus/cloudv2-platform-terraform-aws-tfstate-backend?ref=1.4.0"
+  namespace            = "jppol"
+  environment          = "root" # root, core, something
+  stage                = "test" # test, dev, prod
+  name                 = "terraform"
+  attributes           = ["state"]
+  terraform_state_file = "aws-root-account/02.tfstate-backend"
 
   terraform_backend_config_file_path = "."
   terraform_backend_config_file_name = "backend.tf"

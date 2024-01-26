@@ -1,6 +1,6 @@
 # Repositories
 module "aws-root-account" {
-  source      = "./modules/bootstrap-repository"
+  source      = "./../modules/bootstrap-repository"
   name        = "aws-root-account"
   type        = "core"
   description = "Terraform for the aws-root-account of jppol"
@@ -14,7 +14,7 @@ module "aws-root-account" {
 }
 
 module "template-repository" {
-  source      = "./modules/bootstrap-repository"
+  source      = "./../modules/bootstrap-repository"
   name        = "template-repository"
   type        = "template"
   description = "Github template repository with organisation defaults"
@@ -26,7 +26,7 @@ module "template-repository" {
 }
 
 module "template-cloudv2-platform-terraform-module" {
-  source      = "./modules/bootstrap-repository"
+  source      = "./../modules/bootstrap-repository"
   name        = "template-cloudv2-platform-terraform-module"
   type        = "template"
   description = "Template repository for creating Terraform modules for use with the Cloudv2 Platform"
@@ -43,7 +43,7 @@ module "template-cloudv2-platform-terraform-module" {
 #}
 
 module "cloudv2-platform" {
-  source       = "./modules/repository"
+  source       = "./../modules/repository"
   name         = "cloudv2-platform"
   type         = "core"
   description  = "A place for the Cloudv2 Platform core"
@@ -57,7 +57,7 @@ module "cloudv2-platform" {
 }
 
 module "cloudv2-platform-terraform-module-baseline" {
-  source      = "./modules/repository"
+  source      = "./../modules/repository"
   name        = "cloudv2-platform-terraform-baseline"
   type        = "module"
   description = "Module for enabling and configuring common baseline services such as SecurityHub"
