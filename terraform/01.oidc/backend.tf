@@ -3,7 +3,7 @@ terraform {
   backend "s3" {
     region  = "eu-north-1"
     bucket  = "jppol-root-test-terraform-state"
-    key     = "aws-root-account/01.oidc"
+    key     = "aws-root-account/01.d"
     profile = ""
     encrypt = "true"
 
@@ -17,12 +17,12 @@ terraform {
   }
 }
 
-provider "aws" {
-  default_tags {
-    tags = {
-      owner     = local.github_org
-      terraform = "true"
-    }
-  }
-}
+#provider "aws" {
+#  default_tags {
+#    tags = {
+#      owner     = local.github_org
+#      terraform = "true"
+#    }
+#  }
+#}
 
