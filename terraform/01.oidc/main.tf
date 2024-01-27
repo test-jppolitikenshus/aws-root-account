@@ -1,3 +1,7 @@
+## import tags
+module "tags" {
+  source = "../modules/default-tags/"
+}
 
 ##  OpenID Connect Provider for GitHub Actions
 resource "aws_iam_openid_connect_provider" "default" {
@@ -22,7 +26,7 @@ resource "aws_iam_role" "oidc_role" {
         Action = "sts:AssumeRoleWithWebIdentity"
         Effect = "Allow"
         Principal = {
-          Federated = "arn:aws:iam::${var.aws_root_account}:oidc-provider/token.actions.githubusercontent.com"
+          Federated = "arn:aws:iam::${var.aws_account}:oidc-provider/token.actions.githubusercontent.com"
         },
         Condition = {
           StringEquals = { # no wildcard
