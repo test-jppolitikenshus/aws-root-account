@@ -1,9 +1,5 @@
 locals {
 
-  # github organisation
-  #  access to github organisation is GitHub CLI (gh auth login)
-  github_org = "test-jppolitikenshus"
-
   # GitHub usernames for the Platform team maintainers
   # NB: Terraform shows a perputal difference in roles if someone is an organisation owner
   # and will attempt to change them from `maintainer` to `member`, so owners should go in here.

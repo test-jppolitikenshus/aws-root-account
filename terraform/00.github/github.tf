@@ -21,7 +21,7 @@ output "github_organization_settings-2fa-reminder" {
   description = "something"
   value       = <<EOT
 ************* Manually settings required:
-- enforce 2FA in org: https://github.com/organizations/${local.github_org}/settings/security
+- enforce 2FA in org: https://github.com/organizations/${var.github_org}/settings/security
 - enable "Private vulnerability reporting for new public repositories"
 - "Code scanning" and "Recommend the extended query suite for repositories enabling default setup"
 *************

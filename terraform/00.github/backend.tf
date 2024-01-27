@@ -1,13 +1,12 @@
 terraform {
   required_version = "<1.6"
   backend "s3" {
-    region  = "eu-north-1"
-    bucket  = "jppol-root-test-terraform-state"
-    key     = "aws-root-account/00.github"
+    region = "eu-north-1"
+    #bucket         = "jppol-root-test-terraform-state"         # This value is local to ../stage/*
+    #dynamodb_table = "jppol-root-test-terraform-state-lock"    # This value is local to ../stage/*
+    #key            = "aws-root-account/00.github"              # This value is set at runtime based on <repo>/<module>
     profile = ""
     encrypt = "true"
-
-    dynamodb_table = "jppol-root-test-terraform-state-lock"
   }
 
   required_providers {
@@ -21,7 +20,9 @@ terraform {
 # Configure the GitHub Provider
 #  access to Github Organisation is via GitHub CLI (gh auth login)
 provider "github" {
-  owner = local.github_org
+  owner = var.github_org
 }
+
+
 
 
