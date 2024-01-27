@@ -3,9 +3,9 @@ output "github_org" {
   value       = var.github_org
 }
 
-output "aws_root_account" {
-  description = "Which root account is configured"
-  value       = var.aws_root_account
+output "aws_account" {
+  description = "Which aws account is configured"
+  value       = var.aws_account
 }
 
 

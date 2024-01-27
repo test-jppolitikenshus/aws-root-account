@@ -1,5 +1,6 @@
 terraform {
-  required_version = "< 1.6.0"
+  required_version = ">= 1.0.0"
+
   backend "s3" {
     region  = "eu-north-1"
     bucket  = "jppol-root-test-terraform-state"
