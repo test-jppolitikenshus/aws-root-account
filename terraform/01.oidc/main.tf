@@ -1,9 +1,3 @@
-## import tags
-module "tags" {
-  source = "../modules/default-tags/"
-}
-
-##  OpenID Connect Provider for GitHub Actions
 resource "aws_iam_openid_connect_provider" "default" {
   url = "https://token.actions.githubusercontent.com"
 
