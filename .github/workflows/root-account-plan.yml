@@ -1,4 +1,4 @@
-name: terraform plan (root-account)
+name: terraform plan (aws-root-account)
 
 on:
   pull_request:
