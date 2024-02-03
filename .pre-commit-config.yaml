@@ -4,6 +4,7 @@ repos:
   hooks:
     - id: terraform_fmt
     - id: terraform_docs
+      args: ["--args=--lockfile=false"]
     - id: terraform_checkov
     - id: infracost_breakdown
     - id: terraform_tflint
@@ -11,3 +12,34 @@ repos:
     - id: terraform_validate
     - id: terrascan
 
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+    # Git style
+    - id: check-added-large-files # prevents giant files from being committed.
+    - id: forbid-new-submodules # prevents addition of new git submodules.
+    - id: no-commit-to-branch # don't commit to branch
+  
+    # Common errors
+    - id: trailing-whitespace # trims trailing whitespace.
+      args: [--markdown-linebreak-ext=md]
+    - id: end-of-file-fixer # ensures that a file is either empty, or ends with one newline.
+    - id: check-merge-conflict # checks for files that contain merge conflict strings.
+    - id: check-executables-have-shebangs # ensures that (non-binary) executables have a shebang.
+  
+    # Cross platform
+    - id: check-case-conflict # checks for files that would conflict in case-insensitive filesystems.
+    - id: mixed-line-ending # replaces or checks mixed line ending.
+      args: [--fix=lf]
+  
+    # YAML
+    - id: check-yaml  # checks yaml files for parseable syntax.
+      exclude: |
+        (?x)^(
+            deprecated/eks/.*/charts/.*/templates/.*.yaml
+            deprecated/github-actions-runner/runners/actions-runner/chart/templates/.*.yaml |
+            modules/eks/cert-manager/cert-manager-issuer/templates/.*.yaml |
+            modules/strongdm/charts/strongdm/templates/.*.yaml |
+            modules/eks/.*/charts/.*/templates/.*.yaml
+           )$
+  
