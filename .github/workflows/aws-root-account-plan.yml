@@ -38,40 +38,41 @@ jobs:
             #- run: terraform init
             #- run: terraform validate -no-color
             #- run: terraform plan -no-color
-      - name: Get changed root dirs
-        id: changed-dirs
-        uses: tj-actions/changed-files@v42
-        with:
-          dir_names: "true"
-
-      - name: List all changed dirs
-        env:
-          ALL_CHANGED_FILES: ${{ steps.changed-dirs.outputs.all_changed_files }}
-        run: |
-          for dir in ${ALL_CHANGED_FILES}; do
-            echo "$dir was changed"
-          done
-
-
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v42
-
-      - name: List all changed files
-        env:
-          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
-        run: |
-          for file in ${ALL_CHANGED_FILES}; do
-            echo "$file was changed"
-          done
-
+            #
+            #      - name: Get changed root dirs
+            #        id: changed-dirs
+            #        uses: tj-actions/changed-files@v42
+            #        with:
+            #          dir_names: "true"
+            #
+            #      - name: List all changed dirs
+            #        env:
+            #          ALL_CHANGED_FILES: ${{ steps.changed-dirs.outputs.all_changed_files }}
+            #        run: |
+            #          for dir in ${ALL_CHANGED_FILES}; do
+            #            echo "$dir was changed"
+            #          done
+            #
+            #
+            #      - name: Get changed files
+            #        id: changed-files
+            #        uses: tj-actions/changed-files@v42
+            #
+            #      - name: List all changed files
+            #        env:
+            #          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+            #        run: |
+            #          for file in ${ALL_CHANGED_FILES}; do
+            #            echo "$file was changed"
+            #          done
+            #
       - name: Run changed-files with dir_names
         id: changed-files-dir-names
         uses: tj-actions/changed-files@v42
         with:
           dir_names: "true"
           dir_names_exclude_current_dir: "true"
-          dir_names_include_files: "[0-9][0-9].*"
+          dir_names_include_files: '[0-9]*'
           dir_names_max_depth: "2"
 
       - name: List all changed files2
