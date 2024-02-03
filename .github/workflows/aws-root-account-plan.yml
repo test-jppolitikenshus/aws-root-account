@@ -96,7 +96,7 @@ jobs:
               ;;
             esac
           done
-          echo RESULT=$(printf "%s\n" $ASDF |sort -t/ -k2n|tr -s '\n\r' ' ') >> $GITHUB_ENV   # sort works with lines, not string items, so this
+          echo RESULT=$(printf "%s\n" $RESULT |sort -t/ -k2n|tr -s '\n\r' ' ') >> $GITHUB_ENV   # sort works with lines, not string items, so this
           #echo "RESULT=${RESULT}" >> $GITHUB_ENV
 
       - name: Lets see what to do
