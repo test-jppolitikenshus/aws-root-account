@@ -6,3 +6,8 @@ repos:
     - id: terraform_docs
     - id: terraform_checkov
     - id: infracost_breakdown
+    - id: terraform_tflint
+    - id: terraform_trivy
+    - id: terraform_validate
+    - id: terrascan
+
