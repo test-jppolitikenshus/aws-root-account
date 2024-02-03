@@ -30,6 +30,7 @@ jobs:
         uses: actions/checkout@v3    # get it from https://github.com/actions
 
       - name: Configure AWS Credentials
+        if: ${{ !env.ACT }}   # skip step if run locally
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ env.AWS_REGION }}
@@ -53,3 +54,10 @@ jobs:
 
       - name: get caller identity
         run: aws sts get-caller-identity
+
+  greeting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Say hello
+        run: echo "hello world"
