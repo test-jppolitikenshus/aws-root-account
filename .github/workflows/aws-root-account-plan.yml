@@ -46,7 +46,7 @@ jobs:
 
       - name: List all changed files
         env:
-          ALL_CHANGED_DIRS: ${{ steps.changed-dirs.outputs.all_changed_files }}
+          ALL_CHANGED_DIRS: ${{ steps.changed-dirs.outputs.all_changed_dirs }}
         run: |
           for dir in ${ALL_CHANGED_DIRS; do
             echo "$dir was changed"
