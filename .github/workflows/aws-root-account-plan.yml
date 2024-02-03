@@ -46,9 +46,9 @@ jobs:
 
       - name: List all changed dirs
         env:
-          ALL_CHANGED_DIRS: ${{ steps.changed-dirs.outputs.all_changed_dirs }}
+          ALL_CHANGED_FILES: ${{ steps.changed-dirs.outputs.all_changed_files }}
         run: |
-          for dir in ${ALL_CHANGED_DIRS}; do
+          for dir in ${ALL_CHANGED_FILES}; do
             echo "$dir was changed"
           done
 
@@ -73,3 +73,11 @@ jobs:
           dir_names_exclude_current_dir: "true"
           dir_names_include_files: "^\\d.*"
           dir_names_max_depth: "2"
+
+      - name: List all changed files2
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files-dir-names.outputs.all_changed_files }}
+        run: |
+          for file in ${ALL_CHANGED_FILES}; do
+            echo "$file was changed"
+          done
