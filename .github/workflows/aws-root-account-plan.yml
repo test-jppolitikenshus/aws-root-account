@@ -71,7 +71,7 @@ jobs:
         with:
           dir_names: "true"
           dir_names_exclude_current_dir: "true"
-          dir_names_include_files: "^\\d.*"
+          dir_names_include_files: "[0-9][0-9].*"
           dir_names_max_depth: "2"
 
       - name: List all changed files2
