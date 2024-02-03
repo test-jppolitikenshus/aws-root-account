@@ -24,3 +24,4 @@ Three GitHub organizations are presently used for this purpose:
 5. Authenticate to your test AWS account
 6. terraform apply 
 
+
