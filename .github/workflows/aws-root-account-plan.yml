@@ -44,10 +44,23 @@ jobs:
         with:
           dir_names: "true"
 
-      - name: List all changed files
+      - name: List all changed dirs
         env:
           ALL_CHANGED_DIRS: ${{ steps.changed-dirs.outputs.all_changed_dirs }}
         run: |
           for dir in ${ALL_CHANGED_DIRS}; do
             echo "$dir was changed"
+          done
+
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v42
+
+      - name: List all changed files
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+        run: |
+          for file in ${ALL_CHANGED_FILES}; do
+            echo "$file was changed"
           done
