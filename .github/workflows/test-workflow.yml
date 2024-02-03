@@ -27,13 +27,13 @@ jobs:
 
     steps:
       - name: Git clone the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3    # get it from https://github.com/actions
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: arn:aws:iam::474892472306:role/AWS-GitHubActions-OIDC_role
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ROOT_ACCOUNT }}:role/AWS-GitHubActions-OIDC_role
           role-session-name: "GHA-\
             user-${{ github.event.pull_request.user.login }}-\
             pr-${{ github.event.pull_request.number }}-\

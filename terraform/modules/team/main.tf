@@ -1,15 +1,15 @@
 
 locals {
   maintainers = toset([
-    for user in var.maintainers : 
+    for user in var.maintainers :
     user
-    if contains(var.members, user) 
+    if contains(var.members, user)
   ])
 
   members = toset([
-    for user in var.members : 
+    for user in var.members :
     user
-    if !contains(var.maintainers, user) 
+    if !contains(var.maintainers, user)
   ])
 }
 
