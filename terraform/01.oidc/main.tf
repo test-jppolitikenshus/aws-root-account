@@ -44,3 +44,4 @@ resource "aws_iam_role_policy_attachment" "oidc_role_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
+
