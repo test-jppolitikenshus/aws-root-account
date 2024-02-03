@@ -38,14 +38,16 @@ jobs:
             #- run: terraform init
             #- run: terraform validate -no-color
             #- run: terraform plan -no-color
-      - name: Get changed files
-        id: changed-files
+      - name: Get changed root dirs
+        id: changed-dirs
         uses: tj-actions/changed-files@v42
+        with:
+          dir_names: "true"
 
       - name: List all changed files
         env:
-          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+          ALL_CHANGED_DIRS: ${{ steps.changed-dirs.outputs.all_changed_files }}
         run: |
-          for file in ${ALL_CHANGED_FILES}; do
-            echo "$file was changed"
+          for dir in ${ALL_CHANGED_DIRS; do
+            echo "$dir was changed"
           done
