@@ -21,6 +21,7 @@ permissions:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   AssumeRoleAndCallIdentity:
+    environment: test
     #if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
 
