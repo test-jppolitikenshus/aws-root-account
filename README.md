@@ -11,7 +11,7 @@ This terraform repository (aws-root-account) is the entrypoint for establishing 
 Three GitHub organizations are presently used for this purpose:
 - commercial-tech: This is Commercial & Tech's organisation containing this template bootstrap repository
 - jppolitikenshus: This is the public organisation used for JPPol repositories, including the Cloudv2 Platform
-- test-jppolitikenshus: This is a test organisation used for github and aws testing with the aws-test-master account (474892472306)
+- test-jppolitikenshus: This is a test organisation used for github and aws testing with the aws-test-master account 
 
 
 # Bootstrapping a test AWS environment
