@@ -1,6 +1,8 @@
 name: terraform plan (aws-root-account)
 
 on:
+  push:
+    branches: [ "main" ]
   pull_request:
     paths:
       # modules - for now do not care about local modules- when modules are put in github, version change will trigger action.
