@@ -53,6 +53,9 @@ jobs:
           echo test, and deploy your project.
 
       - name: get caller identity
+        uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
+        with:
+          terraform_version: 1.5.2
         run: aws sts get-caller-identity
 
   greeting:
