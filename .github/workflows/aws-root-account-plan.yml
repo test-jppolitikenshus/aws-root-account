@@ -3,6 +3,7 @@ name: terraform plan (aws-root-account)
 on:
   pull_request:
     paths:
+      # modules - for now do not care about local modules- when modules are put in github, version change will trigger action.
       - 'terraform/**'
       - '.github/workflows/aws-root-account-plan.yml'
       - '.github/workflows/aws-root-account-apply.yml'
@@ -27,12 +28,21 @@ jobs:
 
           role-session-name: GitHubActions
           aws-region: eu-north-1
-      - uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
+            #- uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
+            #  with:
+            #    terraform_version: 1.5.2
+            #- run: terraform fmt -check
+            #  continue-on-error: true
+            #- run: terraform init
+            #- run: terraform validate -no-color
+            #- run: terraform plan -no-color
+      - uses: Stockopedia/action-get-changed-files@v1
+        id: get_changed
         with:
-          terraform_version: 1.5.2
-      - run: terraform fmt -check
-        continue-on-error: true
-      - run: terraform init
-      - run: terraform validate -no-color
-      - run: terraform plan -no-color
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+            #ignore: "**/*.js" # glob
+          foldersOnly: true # to only include folders in the output
+          format: json # either json, csv or newline
+      - name: Echo
+        run: echo ${{ steps.get_changed.outputs.changed }} 
    
