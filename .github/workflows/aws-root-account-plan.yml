@@ -113,7 +113,8 @@ jobs:
     needs: plan
     strategy:
       matrix:
-        root-module: [ "${{ needs.plan.outputs.RESULT }}" ]
+        #root-module: [ "${{ needs.plan.outputs.RESULT }}" ]
+        root-module: [ terraform/00.github, terraform/01.oidc ]
     steps:
       - uses: actions/checkout@v3
       - name: Say hello
