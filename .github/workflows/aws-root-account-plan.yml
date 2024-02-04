@@ -110,7 +110,8 @@ jobs:
         run: |
           echo "This is it: $RESULT"
 
-  example_matrix:
+  terraform_plan:
+    environment: test
     runs-on: ubuntu-latest
     needs: plan
     strategy:
