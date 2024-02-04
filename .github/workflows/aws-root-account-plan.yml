@@ -108,7 +108,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        root-module: ${{ env.RESULT }}
+        root-module: [ "${{ env.RESULT }}" ]
     steps:
       - uses: actions/checkout@v3
       - name: Say hello
