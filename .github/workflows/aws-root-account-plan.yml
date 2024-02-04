@@ -114,6 +114,9 @@ jobs:
     environment: test
     runs-on: ubuntu-latest
     needs: plan
+    permissions:
+      id-token: write
+      contents: read
     strategy:
       matrix: 
         root-module: ${{ fromJson(needs.plan.outputs.RESULT) }}   # fromJson is apparently the only way to feed array to GHA
