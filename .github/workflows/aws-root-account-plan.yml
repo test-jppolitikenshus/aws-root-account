@@ -100,7 +100,7 @@ jobs:
           done
           echo RESULT=$(printf "%s\n" $RESULT |sort -t/ -k2n|tr -s '\n\r' ' ') >> $GITHUB_ENV   # sort works with lines, not string items, so this
           #echo RESULT=$(printf "%s\n" $RESULT |sort -t/ -k2n|tr -s '\n\r' ' ') >> $GITHUB_OUTPUT   # ENV is for steps, OUTPUT passes variables between jobs
-          echo RESULT='["terraform/00.asdf", "terraform/01.qwer"]' >>$GITHUB_OUTPUT
+          echo RESULT="['terraform/00.asdf', 'terraform/01.qwer']" >>$GITHUB_OUTPUT
           #echo "RESULT=${RESULT}" >> $GITHUB_ENV
 
       - name: Lets see what to do
@@ -114,7 +114,7 @@ jobs:
     needs: plan
     strategy:
       matrix: 
-        root-module: ${{ needs.plan.outputs.RESULT }}
+        root-module: ${{ from.Json(needs.plan.outputs.RESULT) }}
         #root-module: [ terraform/00.github, terraform/01.oidc ]
     steps:
       - uses: actions/checkout@v3
