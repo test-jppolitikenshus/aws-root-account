@@ -14,6 +14,8 @@ jobs:
   plan:
     environment: test
     runs-on: ubuntu-latest
+    outputs:
+      RESULT: ${{ env.RESULT }}
     permissions:
       id-token: write
       contents: read
@@ -96,6 +98,7 @@ jobs:
             esac
           done
           echo RESULT=$(printf "%s\n" $RESULT |sort -t/ -k2n|tr -s '\n\r' ' ') >> $GITHUB_ENV   # sort works with lines, not string items, so this
+          echo RESULT=$(printf "%s\n" $RESULT |sort -t/ -k2n|tr -s '\n\r' ' ') >> $GITHUB_OUTPUT   # ENV is for steps, OUTPUT passes variables between jobs
           #echo "RESULT=${RESULT}" >> $GITHUB_ENV
 
       - name: Lets see what to do
@@ -106,9 +109,10 @@ jobs:
 
   example_matrix:
     runs-on: ubuntu-latest
+    needs: plan
     strategy:
       matrix:
-        root-module: [ "${{ env.RESULT }}" ]
+        root-module: [ "${{ needs.plan.outputs.RESULT }}" ]
     steps:
       - uses: actions/checkout@v3
       - name: Say hello
