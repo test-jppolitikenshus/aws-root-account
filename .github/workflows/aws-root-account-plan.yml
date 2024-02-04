@@ -79,7 +79,6 @@ jobs:
           dir_names_exclude_current_dir: "true"
           dir_names_include_files: '[0-9]*'
           dir_names_max_depth: "2"
-          separator: ','
 
       - name: List all changed directories
         env:
@@ -102,12 +101,13 @@ jobs:
               ;;
             esac
           done
-          echo RESULT=$(printf "%s\n" $RESULT |sort -t/ -k2n|tr -s '\n\r' ' ') >> $GITHUB_ENV   # sort works with lines, not string items, so this
+          #echo RESULT=$(printf "%s\n" $RESULT |sort -t/ -k2n|tr -s '\n\r' ' ') >> $GITHUB_ENV   # sort works with lines, not string items, so this
+          echo RESULT=$(printf "\"%s\"\n" $qwer |sort -t/ -k2n|tr -s '\n\r' ','|sed 's/,$//'|sed 's/^\(.*\)/[\1]/') >> $GITHUB_ENV  # sanitize to match required format
           #echo RESULT=$(printf "%s\n" $RESULT |sort -t/ -k2n|tr -s '\n\r' ' ') >> $GITHUB_OUTPUT   # ENV is for steps, OUTPUT passes variables between jobs
           #echo RESULT="['terraform/00.asdf', 'terraform/01.qwer']" >>$GITHUB_OUTPUT
-          echo RESULT="['9.0.0', '11.0.0']" >> $GITHUB_OUTPUT
-          echo RESULT="['9.0.0', '11.0.0']"
           #echo "RESULT=${RESULT}" >> $GITHUB_ENV
+          #
+          #echo RESULT='["9.0.0","11.0.0"]' >> $GITHUB_ENV  # this is the required format
 
       - name: Lets see what to do
         env:
@@ -120,7 +120,7 @@ jobs:
     needs: plan
     strategy:
       matrix: 
-        root-module: [ "${{ needs.plan.outputs.RESULT }}" ]
+        root-module: ${{ fromJson(needs.plan.outputs.RESULT) }}   # fromJson is apparently the only way to feed array to GHA
           #root-module: ${{ fromJson(needs.plan.outputs.RESULT) }}
         #root-module: [ terraform/00.github, terraform/01.oidc ]
     steps:
@@ -128,4 +128,4 @@ jobs:
       - name: Say hello
         run: |
           echo "hello world ${{ matrix.root-module }}"
-
+          echo "root-module: ${{ fromJson(needs.plan.outputs.RESULT) }}"
