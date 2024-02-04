@@ -16,6 +16,6 @@ data "external" "asdf" {
 }
 
 output "asdfasfd" {
-  description = "asdfasdfasdasdasdasdasdasdasdasdasdasfdfffffffff"
+  description = "asdfasdfasdasdasdasdasdasdasdasdasdasfasddfffffffff"
   value       = data.external.asdf.program
 }
