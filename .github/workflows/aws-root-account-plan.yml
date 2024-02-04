@@ -93,7 +93,7 @@ jobs:
           ALL_CHANGED_FILES: ${{ steps.changed-files-dir-names.outputs.all_changed_files }}
         run: |
           for path in ${ALL_CHANGED_FILES}; do    # this is a string with the affected modules separated by a space
-            case ${path##*/} in   # only consider directories starting with two digits eg. "terraform/01.something"
+            case ${path##*/} in                   # only consider directories starting with two digits eg. "terraform/01.something"
               ([0-9][0-9].*)
               RESULT="${path} ${RESULT}"
               ;;
@@ -101,12 +101,7 @@ jobs:
               ;;
             esac
           done
-          #echo RESULT=$(printf "%s\n" $RESULT |sort -t/ -k2n|tr -s '\n\r' ' ') >> $GITHUB_ENV   # sort works with lines, not string items, so this
-          echo RESULT=$(printf "\"%s\"\n" $qwer |sort -t/ -k2n|tr -s '\n\r' ','|sed 's/,$//'|sed 's/^\(.*\)/[\1]/') >> $GITHUB_ENV  # sanitize to match required format
-          #echo RESULT=$(printf "%s\n" $RESULT |sort -t/ -k2n|tr -s '\n\r' ' ') >> $GITHUB_OUTPUT   # ENV is for steps, OUTPUT passes variables between jobs
-          #echo RESULT="['terraform/00.asdf', 'terraform/01.qwer']" >>$GITHUB_OUTPUT
-          #echo "RESULT=${RESULT}" >> $GITHUB_ENV
-          #
+          echo RESULT=$(printf "\"%s\"\n" $RESULT |sort -t/ -k2n|tr -s '\n\r' ','|sed 's/,$//'|sed 's/^\(.*\)/[\1]/') >> $GITHUB_ENV  # sort output and sanitize to match required format
           #echo RESULT='["9.0.0","11.0.0"]' >> $GITHUB_ENV  # this is the required format
 
       - name: Lets see what to do
@@ -121,11 +116,8 @@ jobs:
     strategy:
       matrix: 
         root-module: ${{ fromJson(needs.plan.outputs.RESULT) }}   # fromJson is apparently the only way to feed array to GHA
-          #root-module: ${{ fromJson(needs.plan.outputs.RESULT) }}
-        #root-module: [ terraform/00.github, terraform/01.oidc ]
     steps:
       - uses: actions/checkout@v3
       - name: Say hello
         run: |
           echo "hello world ${{ matrix.root-module }}"
-          echo "root-module: ${{ fromJson(needs.plan.outputs.RESULT) }}"
