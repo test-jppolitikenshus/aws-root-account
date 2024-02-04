@@ -75,6 +75,7 @@ jobs:
           dir_names_exclude_current_dir: "true"
           dir_names_include_files: '[0-9]*'
           dir_names_max_depth: "2"
+          separator: ','
 
       - name: List all changed directories
         env:
