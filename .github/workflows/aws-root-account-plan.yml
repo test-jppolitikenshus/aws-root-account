@@ -159,8 +159,8 @@ jobs:
       - name: Terraform lint
         run: tflint -f compact
 
-          #- name: Terraform Plan
-          #run: terraform plan -no-color
+      - name: Terraform Plan
+        run: terraform plan -no-color
       
       - name: Say hello
         run: |
