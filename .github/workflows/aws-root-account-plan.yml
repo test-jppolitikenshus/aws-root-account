@@ -101,7 +101,7 @@ jobs:
               ;;
             esac
           done
-          if [ -z ${ALL_CHANGED_FILES} ]; then
+          if [ -z ${RESULT} ]; then
             echo "exit, nothing to do"
             exit 1
           else
