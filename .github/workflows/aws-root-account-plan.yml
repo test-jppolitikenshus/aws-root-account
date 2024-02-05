@@ -15,7 +15,7 @@ env:
 
 jobs:
   plan:
-    environment: $ENVIRONMENT
+    environment: ${{ env.ENVIRONMENT }}
     runs-on: ubuntu-latest
     outputs:
       RESULT: ${{ env.RESULT }}
@@ -116,7 +116,7 @@ jobs:
           echo "This is it: $RESULT"
 
   terraform_plan:
-    environment: $ENVIRONMENT
+    environment: ${{ env.ENVIRONMENT }}
     runs-on: ubuntu-latest
     needs: plan
     permissions:
