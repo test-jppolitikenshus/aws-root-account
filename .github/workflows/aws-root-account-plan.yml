@@ -15,7 +15,7 @@ env:
 
 jobs:
   plan:
-    environment: test
+    environment: test  # https://github.com/orgs/community/discussions/26594 (issue with matrix jobs and env)
     runs-on: ubuntu-latest
     outputs:
       RESULT: ${{ env.RESULT }}
@@ -95,7 +95,7 @@ jobs:
           for path in ${ALL_CHANGED_FILES}; do    # this is a string with the affected modules separated by a space
             case ${path##*/} in                   # only consider directories starting with two digits eg. "terraform/01.something"
               ([0-9][0-9].*)
-              RESULT="${path} ${RESULT}"
+              RESULT="${path##*/} ${RESULT}"
               ;;
               (*)
               ;;
@@ -105,7 +105,7 @@ jobs:
             echo "exit now, nothing to do, \$RESULT is empty"
             exit 1
           else
-            echo RESULT=$(printf "\"%s\"\n" $RESULT |sort -t/ -k2n|tr -s '\n\r' ','|sed 's/,$//'|sed 's/^\(.*\)/[\1]/') >> $GITHUB_ENV  # sort output and sanitize to match required format
+            echo RESULT=$(printf "\"%s\"\n" $RESULT |sort -n|tr -s '\n\r' ','|sed 's/,$//'|sed 's/^\(.*\)/[\1]/') >> $GITHUB_ENV  # sort output and sanitize to match required format
             #echo RESULT='["9.0.0","11.0.0"]' >> $GITHUB_ENV  # this is the required format
           fi
 
@@ -124,7 +124,7 @@ jobs:
       contents: read
     defaults:
       run:
-        working-directory: ./${{ matrix.root-module }}
+        working-directory: ./terraform/${{ matrix.root-module }}
     strategy:
       matrix: 
         root-module: ${{ fromJson(needs.plan.outputs.RESULT) }}   # fromJson is apparently the only way to feed array to GHA
@@ -146,7 +146,7 @@ jobs:
         continue-on-error: true
       
       - name: Terraform Init
-        run: echo "terraform init -backend-config key=aws-root-account/${{ matrix.root-module }} -backend-config ../stage/${{ env.ENVIRONMENT }}/backend.tfvars" #-compact-warnings
+        run: echo "terraform init -backend-config key=${{ github.event.repository.name }}/${{ matrix.root-module }} -backend-config ../stage/${{ env.ENVIRONMENT }}/backend.tfvars" #-compact-warnings
       
       - name: Terraform Validate
         run: terraform validate -no-color
