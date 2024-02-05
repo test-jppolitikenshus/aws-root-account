@@ -146,7 +146,7 @@ jobs:
         continue-on-error: true
       
       - name: Terraform Init
-        run: terraform init -backend-config key=${{ github.event.repository.name }}/${{ matrix.root-module }} -backend-config bucket=${{ secret.S3_STATE_BUCKET }} -backend-config dynamodb_table=${{ secret.S3_STATE_BUCKET }}-lock #-compact-warnings
+        run: terraform init -backend-config key=${{ github.event.repository.name }}/${{ matrix.root-module }} -backend-config bucket=${{ secrets.S3_STATE_BUCKET }} -backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock #-compact-warnings
       
       - name: Terraform Validate
         run: terraform validate -no-color
