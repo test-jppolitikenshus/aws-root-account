@@ -84,13 +84,9 @@ jobs:
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files-dir-names.outputs.all_changed_files }}
         run: |
-          if [ -z ${ALL_CHANGED_FILES} ]; then
-            exit 1
-          else
-            for file in ${ALL_CHANGED_FILES}; do
-              echo "$file was changed"
-            done
-          fi
+          for file in ${ALL_CHANGED_FILES}; do
+            echo "$file was changed"
+          done
 
       - name: Filter out root modules to work on
         env:
@@ -105,8 +101,13 @@ jobs:
               ;;
             esac
           done
-          echo RESULT=$(printf "\"%s\"\n" $RESULT |sort -t/ -k2n|tr -s '\n\r' ','|sed 's/,$//'|sed 's/^\(.*\)/[\1]/') >> $GITHUB_ENV  # sort output and sanitize to match required format
-          #echo RESULT='["9.0.0","11.0.0"]' >> $GITHUB_ENV  # this is the required format
+          if [ -z ${ALL_CHANGED_FILES} ]; then
+            echo "exit, nothing to do"
+            exit 1
+          else
+            echo RESULT=$(printf "\"%s\"\n" $RESULT |sort -t/ -k2n|tr -s '\n\r' ','|sed 's/,$//'|sed 's/^\(.*\)/[\1]/') >> $GITHUB_ENV  # sort output and sanitize to match required format
+            #echo RESULT='["9.0.0","11.0.0"]' >> $GITHUB_ENV  # this is the required format
+          fi
 
       - name: Lets see what to do
         env:
