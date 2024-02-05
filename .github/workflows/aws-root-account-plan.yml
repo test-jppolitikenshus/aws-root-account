@@ -84,9 +84,13 @@ jobs:
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files-dir-names.outputs.all_changed_files }}
         run: |
-          for file in ${ALL_CHANGED_FILES}; do
-            echo "$file was changed"
-          done
+          if [ -z ${ALL_CHANGED_FILES} ]; then
+            exit 1
+          else
+            for file in ${ALL_CHANGED_FILES}; do
+              echo "$file was changed"
+            done
+          fi
 
       - name: Filter out root modules to work on
         env:
