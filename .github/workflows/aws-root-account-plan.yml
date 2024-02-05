@@ -11,11 +11,11 @@ on:
   workflow_dispatch:
 
 env:
-  ENVIRONMENT: "test"
+  AWS_ASDF: "test"
 
 jobs:
   plan:
-    environment: ${{ env.ENVIRONMENT }}
+    environment: ${{ env.ASDF }}
     runs-on: ubuntu-latest
     outputs:
       RESULT: ${{ env.RESULT }}
@@ -116,7 +116,7 @@ jobs:
           echo "This is it: $RESULT"
 
   terraform_plan:
-    environment: ${{ env.ENVIRONMENT }}
+    environment: ${{ env.ASDF }}
     runs-on: ubuntu-latest
     needs: plan
     permissions:
