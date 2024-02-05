@@ -151,10 +151,18 @@ jobs:
       - name: Terraform Validate
         run: terraform validate -no-color
       
-      #- run: terraform plan -no-color
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v3
+        with:
+          tflint_version: v0.48.0
+
+      - name: Terraform lint
+        run: tflint -f compact
+
+          #- name: Terraform Plan
+          #run: terraform plan -no-color
+      
       - name: Say hello
         run: |
           echo "hello world ${{ matrix.root-module }}"
-          echo "hello2 ${matrix.root-module##*/}"
-          echo "$ENVIRONMENT"
 
