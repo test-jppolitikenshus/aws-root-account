@@ -133,7 +133,7 @@ jobs:
       - uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a # v4.0.1
         with:
           # FIX ROLE NAME role-to-assume: arn:aws:iam::${{secrets.AWS_ROOT_ACCOUNT_ID}}:role/github-actions-plan
-          role-to-assume: arn:aws:iam::${{secrets.AWS_ROOT_ACCOUNT_ID}}:role/AWS-GitHubActions-OIDC_role
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ROOT_ACCOUNT_ID }}:role/AWS-GitHubActions-OIDC_role
           role-session-name: GitHubActions
           aws-region: eu-north-1
       
@@ -146,7 +146,7 @@ jobs:
         continue-on-error: true
       
       - name: Terraform Init
-        run: terraform init -backend-config key=aws-root-account/${{ matrix.root-module }} -backend-config ../stage/${{ env.ENVIRONMENT }}/backend.tfvars #-compact-warnings
+        run: echo "terraform init -backend-config key=aws-root-account/${{ matrix.root-module##*/ }} -backend-config ../stage/${{ env.ENVIRONMENT }}/backend.tfvars" #-compact-warnings
       
       - name: Terraform Validate
         run: terraform validate -no-color
@@ -155,3 +155,6 @@ jobs:
       - name: Say hello
         run: |
           echo "hello world ${{ matrix.root-module }}"
+          echo "hello2 ${matrix.root-module##*/}"
+          echo "$ENVIRONMENT"
+
