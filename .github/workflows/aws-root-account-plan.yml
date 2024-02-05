@@ -146,7 +146,7 @@ jobs:
         continue-on-error: true
       
       - name: Terraform Init
-        run: echo "terraform init -backend-config key=${{ github.event.repository.name }}/${{ matrix.root-module }} -backend-config ../stage/${{ env.ENVIRONMENT }}/backend.tfvars" #-compact-warnings
+        run: terraform init -backend-config key=${{ github.event.repository.name }}/${{ matrix.root-module }} -backend-config ../stage/${{ env.ENVIRONMENT }}/backend.tfvars #-compact-warnings
       
       - name: Terraform Validate
         run: terraform validate -no-color

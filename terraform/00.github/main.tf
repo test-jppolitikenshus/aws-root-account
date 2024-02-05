@@ -5,17 +5,18 @@
 #  environment = "test"
 #}
 
-data "external" "asdf" {
-  program = [
-    #"gh variable list -e test |grep -E "^AWS_ACCOUNT\t"|awk '{print $2}'"
-    "uname - a"
-  ]
-  result {
+#data "external" "asdf" {
+#  program = [
+#    #"gh variable list -e test |grep -E "^AWS_ACCOUNT\t"|awk '{print $2}'"
+#    "uname - a"
+#  ]
+#  result {
+#
+#  }
+#}
 
-  }
-}
+#output "asdfasfd" {
+#  description = "asdfasdfasdasdasdasdasdasdasdasdasdasfasasdfddfffffffffasdasfasdasdasdasdasdasdasdasdasdfffffffffdf"
+#  value       = data.external.asdf.program
+#}
 
-output "asdfasfd" {
-  description = "asdfasdfasdasdasdasdasdasdasdasdasdasfasasdfddfffffffffasdasfasdasdasdasdasdasdasdasdasdfffffffffdf"
-  value       = data.external.asdf.program
-}
