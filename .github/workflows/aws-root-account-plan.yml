@@ -143,14 +143,20 @@ jobs:
           terraform_version: 1.5.2
       
       - name: Terraform fmt
-        run: terraform fmt -check
+        run: |
+          echo "pwd: $(pwd)"
+          terraform fmt -check
         continue-on-error: true
       
       - name: Terraform Init
-        run: terraform init -backend-config key=${{ github.event.repository.name }}/${{ matrix.root-module }} -backend-config bucket=${{ secrets.S3_STATE_BUCKET }} -backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock #-compact-warnings
+        run: |
+          echo "pwd: $(pwd)"
+          terraform init -backend-config key=${{ github.event.repository.name }}/${{ matrix.root-module }} -backend-config bucket=${{ secrets.S3_STATE_BUCKET }} -backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock #-compact-warnings
       
       - name: Terraform Validate
-        run: terraform validate -no-color
+        run: |
+          echo "pwd: $(pwd)"
+          terraform validate -no-color
       
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v3
@@ -158,15 +164,19 @@ jobs:
           tflint_version: v0.48.0
 
       - name: Terraform lint
-        run: tflint -f compact
+        run: |
+          echo "pwd: $(pwd)"
+          tflint -f compact
 
       - name: Terraform Plan
         run: |
+          echo "pwd: $(pwd)"
           echo "terraform plan -no-color -var-file ../stage/test/terraform.tfvars -var github_org=${{ secrets.GH_ORG }}"   # https://github.com/orgs/community/discussions/26594 (issue with matrix jobs and env)
           terraform plan -no-color -var-file ../stage/test/terraform.tfvars -var github_org=${{ secrets.GH_ORG }}   # https://github.com/orgs/community/discussions/26594 (issue with matrix jobs and env)
 
       
       - name: Say hello
         run: |
+          echo "pwd: $(pwd)"
           echo "hello world ${{ matrix.root-module }}"
 
