@@ -145,6 +145,7 @@ jobs:
       - name: Terraform fmt
         run: |
           echo "pwd: $(pwd)"
+          cat variables.tf
           terraform fmt -check
         continue-on-error: true
       
