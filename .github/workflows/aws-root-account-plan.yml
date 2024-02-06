@@ -161,7 +161,9 @@ jobs:
         run: tflint -f compact
 
       - name: Terraform Plan
-        run: terraform plan -no-color -var-file ../stage/test/terraform.tfvars -var github_org=${{ secrets.GH_ORG }}   # https://github.com/orgs/community/discussions/26594 (issue with matrix jobs and env)
+        run: |
+          echo "terraform plan -no-color -var-file ../stage/test/terraform.tfvars -var github_org=${{ secrets.GH_ORG }}"   # https://github.com/orgs/community/discussions/26594 (issue with matrix jobs and env)
+          terraform plan -no-color -var-file ../stage/test/terraform.tfvars -var github_org=${{ secrets.GH_ORG }}   # https://github.com/orgs/community/discussions/26594 (issue with matrix jobs and env)
 
       
       - name: Say hello
