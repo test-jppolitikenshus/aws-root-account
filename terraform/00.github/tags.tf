@@ -10,6 +10,7 @@ module "tags" {
 variable "stage" {
   type        = string
   description = "gets the stage from TF_VAR_stage"
+  default     = "test"
   validation {
     condition     = var.stage == "test" || var.stage == "prod"
     error_message = "stage must be either test or prod"
