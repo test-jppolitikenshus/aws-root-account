@@ -160,7 +160,8 @@ jobs:
         run: tflint -f compact
 
       - name: Terraform Plan
-        run: terraform plan -no-color
+        run: terraform plan -no-color -var-file ../stage/test/terraform.tfvars    # https://github.com/orgs/community/discussions/26594 (issue with matrix jobs and env)
+
       
       - name: Say hello
         run: |
