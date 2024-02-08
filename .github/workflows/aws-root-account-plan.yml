@@ -21,9 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       RESULT: ${{ env.RESULT }}
-    permissions:
-      id-token: write
-      contents: read
+    permissions: write-all
+      #permissions:
+      #id-token: write
+      #contents: read
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         #- uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a # v4.0.1
@@ -174,7 +175,6 @@ jobs:
 
       - name: Terraform Plan
         run: |
-          echo "pwd: $(pwd) ${github_token}"
           echo "terraform plan -no-color -var-file ../stage/test/terraform.tfvars -var github_org=${{ secrets.GH_ORG }}"   # https://github.com/orgs/community/discussions/26594 (issue with matrix jobs and env)
           terraform plan -no-color -var-file ../stage/test/terraform.tfvars -var github_org=${{ secrets.GH_ORG }}   # https://github.com/orgs/community/discussions/26594 (issue with matrix jobs and env)
         continue-on-error: true
