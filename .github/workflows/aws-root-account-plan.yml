@@ -13,6 +13,7 @@ on:
 env:
   ENVIRONMENT: "test"
   GH_ORG: ${{ secrets.GH_ORG }}
+  TF_VAR_github_token: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   plan:
@@ -176,7 +177,10 @@ jobs:
 
       - name: Terraform Plan
         run: |
-          echo "pwd: $(pwd)"
+          env:
+            TF_VAR_github_token: ${{ secrets.GITHUB_TOKEN }}
+          echo "pwd: $(pwd) ${github_token}"
+          
           echo "terraform plan -no-color -var-file ../stage/test/terraform.tfvars -var github_org=${{ secrets.GH_ORG }}"   # https://github.com/orgs/community/discussions/26594 (issue with matrix jobs and env)
           terraform plan -no-color -var-file ../stage/test/terraform.tfvars -var github_org=${{ secrets.GH_ORG }}   # https://github.com/orgs/community/discussions/26594 (issue with matrix jobs and env)
         continue-on-error: true
