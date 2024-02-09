@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       RESULT: ${{ env.RESULT }}
-      TF_VAR_GITHUB_APP_ID: ${{ secrets.GH_APP_ID }} >> $GITHUB_ENV
+      TF_VAR_GITHUB_APP_ID: ${{ secrets.GH_APP_ID }} >> $GITHUB_OUTPUT
       TF_VAR_GITHUB_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }} >> $GITHUB_ENV
       TF_VAR_GITHUB_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }} >> $GITHUB_ENV
 
@@ -168,6 +168,8 @@ jobs:
       - name: Terraform Validate
         run: |
           echo "pwd: $(pwd)"
+          echo "app id: $GITHUB_APP_ID"
+          echo "inst id: $GITHUB_APP_INSTALLATION_ID"
           terraform validate -no-color
       
       - name: Setup TFLint
