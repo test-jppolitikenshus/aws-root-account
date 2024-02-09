@@ -21,7 +21,9 @@ terraform {
 #  access to Github Organisation is via GitHub CLI (gh auth login)
 provider "github" {
   owner = var.github_org
-  token = var.github_token
+  #token = var.github_token
+  app_auth {
+  }
 }
 
 

@@ -14,6 +14,11 @@ env:
   ENVIRONMENT: "test"
   GH_ORG: ${{ secrets.GH_ORG }}
   TF_VAR_github_token: ${{ secrets.GITHUB_TOKEN }}
+    #TF_VAR_test_github_action_app: ${{ TEST_GITHUB_ACTIONS_APP }}
+  TF_VAR_GITHUB_APP_ID: ${{ secrets.GH_APP_ID }}
+  TF_VAR_GITHUB_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
+  TF_VAR_GITHUB_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
+
 
 jobs:
   plan:
