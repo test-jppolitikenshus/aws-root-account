@@ -170,7 +170,7 @@ jobs:
           echo "pwd: $(pwd)"
           echo "app id: $TF_VAR_GITHUB_APP_ID"
           echo "inst id: $TF_VAR_GITHUB_APP_INSTALLATION_ID"
-          echo "PEM id: ${{ fromJson(needs.plan.outputs.TF_VAR_GITHUB_APP_PEM_FILE }}""""
+          echo "PEM id: ${{ fromJson(needs.plan.outputs.TF_VAR_GITHUB_APP_PEM_FILE) }}"
           terraform validate -no-color
       
       - name: Setup TFLint
