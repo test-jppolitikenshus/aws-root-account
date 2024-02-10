@@ -21,11 +21,8 @@ jobs:
   plan:
     environment: test  # https://github.com/orgs/community/discussions/26594 (issue with matrix jobs and env)
     runs-on: ubuntu-latest
-    outputs:
+    outputs:          # these are available inside matrix runs
       RESULT: ${{ env.RESULT }}
-      TF_VAR_GITHUB_APP_ID: ${{ secrets.GH_APP_ID }} >> $GITHUB_OUTPUT
-      TF_VAR_GITHUB_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }} >> $GITHUB_ENV
-      TF_VAR_GITHUB_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }} >> $GITHUB_ENV
 
     permissions: write-all
       #permissions:
@@ -168,6 +165,8 @@ jobs:
       - name: Terraform Validate
         env:
           TF_VAR_GITHUB_APP_ID: ${{ secrets.GH_APP_ID }} 
+          TF_VAR_GITHUB_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
+          TF_VAR_GITHUB_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }} 
 
         run: |
           echo "pwd: $(pwd)"
