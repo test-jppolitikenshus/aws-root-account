@@ -23,8 +23,8 @@ resource "github_repository" "default" {
   auto_init              = false
   archived               = false
   archive_on_destroy     = true
-  #  vulnerability_alerts   = var.type == "template" ? false : true # not supported by github app permission for templates
-  topics = concat(local.topics, var.topics)
+  vulnerability_alerts   = true #var.type == "template" ? false : true # not supported by github app permission for templates
+  topics                 = concat(local.topics, var.topics)
 
   security_and_analysis {
     dynamic "advanced_security" {
