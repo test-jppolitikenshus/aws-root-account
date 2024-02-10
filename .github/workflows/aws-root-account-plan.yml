@@ -123,7 +123,7 @@ jobs:
           terraform validate -no-color
       
       - name: Setup TFLint
-        uses: terraform-linters/setup-tflint@v3     # TODO: fix versioning hash
+        uses: terraform-linters/setup-tflint@19a52fbac37dacb22a09518e4ef6ee234f2d4987 # v.4.0.0
         with:
           tflint_version: v0.48.0
 
