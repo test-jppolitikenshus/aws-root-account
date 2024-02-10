@@ -3,11 +3,11 @@ name: terraform plan (aws-root-account)
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    paths:
-      - 'terraform/**'
-      - '.github/workflows/aws-root-account-plan.yml'
-      - '.github/workflows/aws-root-account-apply.yml'
+  #pull_request:
+  #  paths:
+  #    - 'terraform/**'
+  #    - '.github/workflows/aws-root-account-plan.yml'
+  #    - '.github/workflows/aws-root-account-apply.yml'
   workflow_dispatch:
 
 env:
@@ -166,9 +166,13 @@ jobs:
           terraform init -backend-config key=${{ github.event.repository.name }}/${{ matrix.root-module }} -backend-config bucket=${{ secrets.S3_STATE_BUCKET }} -backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock #-compact-warnings
       
       - name: Terraform Validate
+        env:
+          TF_VAR_GITHUB_APP_ID: ${{ secrets.GH_APP_ID }} 
+
         run: |
           echo "pwd: $(pwd)"
           echo "app id: $TF_VAR_GITHUB_APP_ID"
+          echo "app id: $GITHUB_APP_ID"
           echo "inst id: $TF_VAR_GITHUB_APP_INSTALLATION_ID"
           echo "PEM id: $TF_VAR_GITHUB_APP_PEM_FILE"
           terraform validate -no-color
