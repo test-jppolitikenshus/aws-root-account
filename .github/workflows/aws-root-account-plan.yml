@@ -138,8 +138,7 @@ jobs:
           GITHUB_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
           GITHUB_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }} 
         run: |
-          echo "terraform plan -no-color -var-file ../stage/test/terraform.tfvars -var github_org=${{ secrets.GH_ORG }}"   # https://github.com/orgs/community/discussions/26594 (issue with matrix jobs and env)
-          terraform plan -no-color -var-file ../stage/test/terraform.tfvars -var github_org=${{ secrets.GH_ORG }}   # https://github.com/orgs/community/discussions/26594 (issue with matrix jobs and env)
+          terraform plan -no-color -var github_org=${{ secrets.GH_ORG }} -var cost_center=9910  # https://github.com/orgs/community/discussions/26594 (issue with matrix jobs and env)
         continue-on-error: true
 
       
