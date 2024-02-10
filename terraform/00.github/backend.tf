@@ -21,8 +21,8 @@ terraform {
 #  access to Github Organisation is via GitHub CLI (gh auth login)
 provider "github" {
   owner = var.github_org
-  #app_auth { # GHA uses github app to perform changes to github, since GHA runner only have permissions to current repository
-  #}
+  app_auth { # GHA uses github app to perform changes to github, since GHA runner only have permissions to current repository
+  }
 }
 
 

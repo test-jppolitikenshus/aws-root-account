@@ -99,7 +99,7 @@ jobs:
         with:
           terraform_version: 1.5.2
           terraform_wrapper: false
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+            #github-token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Terraform fmt
         run: |
