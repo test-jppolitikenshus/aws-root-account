@@ -164,16 +164,11 @@ jobs:
       
       - name: Terraform Validate
         env:
-          GITHUB_APP_ID: ${{ secrets.GH_APP_ID }} 
+          GITHUB_APP_ID: ${{ secrets.GH_APP_ID }}   # TODO: only include these in the github root module
           GITHUB_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
           GITHUB_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }} 
-
         run: |
           echo "pwd: $(pwd)"
-          echo "app id: $TF_VAR_GITHUB_APP_ID"
-          echo "app id: $GITHUB_APP_ID"
-          echo "inst id: $TF_VAR_GITHUB_APP_INSTALLATION_ID"
-          echo "PEM id: $TF_VAR_GITHUB_APP_PEM_FILE"
           terraform validate -no-color
       
       - name: Setup TFLint

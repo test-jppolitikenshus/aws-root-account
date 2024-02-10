@@ -4,11 +4,11 @@ variable "github_org" {
   description = "github_organisation"
 }
 
-variable "github_token" {
-  type        = string
-  default     = ""
-  description = "github_token"
-}
+#variable "github_token" {
+#  type        = string
+#  default     = ""
+#  description = "github_token"
+#}
 
 #data "github_actions_environment_variables" "qwer" {
 #  environment = "test"
