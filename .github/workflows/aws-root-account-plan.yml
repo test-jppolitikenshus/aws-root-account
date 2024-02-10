@@ -10,18 +10,16 @@ on:
   #    - '.github/workflows/aws-root-account-apply.yml'
   workflow_dispatch:
 
-env:
+env:          # Note: these are available inside matrix runs
   ENVIRONMENT: "test"
   GH_ORG: ${{ secrets.GH_ORG }}
   TF_VAR_github_token: ${{ secrets.GITHUB_TOKEN }}
-    #TF_VAR_test_github_action_app: ${{ TEST_GITHUB_ACTIONS_APP }}
-
 
 jobs:
   plan:
-    environment: test  # https://github.com/orgs/community/discussions/26594 (issue with matrix jobs and env)
+    environment: test  # https://github.com/orgs/community/discussions/26594 (TODO: fix github env here - issue with matrix jobs and env)
     runs-on: ubuntu-latest
-    outputs:          # these are available inside matrix runs
+    outputs:          
       RESULT: ${{ env.RESULT }}
 
     permissions: write-all
@@ -30,53 +28,6 @@ jobs:
       #contents: read
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-        #- uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a # v4.0.1
-        #with:
-        #  #role-to-assume: arn:aws:iam::${{secrets.AWS_ROOT_ACCOUNT_ID}}:role/github-actions-plan
-        #  role-to-assume: arn:aws:iam::${{secrets.AWS_ROOT_ACCOUNT}}:role/AWS-GitHubActions-OIDC_role
-        #  role-session-name: GitHubActions
-        #  aws-region: eu-north-1
-
-
-
-
-
-            #- uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
-            #  with:
-            #    terraform_version: 1.5.2
-            #- run: terraform fmt -check
-            #  continue-on-error: true
-            #- run: terraform init
-            #- run: terraform validate -no-color
-            #- run: terraform plan -no-color
-            #
-            #      - name: Get changed root dirs
-            #        id: changed-dirs
-            #        uses: tj-actions/changed-files@v42
-            #        with:
-            #          dir_names: "true"
-            #
-            #      - name: List all changed dirs
-            #        env:
-            #          ALL_CHANGED_FILES: ${{ steps.changed-dirs.outputs.all_changed_files }}
-            #        run: |
-            #          for dir in ${ALL_CHANGED_FILES}; do
-            #            echo "$dir was changed"
-            #          done
-            #
-            #
-            #      - name: Get changed files
-            #        id: changed-files
-            #        uses: tj-actions/changed-files@v42
-            #
-            #      - name: List all changed files
-            #        env:
-            #          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
-            #        run: |
-            #          for file in ${ALL_CHANGED_FILES}; do
-            #            echo "$file was changed"
-            #          done
-            #
       - name: Identify updated directories in PR (or push)
         id: changed-files-dir-names
         uses: tj-actions/changed-files@v42
@@ -172,7 +123,7 @@ jobs:
           terraform validate -no-color
       
       - name: Setup TFLint
-        uses: terraform-linters/setup-tflint@v3
+        uses: terraform-linters/setup-tflint@v3     # TODO: fix versioning hash
         with:
           tflint_version: v0.48.0
 
