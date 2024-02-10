@@ -164,9 +164,9 @@ jobs:
       
       - name: Terraform Validate
         env:
-          TF_VAR_GITHUB_APP_ID: ${{ secrets.GH_APP_ID }} 
-          TF_VAR_GITHUB_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
-          TF_VAR_GITHUB_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }} 
+          GITHUB_APP_ID: ${{ secrets.GH_APP_ID }} 
+          GITHUB_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
+          GITHUB_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }} 
 
         run: |
           echo "pwd: $(pwd)"
