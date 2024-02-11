@@ -176,7 +176,7 @@ jobs:
           plan -- \
             terraform plan \
             -var github_org=${{ secrets.GH_ORG }} 
-            -var cost_center=9910
+            -var cost_center="9910"
             -out="asdf.plan.md" \
             -lock=false \
             -input=false \
