@@ -261,6 +261,7 @@ jobs:
           tableName: ${{ secrets.S3_STATE_BUCKET }}-terraform-plan-storage
           bucketName: ${{ secrets.S3_STATE_BUCKET }} 
           component: asdf
+          stack: stack
 
       - name: Setup Infracost
         #if: ${{ steps.plan.outputs.changes == 'true' }}
