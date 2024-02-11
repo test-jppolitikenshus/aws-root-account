@@ -162,15 +162,15 @@ jobs:
           -var "job:${{ github.job }}" \
           -var "logoImage:'https://itoc.dk/_img/hellpoundercorp.png'" \
           -var "logoUrl:https://jppol.dk'" \
-          -var "infracost_enabled:${{ steps.config.outputs.enable-infracost }}" \
-          -var "driftModeEnabled:${{ inputs.drift-detection-mode-enabled }}" \
-          --output ${{ steps.vars.outputs.summary_file }} \
-          --log-level $([[ "${{ inputs.debug }}" == "true" ]] && echo "DEBUG" || echo "INFO") \
+          -var "infracost_enabled: true" \
+          -var "driftModeEnabled: true" \
+          --output asdf.summary.md \
+          --log-level $([[ "asdf" == "true" ]] && echo "DEBUG" || echo "INFO") \
           plan -- \
             terraform plan \
             -var github_org=${{ secrets.GH_ORG }} 
             -var cost_center=9910
-            -out="${{ steps.vars.outputs.plan_file }}" \
+            -out="asdf.plan.md" \
             -lock=false \
             -input=false \
             -no-color \
