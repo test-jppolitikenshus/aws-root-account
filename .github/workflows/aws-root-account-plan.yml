@@ -257,7 +257,7 @@ jobs:
         with:
           action: storePlan
           commitSHA: ${{ github.event.pull_request.head.sha }}
-          planPath: ${{ matrix.root_module }}
+          planPath: ${{ steps.vars.outputs.plan_file }} 
           tableName: ${{ secrets.S3_STATE_BUCKET }}-terraform-plan-storage
           bucketName: ${{ secrets.S3_STATE_BUCKET }} 
           component: asdf
