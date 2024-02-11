@@ -250,18 +250,23 @@ jobs:
           rm -f ${TERRAFORM_OUTPUT_FILE}
 
 
-      - name: Store New Plan
-        #if: ${{ steps.plan.outputs.error == 'false' }}
-        uses: cloudposse/github-action-terraform-plan-storage@cabb23241c26f911577b64da5bbb5d2f69727d83 # v1.11.0
-        id: store-plan
-        with:
-          action: storePlan
-          commitSHA: ${{ github.event.pull_request.head.sha }}
-          planPath: ${{ steps.vars.outputs.plan_file }} 
-          tableName: ${{ secrets.S3_STATE_BUCKET }}-terraform-plan-storage
-          bucketName: ${{ secrets.S3_STATE_BUCKET }} 
-          component: asdf
-          stack: stack
+          #- name: Store New Plan
+          #  #if: ${{ steps.plan.outputs.error == 'false' }}
+          #  uses: cloudposse/github-action-terraform-plan-storage@cabb23241c26f911577b64da5bbb5d2f69727d83 # v1.11.0
+          #  id: store-plan
+          #  with:
+          #    action: storePlan
+          #    commitSHA: ${{ github.event.pull_request.head.sha }}
+          #    planPath: ${{ steps.vars.outputs.plan_file }} 
+          #    tableName: ${{ secrets.S3_STATE_BUCKET }}-terraform-plan-storage
+          #    bucketName: ${{ secrets.S3_STATE_BUCKET }} 
+          #    component: asdf
+          #    stack: stack
+
+      - name: Store plan
+        run: |
+          aws s3 cp ${{ steps.vars.outputs.plan_file }} s3://${{ secrets.S3_STATE_BUCKET }}/${{ github.event.repository.name }}/metadata/
+
 
       - name: Setup Infracost
         #if: ${{ steps.plan.outputs.changes == 'true' }}
