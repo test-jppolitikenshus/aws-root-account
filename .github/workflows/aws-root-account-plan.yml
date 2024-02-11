@@ -16,7 +16,7 @@ env:          # Note: these are available inside matrix runs
   TF_VAR_github_token: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  plan:
+  detect:
     environment: test  # https://github.com/orgs/community/discussions/26594 (TODO: fix github env here - issue with matrix jobs and env)
     runs-on: ubuntu-latest
     outputs:          
@@ -144,6 +144,31 @@ jobs:
           repo: suzuki-shunsuke/tfcmt
           tag: v4.6.0
 
+      - name: Prepare Artifacts Directory
+        #if: ${{ steps.atmos-github-actions-enabled.outputs.value == 'true' }}
+        shell: bash
+        run: |
+          mkdir -p metadata
+
+      - name: Define Job Variables
+        #if: ${{ steps.atmos-github-actions-enabled.outputs.value == 'true' }}
+        id: vars
+        shell: bash
+        run: |
+          PLAN_FILE="$GITHUB_WORKSPACE/${{ matrix.root_module }}-${{ inputs.sha }}.planfile"
+          LOCK_FILE="$GITHUB_WORKSPACE/.terraform.lock.hcl"
+
+          ISSUE_SUMMARY_FILE="$GITHUB_WORKSPACE/metadata/issue-description.md"
+          STEP_SUMMARY_FILE="$GITHUB_WORKSPACE/metadata/step-summary.md"
+          SUMMARY_FILE="$GITHUB_WORKSPACE/metadata/summary.md"
+          
+          echo "plan_file=${PLAN_FILE}" >> $GITHUB_OUTPUT
+          echo "lock_file=${LOCK_FILE}" >> $GITHUB_OUTPUT
+
+          echo "summary_file=${SUMMARY_FILE}" >> $GITHUB_OUTPUT
+          echo "step_summary_file=${STEP_SUMMARY_FILE}" >> $GITHUB_OUTPUT
+          echo "issue_file=${ISSUE_SUMMARY_FILE}" >> $GITHUB_OUTPUT
+
       - name: Terraform Plan
         env:
           GITHUB_APP_ID: ${{ secrets.GH_APP_ID }}   # TODO: only include these in the github root module
@@ -226,7 +251,7 @@ jobs:
 
 
       - name: Store New Plan
-        if: ${{ steps.plan.outputs.error == 'false' }}
+        #if: ${{ steps.plan.outputs.error == 'false' }}
         uses: cloudposse/github-action-terraform-plan-storage@cabb23241c26f911577b64da5bbb5d2f69727d83 # v1.11.0
         id: store-plan
         with:
@@ -237,14 +262,14 @@ jobs:
           bucketName: ${{ secrets.S3_STATE_BUCKET }} 
 
       - name: Setup Infracost
-        if: ${{ steps.plan.outputs.changes == 'true' }}
+        #if: ${{ steps.plan.outputs.changes == 'true' }}
         uses: infracost/actions/setup@0d27b734c72a1abb0aba3e2c3f54e4982cbd2591 # v2.1.0
         with:
           api-key: ${{ secrets.INFRACOST_API_KEY }}
 
 
       - name: Convert PLANFILE to JSON
-        if: ${{ steps.config.outputs.enable-infracost == 'true' && steps.atmos-plan.outputs.changes == 'true' }}
+        #if: ${{ steps.config.outputs.enable-infracost == 'true' && steps.atmos-plan.outputs.changes == 'true' }}
         shell: bash
         working-directory: ./${{ steps.vars.outputs.component_path }}
         run: |
