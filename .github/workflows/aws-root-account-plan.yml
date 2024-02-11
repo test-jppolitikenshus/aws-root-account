@@ -82,10 +82,10 @@ jobs:
       #contents: read
     defaults:
       run:
-        working-directory: ./terraform/${{ matrix.root-module }}
+        working-directory: ./terraform/${{ matrix.root_module }}
     strategy:
       matrix: 
-        root-module: ${{ fromJson(needs.plan.outputs.RESULT) }}   # fromJson is apparently the only way to feed array to GHA
+        root_module: ${{ fromJson(needs.plan.outputs.RESULT) }}   # fromJson is apparently the only way to feed array to GHA
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a # v4.0.1
@@ -111,7 +111,7 @@ jobs:
       - name: Terraform Init
         run: |
           echo "pwd: $(pwd)"
-          terraform init -backend-config key=${{ github.event.repository.name }}/${{ matrix.root-module }} -backend-config bucket=${{ secrets.S3_STATE_BUCKET }} -backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock #-compact-warnings
+          terraform init -backend-config key=${{ github.event.repository.name }}/${{ matrix.root_module }} -backend-config bucket=${{ secrets.S3_STATE_BUCKET }} -backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock #-compact-warnings
       
       - name: Terraform Validate
         env:
@@ -123,7 +123,7 @@ jobs:
           terraform validate -no-color
       
       - name: Setup TFLint
-        uses: terraform-linters/setup-tflint@19a52fbac37dacb22a09518e4ef6ee234f2d4987 # v.4.0.0
+        uses: terraform-linters/setup-tflint@19a52fbac37dacb22a09518e4ef6ee234f2d4987 # v4.0.0
         with:
           tflint_version: v0.48.0
 
@@ -132,18 +132,213 @@ jobs:
           echo "pwd: $(pwd)"
           tflint -f compact
 
+      - name: Install tfcmt
+        uses: suzuki-shunsuke/tfcmt@74ffe99cd637180b5b4d79157eb09ccc9ac5b2ad # v4.9.0
+
       - name: Terraform Plan
         env:
           GITHUB_APP_ID: ${{ secrets.GH_APP_ID }}   # TODO: only include these in the github root module
           GITHUB_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
           GITHUB_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }} 
         run: |
-          terraform plan -no-color -var github_org=${{ secrets.GH_ORG }} -var cost_center=9910  # https://github.com/orgs/community/discussions/26594 (issue with matrix jobs and env)
-        continue-on-error: true
+          #  Simple plan
+          #  terraform plan -no-color -var github_org=${{ secrets.GH_ORG }} -var cost_center=9910  # https://github.com/orgs/community/discussions/26594 (issue with matrix jobs and env)
+          #continue-on-error: true
+          #
+          #  Full plan
+          set +e
+
+          TERRAFORM_OUTPUT_FILE="./terraform-${GITHUB_RUN_ID}-output.txt"
+
+          tfcmt \
+          --config ${{ github.action_path }}/config/summary.yaml \
+          -owner "${{ github.repository_owner }}" \
+          -repo "${{ github.event.repository.name }}" \
+          -var "target:${{ matrix.root_module }}" \
+          -var "commitSHA:${{ github.event.pull_request.head.sha }}" \
+          -var "job:${{ github.job }}" \
+          -var "logoImage:'https://itoc.dk/_img/hellpoundercorp.png'" \
+          -var "logoUrl:https://jppol.dk'" \
+          -var "infracost_enabled:${{ steps.config.outputs.enable-infracost }}" \
+          -var "driftModeEnabled:${{ inputs.drift-detection-mode-enabled }}" \
+          --output ${{ steps.vars.outputs.summary_file }} \
+          --log-level $([[ "${{ inputs.debug }}" == "true" ]] && echo "DEBUG" || echo "INFO") \
+          plan -- \
+            terraform plan \
+            -var github_org=${{ secrets.GH_ORG }} 
+            -var cost_center=9910
+            -out="${{ steps.vars.outputs.plan_file }}" \
+            -lock=false \
+            -input=false \
+            -no-color \
+          &> ${TERRAFORM_OUTPUT_FILE}
+
+          TERRAFORM_RESULT=$?
+
+          set -e
+
+          if [[ "${{ inputs.drift-detection-mode-enabled }}" == "true" ]]; then
+            # Split summary to 2 files - issue and step summary files
+            # Remove \0 at the end of the grep output
+            grep -Pzo '(.|\n)*(?=_______________ISSUE-MARKDOWN_______________\n)' ${{ steps.vars.outputs.summary_file }} | grep -Pav  "\x00" > ${{ steps.vars.outputs.step_summary_file }}
+            grep -Pzo '(?<=_______________ISSUE-MARKDOWN_______________\n)(.|\n)*' ${{ steps.vars.outputs.summary_file }} | grep -Pav  "\x00" > ${{ steps.vars.outputs.issue_file }}
+            rm -f ${{ steps.vars.outputs.summary_file }}
+          else
+            mv ${{ steps.vars.outputs.summary_file }} ${{ steps.vars.outputs.step_summary_file }}
+          fi
+        
+          cat "${TERRAFORM_OUTPUT_FILE}"
+        
+          HAS_CHANGES=false
+          HAS_NO_CHANGES=false
+          HAS_ERROR=false
+          if [[ "${TERRAFORM_RESULT}" == "0" ]]; then
+            if grep -q '^No changes. Your infrastructure matches the configuration.' ${TERRAFORM_OUTPUT_FILE} ; then
+              echo "No changes found"
+              HAS_NO_CHANGES=true
+            else
+              HAS_CHANGES=true
+              echo "Found changes"
+            fi
+          else
+            HAS_ERROR=true
+            echo "Error appears"
+          fi
+
+          # One of changes, no-changes, error should be true
+          echo "changes=${HAS_CHANGES}" >> $GITHUB_OUTPUT
+          echo "no-changes=${HAS_NO_CHANGES}" >> $GITHUB_OUTPUT
+          echo "error=${HAS_ERROR}" >> $GITHUB_OUTPUT
+
+          echo "result=${TERRAFORM_RESULT}" >> $GITHUB_OUTPUT
+          
+          rm -f ${TERRAFORM_OUTPUT_FILE}
+
+
+      - name: Store New Plan
+        if: ${{ steps.plan.outputs.error == 'false' }}
+        uses: cloudposse/github-action-terraform-plan-storage@cabb23241c26f911577b64da5bbb5d2f69727d83 # v1.11.0
+        id: store-plan
+        with:
+          action: storePlan
+          commitSHA: ${{ github.event.pull_request.head.sha }}
+          planPath: ${{ matrix.root_module }}
+          tableName: ${{ secrets.S3_STATE_BUCKET }}-terraform-plan-storage
+          bucketName: ${{ secrets.S3_STATE_BUCKET }} 
+
+      - name: Setup Infracost
+        if: ${{ steps.plan.outputs.changes == 'true' }}
+        uses: infracost/actions/setup@0d27b734c72a1abb0aba3e2c3f54e4982cbd2591 # v2.1.0
+        with:
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
+
+
+      - name: Convert PLANFILE to JSON
+        if: ${{ steps.config.outputs.enable-infracost == 'true' && steps.atmos-plan.outputs.changes == 'true' }}
+        shell: bash
+        working-directory: ./${{ steps.vars.outputs.component_path }}
+        run: |
+          terraform show -json "${{ steps.vars.outputs.plan_file }}" > "${{ steps.vars.outputs.plan_file }}.json"
+
+      - name: Generate Infracost Diff
+        if: ${{ steps.config.outputs.enable-infracost == 'true' && steps.atmos-plan.outputs.changes == 'true' }}
+        id: infracost
+        shell: bash
+        run: |
+          infracost diff \
+            --path="${{ steps.vars.outputs.plan_file }}.json" \
+            --format=diff \
+            --project-name "${{ inputs.stack }}-${{ inputs.component }}" \
+            --out-file=/tmp/infracost.txt
+          infracost diff \
+            --path="${{ steps.vars.outputs.plan_file }}.json" \
+            --format=json \
+            --project-name "${{ inputs.stack }}-${{ inputs.component }}" \
+            --out-file=/tmp/infracost.json
+          
+          echo "finished=true" >> $GITHUB_OUTPUT
+
+      - name: Debug Infracost
+        if: ${{ steps.infracost.outputs.finished == 'true' && inputs.debug == 'true' }}
+        shell: bash
+        run: |
+          cat ${{ steps.vars.outputs.plan_file }}.json
+          cat /tmp/infracost.txt
+          cat /tmp/infracost.json
+
+      - name: Set Infracost Variables
+        if: ${{ steps.infracost.outputs.finished == 'true' }}
+        id: infracost-diff
+        shell: bash
+        run: |
+          INFRACOST_DIFF_TOTAL_MONTHLY_COST=$(cat /tmp/infracost.json | jq --raw-output .diffTotalMonthlyCost)
+          INFRACOST_DETAILS_DIFF_BREAKDOWN="$(cat /tmp/infracost.txt)"
+          
+          if [[ "${INFRACOST_DIFF_TOTAL_MONTHLY_COST}" == "0" ]]; then
+            INFRA_COST_SUMMARY="Infracost Estimate: monthly cost will not change"
+          elif [[ "${INFRACOST_DIFF_TOTAL_MONTHLY_COST:0:1}" == "-" ]]; then
+            INFRA_COST_SUMMARY="Infracost Estimate: monthly cost will decrease by ${INFRACOST_DIFF_TOTAL_MONTHLY_COST} 📉"
+          else
+            INFRA_COST_SUMMARY="Infracost Estimate: monthly cost will increase by ${INFRACOST_DIFF_TOTAL_MONTHLY_COST} 📈"
+          fi
+
+          sed -i "s/%INFRACOST_SUMMARY%/${INFRA_COST_SUMMARY}/" ${{ steps.vars.outputs.step_summary_file }}
+          sed -i -e '/%INFRACOST_DIFF%/{r /tmp/infracost.txt' -e 'd}' ${{ steps.vars.outputs.step_summary_file }}
+          
+
+      - name: Store Component Metadata to Artifacts
+        if: ${{ steps.atmos-github-actions-enabled.outputs.value == 'true' && inputs.drift-detection-mode-enabled == 'true' }}
+        shell: bash
+        run: |
+          echo -n '{ "stack": "${{ inputs.stack }}", "component": "${{ inputs.component }}", "componentPath": "${{ steps.vars.outputs.component_path }}", "drifted": '"${{ steps.atmos-plan.outputs.changes }}"', "error": '"${{ steps.atmos-plan.outputs.error }}"' }' > "metadata/${{ steps.vars.outputs.component_slug }}.metadata.json"
+
+      - name: Publish Summary or Generate GitHub Issue Description for Drift Detection
+        id: summary
+        shell: bash
+        working-directory: ./${{ steps.vars.outputs.component_path }}
+        run: |
+          if [[ "${{ inputs.drift-detection-mode-enabled }}" == "true" ]]; then
+            STEP_SUMMARY_FILE="${{ steps.vars.outputs.issue_file }}"
+          else
+            STEP_SUMMARY_FILE="${{ steps.vars.outputs.step_summary_file }}"
+          fi
+          
+          if [[ "${{ steps.atmos-plan.outputs.no-changes }}" == "true" ]]; then
+            rm -f ${STEP_SUMMARY_FILE}
+          fi
+          
+          if [ -f ${STEP_SUMMARY_FILE} ]; then
+            echo "${STEP_SUMMARY_FILE} found"
+
+            STEP_SUMMARY=$(cat ${STEP_SUMMARY_FILE} | jq -Rs .)
+            echo "result=${STEP_SUMMARY}" >> $GITHUB_OUTPUT
+
+            if [[ "${{ inputs.drift-detection-mode-enabled }}" == "false" ]]; then
+              echo "Drift detection mode disabled"
+              cat $STEP_SUMMARY_FILE >> $GITHUB_STEP_SUMMARY
+            fi
+          else 
+            echo "${STEP_SUMMARY_FILE} not found"
+            echo "result=\"\"" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload Artifacts
+        if: ${{ steps.atmos-github-actions-enabled.outputs.value == 'true' && inputs.drift-detection-mode-enabled == 'true' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: metadata
+          path: metadata
+          retention-days: ${{ inputs.metadata-retention-days }}
+
+      - name: Exit status
+        if: ${{ steps.atmos-github-actions-enabled.outputs.value == 'true' }}
+        shell: bash
+        run: |
+          exit ${{ steps.atmos-plan.outputs.result }}
 
       
       - name: Say hello
         run: |
           echo "pwd: $(pwd)"
-          echo "hello world ${{ matrix.root-module }}"
+          echo "hello world ${{ matrix.root_module }}"
 
