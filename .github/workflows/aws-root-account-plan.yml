@@ -154,7 +154,7 @@ jobs:
           TERRAFORM_OUTPUT_FILE="./terraform-${GITHUB_RUN_ID}-output.txt"
 
           tfcmt \
-          --config ${{ github.action_path }}/config/summary.yaml \
+          --config config/summary.yaml \
           -owner "${{ github.repository_owner }}" \
           -repo "${{ github.event.repository.name }}" \
           -var "target:${{ matrix.root_module }}" \
