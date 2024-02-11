@@ -143,6 +143,7 @@ jobs:
           GITHUB_APP_ID: ${{ secrets.GH_APP_ID }}   # TODO: only include these in the github root module
           GITHUB_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
           GITHUB_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }} 
+          GITHUB_ACTION_PATH: ${{ github.action_path }}
         run: |
           #  Simple plan
           #  terraform plan -no-color -var github_org=${{ secrets.GH_ORG }} -var cost_center=9910  # https://github.com/orgs/community/discussions/26594 (issue with matrix jobs and env)
@@ -154,7 +155,7 @@ jobs:
           TERRAFORM_OUTPUT_FILE="./terraform-${GITHUB_RUN_ID}-output.txt"
 
           tfcmt \
-          --config config/summary.yaml \
+          --config ${{ github.action_path }}/config/summary.yaml \
           -owner "${{ github.repository_owner }}" \
           -repo "${{ github.event.repository.name }}" \
           -var "target:${{ matrix.root_module }}" \
