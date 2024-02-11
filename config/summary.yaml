@@ -1,4 +1,4 @@
-i# tfcmt Configuration used for posting Terraform GitHub Summaries
+# tfcmt Configuration used for posting Terraform GitHub Summaries
 # https://suzuki-shunsuke.github.io/tfcmt/config
 embedded_var_names: []
 ci:
