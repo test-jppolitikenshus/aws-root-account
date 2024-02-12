@@ -341,7 +341,7 @@ jobs:
         shell: bash
           #working-directory: ./${{ steps.vars.outputs.component_path }}
         run: |
-          if [[ "${{ inputs.drift-detection-mode-enabled }}" == "true" ]]; then
+          if [[ "true" == "true" ]]; then
             STEP_SUMMARY_FILE="${{ steps.vars.outputs.issue_file }}"
           else
             STEP_SUMMARY_FILE="${{ steps.vars.outputs.step_summary_file }}"
@@ -357,7 +357,7 @@ jobs:
             STEP_SUMMARY=$(cat ${STEP_SUMMARY_FILE} | jq -Rs .)
             echo "result=${STEP_SUMMARY}" >> $GITHUB_OUTPUT
 
-            if [[ "${{ inputs.drift-detection-mode-enabled }}" == "false" ]]; then
+            if [[ "true" == "false" ]]; then
               echo "Drift detection mode disabled"
               cat $STEP_SUMMARY_FILE >> $GITHUB_STEP_SUMMARY
             fi
