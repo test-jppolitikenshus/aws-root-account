@@ -302,13 +302,13 @@ jobs:
           
           echo "finished=true" >> $GITHUB_OUTPUT
 
-      - name: Debug Infracost
-        if: ${{ steps.infracost.outputs.finished == 'true' }} # && inputs.debug == 'true' }}
-        shell: bash
-        run: |
-          cat ${{ steps.vars.outputs.plan_file }}.json
-          cat /tmp/infracost.txt
-          cat /tmp/infracost.json
+          # - name: Debug Infracost
+          #   if: ${{ steps.infracost.outputs.finished == 'true' }} # && inputs.debug == 'true' }}
+          #   shell: bash
+          #   run: |
+          #     cat ${{ steps.vars.outputs.plan_file }}.json
+          #     cat /tmp/infracost.txt
+          #     cat /tmp/infracost.json
 
       - name: Set Infracost Variables
         if: ${{ steps.infracost.outputs.finished == 'true' }}
