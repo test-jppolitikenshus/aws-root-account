@@ -158,9 +158,9 @@ jobs:
           PLAN_FILE="$(realpath metadata)/${{ matrix.root_module }}-${{ inputs.sha }}.planfile"
           LOCK_FILE="$(realpath metadata)/.terraform.lock.hcl"
 
-          ISSUE_SUMMARY_FILE="$GITHUB_WORKSPACE/metadata/issue-description.md"
-          STEP_SUMMARY_FILE="$GITHUB_WORKSPACE/metadata/step-summary.md"
-          SUMMARY_FILE="$GITHUB_WORKSPACE/metadata/summary.md"
+          ISSUE_SUMMARY_FILE="$(realpath metadata)/issue-description.md"
+          STEP_SUMMARY_FILE="$(realpath metadata)/step-summary.md"
+          SUMMARY_FILE="$(realpath metadata)/summary.md"
           
           echo "plan_file=${PLAN_FILE}" >> $GITHUB_OUTPUT
           echo "lock_file=${LOCK_FILE}" >> $GITHUB_OUTPUT
