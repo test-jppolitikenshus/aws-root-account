@@ -155,8 +155,8 @@ jobs:
         id: vars
         shell: bash
         run: |
-          PLAN_FILE="$GITHUB_WORKSPACE/${{ matrix.root_module }}-${{ inputs.sha }}.planfile"
-          LOCK_FILE="$GITHUB_WORKSPACE/.terraform.lock.hcl"
+          PLAN_FILE="$GITHUB_WORKSPACE/metadata/${{ matrix.root_module }}-${{ inputs.sha }}.planfile"
+          LOCK_FILE="$GITHUB_WORKSPACE/metadata/.terraform.lock.hcl"
 
           ISSUE_SUMMARY_FILE="$GITHUB_WORKSPACE/metadata/issue-description.md"
           STEP_SUMMARY_FILE="$GITHUB_WORKSPACE/metadata/step-summary.md"
@@ -209,6 +209,8 @@ jobs:
           &> ${TERRAFORM_OUTPUT_FILE}
 
           TERRAFORM_RESULT=$?
+
+          echo "source: ${{ steps.vars.outputs.plan_file }}"
 
           set -e
 
@@ -265,7 +267,7 @@ jobs:
 
       - name: Store plan
         run: |
-          aws s3 cp ${{ steps.vars.outputs.plan_file }} s3://${{ secrets.S3_STATE_BUCKET }}/${{ github.event.repository.name }}/metadata/
+          aws s3 cp ${{ steps.vars.outputs.plan_file }} s3://${{ secrets.S3_STATE_BUCKET }}/${{ github.event.repository.name }}/metadata/ --sse
 
 
       - name: Setup Infracost
