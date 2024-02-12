@@ -1,13 +1,13 @@
 name: terraform plan (aws-root-account)
 
 on:
-  push:
-    branches: [ "main" ]
-  #pull_request:
-  #  paths:
-  #    - 'terraform/**'
-  #    - '.github/workflows/aws-root-account-plan.yml'
-  #    - '.github/workflows/aws-root-account-apply.yml'
+  #push:
+  #  branches: [ "main" ]
+  pull_request:
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/aws-root-account-plan.yml'
+      - '.github/workflows/aws-root-account-apply.yml'
   workflow_dispatch:
 
 env:          # Note: these are available inside matrix runs
@@ -155,7 +155,7 @@ jobs:
         id: vars
         shell: bash
         run: |
-          PLAN_FILE="$(realpath metadata)/${{ matrix.root_module }}-${{ inputs.sha }}.planfile"
+          PLAN_FILE="$(realpath metadata)/${{ matrix.root_module }}-${{ github.event.pull_request.head.sha }}.planfile"
           LOCK_FILE="$(realpath metadata)/.terraform.lock.hcl"
 
           ISSUE_SUMMARY_FILE="$(realpath metadata)/issue-description.md"
