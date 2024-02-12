@@ -155,8 +155,8 @@ jobs:
         id: vars
         shell: bash
         run: |
-          PLAN_FILE="$GITHUB_WORKSPACE/metadata/${{ matrix.root_module }}-${{ inputs.sha }}.planfile"
-          LOCK_FILE="$GITHUB_WORKSPACE/metadata/.terraform.lock.hcl"
+          PLAN_FILE="$(realpath)/metadata/${{ matrix.root_module }}-${{ inputs.sha }}.planfile"
+          LOCK_FILE="$(realpath)/metadata/.terraform.lock.hcl"
 
           ISSUE_SUMMARY_FILE="$GITHUB_WORKSPACE/metadata/issue-description.md"
           STEP_SUMMARY_FILE="$GITHUB_WORKSPACE/metadata/step-summary.md"
