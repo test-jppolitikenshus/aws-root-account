@@ -280,8 +280,8 @@ jobs:
       - name: Convert PLANFILE to JSON
         #if: ${{ steps.config.outputs.enable-infracost == 'true' && steps.atmos-plan.outputs.changes == 'true' }}
         shell: bash
-        working-directory: ./${{ steps.vars.outputs.component_path }}
         run: |
+          echo "path: $(pwd)"
           terraform show -json "${{ steps.vars.outputs.plan_file }}" > "${{ steps.vars.outputs.plan_file }}.json"
 
       - name: Generate Infracost Diff
