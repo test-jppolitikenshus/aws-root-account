@@ -285,25 +285,25 @@ jobs:
           terraform show -json "${{ steps.vars.outputs.plan_file }}" > "${{ steps.vars.outputs.plan_file }}.json"
 
       - name: Generate Infracost Diff
-        if: ${{ steps.config.outputs.enable-infracost == 'true' && steps.atmos-plan.outputs.changes == 'true' }}
+        #if: ${{ steps.config.outputs.enable-infracost == 'true' && steps.atmos-plan.outputs.changes == 'true' }}
         id: infracost
         shell: bash
         run: |
           infracost diff \
             --path="${{ steps.vars.outputs.plan_file }}.json" \
             --format=diff \
-            --project-name "${{ inputs.stack }}-${{ inputs.component }}" \
+            --project-name "${{ github.event.repository.name }}-${{ matrix.root_module }}" \
             --out-file=/tmp/infracost.txt
           infracost diff \
             --path="${{ steps.vars.outputs.plan_file }}.json" \
             --format=json \
-            --project-name "${{ inputs.stack }}-${{ inputs.component }}" \
+            --project-name "${{ github.event.repository.name }}-${{ matrix.root_module }}" \
             --out-file=/tmp/infracost.json
           
           echo "finished=true" >> $GITHUB_OUTPUT
 
       - name: Debug Infracost
-        if: ${{ steps.infracost.outputs.finished == 'true' && inputs.debug == 'true' }}
+        if: ${{ steps.infracost.outputs.finished == 'true' }} # && inputs.debug == 'true' }}
         shell: bash
         run: |
           cat ${{ steps.vars.outputs.plan_file }}.json
@@ -330,16 +330,16 @@ jobs:
           sed -i -e '/%INFRACOST_DIFF%/{r /tmp/infracost.txt' -e 'd}' ${{ steps.vars.outputs.step_summary_file }}
           
 
-      - name: Store Component Metadata to Artifacts
-        if: ${{ steps.atmos-github-actions-enabled.outputs.value == 'true' && inputs.drift-detection-mode-enabled == 'true' }}
-        shell: bash
-        run: |
-          echo -n '{ "stack": "${{ inputs.stack }}", "component": "${{ inputs.component }}", "componentPath": "${{ steps.vars.outputs.component_path }}", "drifted": '"${{ steps.atmos-plan.outputs.changes }}"', "error": '"${{ steps.atmos-plan.outputs.error }}"' }' > "metadata/${{ steps.vars.outputs.component_slug }}.metadata.json"
+          # - name: Store Component Metadata to Artifacts
+          #   if: ${{ steps.atmos-github-actions-enabled.outputs.value == 'true' && inputs.drift-detection-mode-enabled == 'true' }}
+          #   shell: bash
+          #   run: |
+          #     echo -n '{ "stack": "${{ inputs.stack }}", "component": "${{ inputs.component }}", "componentPath": "${{ steps.vars.outputs.component_path }}", "drifted": '"${{ steps.atmos-plan.outputs.changes }}"', "error": '"${{ steps.atmos-plan.outputs.error }}"' }' > "metadata/${{ steps.vars.outputs.component_slug }}.metadata.json"
 
       - name: Publish Summary or Generate GitHub Issue Description for Drift Detection
         id: summary
         shell: bash
-        working-directory: ./${{ steps.vars.outputs.component_path }}
+          #working-directory: ./${{ steps.vars.outputs.component_path }}
         run: |
           if [[ "${{ inputs.drift-detection-mode-enabled }}" == "true" ]]; then
             STEP_SUMMARY_FILE="${{ steps.vars.outputs.issue_file }}"
@@ -347,7 +347,7 @@ jobs:
             STEP_SUMMARY_FILE="${{ steps.vars.outputs.step_summary_file }}"
           fi
           
-          if [[ "${{ steps.atmos-plan.outputs.no-changes }}" == "true" ]]; then
+          if [[ "${{ steps.plan.outputs.no-changes }}" == "true" ]]; then
             rm -f ${STEP_SUMMARY_FILE}
           fi
           
@@ -366,19 +366,19 @@ jobs:
             echo "result=\"\"" >> $GITHUB_OUTPUT
           fi
 
-      - name: Upload Artifacts
-        if: ${{ steps.atmos-github-actions-enabled.outputs.value == 'true' && inputs.drift-detection-mode-enabled == 'true' }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: metadata
-          path: metadata
-          retention-days: ${{ inputs.metadata-retention-days }}
+          #- name: Upload Artifacts
+          #  if: ${{ steps.atmos-github-actions-enabled.outputs.value == 'true' && inputs.drift-detection-mode-enabled == 'true' }}
+          #  uses: actions/upload-artifact@v3
+          #  with:
+          #    name: metadata
+          #    path: metadata
+          #    retention-days: ${{ inputs.metadata-retention-days }}
 
       - name: Exit status
-        if: ${{ steps.atmos-github-actions-enabled.outputs.value == 'true' }}
+        #if: ${{ steps.atmos-github-actions-enabled.outputs.value == 'true' }}
         shell: bash
         run: |
-          exit ${{ steps.atmos-plan.outputs.result }}
+          exit ${{ steps.plan.outputs.result }}
 
       
       - name: Say hello
