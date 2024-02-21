@@ -29,14 +29,14 @@ jobs:
         working-directory: ${{ inputs.moduleRootDirectory }}
     steps:
       - name: Terraform-SetupWithCloud
-        uses: hashicorp/setup-terraform@v3.0.0
+        uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
         with:
           terraform_version: ${{ inputs.terraformVersion }}
 
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Generate token
+      - name: Generate token  # Why ?
         env:
           APP_ID: ${{ secrets.appId }}
           PRIVATE_KEY: ${{ secrets.appPrivateKey }}
@@ -47,7 +47,7 @@ jobs:
           app_id: ${{ secrets.appId }}
           private_key: ${{ secrets.appPrivateKey }}
     
-      - name: authenticate to git with app token
+      - name: authenticate to git with app token  # Why ?
         env:
           APP_ID: ${{ secrets.appId }}
           PRIVATE_KEY: ${{ secrets.appPrivateKey }}

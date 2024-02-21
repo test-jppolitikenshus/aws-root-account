@@ -62,6 +62,8 @@ resource "github_repository" "default" {
   }
 }
 
+#checkov:skip=CKV_GIT_6:"Following discussions with other teams we will not be enforcing signed commits currently"
+#tfsec:ignore:github-branch_protections-require_signed_commits
 resource "github_branch_protection" "default" {
   repository_id          = github_repository.default.id
   pattern                = "main"
@@ -73,6 +75,7 @@ resource "github_branch_protection" "default" {
     contexts = var.required_checks
   }
 
+  #checkov:skip=CKV_GIT_5:"branch protection guidelines do not require 2 reviews"
   required_pull_request_reviews {
     dismiss_stale_reviews           = true
     require_code_owner_reviews      = true

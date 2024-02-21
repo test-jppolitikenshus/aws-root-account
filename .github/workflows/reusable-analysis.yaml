@@ -29,6 +29,7 @@ jobs:
           quiet: false
           soft_fail: false
           compact: false
+          skip_check: CKV_GIT_1 # public repo is ok
 
   tfsec:
     runs-on: ubuntu-latest
