@@ -45,4 +45,3 @@ jobs:
         with:
           working_directory: ${{ inputs.moduleRootDirectory }}
           github_token: ${{ secrets.githubToken }}
-          tfsec_exclude: github-repositories-private
