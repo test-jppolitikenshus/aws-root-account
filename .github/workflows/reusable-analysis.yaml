@@ -30,6 +30,13 @@ jobs:
           soft_fail: false
           compact: false
           skip_check: CKV_GIT_1 # public repo is ok
+          output_file_path: ./checkov.sarif
+
+      - name: Upload SARIF file
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@cdcdbb579706841c47f7063dda365e292e5cad7a # v2.13.4
+        with:
+          sarif_file: ./checkov.sarif
 
   tfsec:
     runs-on: ubuntu-latest
@@ -40,8 +47,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Scan module with tfsec
-        uses: aquasecurity/tfsec-action@v1.0.3
+          #- name: Scan module with tfsec
+          #  uses: aquasecurity/tfsec-action@v1.0.3
+          #  with:
+          #    working_directory: ${{ inputs.moduleRootDirectory }}
+          #    github_token: ${{ secrets.githubToken }}
+          #
+      - name: Run Trivy vulnerability scanner in repo mode
+        uses: aquasecurity/trivy-action@84384bd6e777ef152729993b8145ea352e9dd3ef # v0.17.0
         with:
-          working_directory: ${{ inputs.moduleRootDirectory }}
-          github_token: ${{ secrets.githubToken }}
+          scan-type: 'fs'
+          scanners: misconfig,vuln,secret
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@cdcdbb579706841c47f7063dda365e292e5cad7a # v2.13.4
+        with:
+          sarif_file: 'trivy-results.sarif'
