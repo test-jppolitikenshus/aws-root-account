@@ -68,19 +68,17 @@ resource "github_repository" "default" {
   }
 }
 
-#checkov:skip=CKV_GIT_6:"Following discussions with other teams we will not be enforcing signed commits currently"
 resource "github_branch_protection" "default" {
   repository_id          = github_repository.default.id
   pattern                = "main"
   enforce_admins         = false # allow admins to override PR
-  require_signed_commits = true  # true prevents terraform from provisioning
+  require_signed_commits = false # true prevents terraform from provisioning
 
   required_status_checks {
     strict   = false
     contexts = var.required_checks
   }
 
-  #checkov:skip=CKV_GIT_5: "GitHub pull requests should require at least 2 approvals" however we only require 1
   required_pull_request_reviews {
     dismiss_stale_reviews           = true
     require_code_owner_reviews      = true
