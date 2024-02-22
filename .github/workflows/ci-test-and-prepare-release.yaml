@@ -49,7 +49,7 @@ jobs:
       with:
         format: 'json'
     - name: Condense to directory list
-      uses: actions/github-script@v4
+      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
       id: condense
       env:
         RAW_FILES: '${{ steps.raw-files.outputs.all }}'
@@ -186,7 +186,8 @@ jobs:
 
       - name: Combine version information
         id: extract-releases
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+
         with:
           script: |
             const { readdir, readFile } = require('fs').promises;
@@ -202,7 +203,7 @@ jobs:
               })));
               
       - name: Dispatch monorepo_release event
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         env:
           RELEASE_LIST: '${{ steps.extract-releases.outputs.result }}'
         with:

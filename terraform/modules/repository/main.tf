@@ -7,6 +7,7 @@ locals {
 
 # Repository basics
 resource "github_repository" "default" {
+  #tfsec:ignore:github-repositories-private
   name                   = var.name
   description            = join(" • ", [var.description, "This repository is defined and managed in Terraform"])
   homepage_url           = var.homepage_url
