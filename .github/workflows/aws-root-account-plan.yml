@@ -1,13 +1,13 @@
-name: 'CI/terraform plan (aws-root-account)'
+name: terraform plan (aws-root-account)
 
 on:
   #push:
   #  branches: [ "main" ]
-  #pull_request:
-  #  paths:
-  #    - 'terraform/**'
-  #    - '.github/workflows/aws-root-account-plan.yml'
-  #    - '.github/workflows/aws-root-account-apply.yml'
+  pull_request:
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/aws-root-account-plan.yml'
+      - '.github/workflows/aws-root-account-apply.yml'
   workflow_dispatch:
 
 env:          # Note: these are available inside matrix runs
