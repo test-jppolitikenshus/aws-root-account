@@ -106,6 +106,7 @@ jobs:
       githubToken: ${{ secrets.GITHUB_TOKEN }}
           
   plan:
+    permissions: write-all
     needs: detect
     if: ${{ needs.detect.outputs.directories != '{}' && ( needs.detect.outputs.is-merge-event == 'true' || github.event.action != 'closed' )}}
     strategy:
