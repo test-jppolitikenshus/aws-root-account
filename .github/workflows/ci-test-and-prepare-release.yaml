@@ -120,6 +120,7 @@ jobs:
       githubToken: ${{ secrets.GITHUB_TOKEN }}
           
   comment:
+    permissions: write-all
     needs: [detect, plan]
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
