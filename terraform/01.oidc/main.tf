@@ -40,8 +40,7 @@ resource "aws_iam_role" "oidc_role" {
 
 ## add permissions to web identity role
 resource "aws_iam_role_policy_attachment" "oidc_role_policy_attachment" {
-  role = aws_iam_role.oidc_role.name
-  #checkov:skip=CKV_AWS_274:"Disallow IAM roles, users, and groups from using the AWS AdministratorAccess policy" - this is ok for now (TODO)
+  role       = aws_iam_role.oidc_role.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
