@@ -177,6 +177,7 @@ jobs:
             }
 
   trigger-release:
+    permissions: write-all
     needs: [detect, plan]
     if: needs.detect.outputs.is-merge-event == 'true'
     runs-on: ubuntu-latest
