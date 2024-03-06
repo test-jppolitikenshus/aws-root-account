@@ -3,6 +3,7 @@
 # be bootstrapped according to the simple yet essential procedure in
 # https://github.com/cloudposse/terraform-aws-tfstate-backend#usage
 module "terraform_state_backend" {
+  #checkov:skip=CKV_TF_1:Module registry does not support commit hashes for versions
   source               = "github.com/test-jppolitikenshus/cloudv2-platform-terraform-aws-tfstate-backend?ref=1.4.0"
   namespace            = "jppol"
   environment          = "root" # root, core, something
