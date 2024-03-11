@@ -43,127 +43,78 @@ jobs:
               labels: ["${{ inputs.moduleRootDirectory }}"]
             })
 
-      - name: Detect previous version number
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
-        id: prev-version
-        env:
-          PACKAGE_NAME: '${{ inputs.moduleRootDirectory }}'
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const query = `query($owner: String!, $repo: String!, $refPrefix: String!) {
-              repository(owner: $owner, name: $repo) {
-                refs(refPrefix: $refPrefix, first: 1, orderBy: {field: TAG_COMMIT_DATE, direction: DESC}) {
-                  edges { node { name } }
-                }
-              }
-            }`;
-            const result = await github.graphql(query, { owner, repo,
-              refPrefix: `refs/tags/${process.env.PACKAGE_NAME}/`,
-            });
-            const prevNode = result.repository.refs.edges[0];
-            const prevVer = prevNode ? prevNode.node.name.substring(1) : '0.0.0';
-            console.log('Found previous version', prevVer);
-            return prevVer;
-          result-encoding: string
-
-      - name: Determine new version number
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
-        id: new-version
-        env:
-          PREV_VERSION: '${{ steps.prev-version.outputs.result }}'
-          RELEASE_TYPE: '${{ inputs.releaseType }}'
-        with:
-          script: |
-            const { PREV_VERSION, RELEASE_TYPE } = process.env;
-            console.log('Previous version was', PREV_VERSION);
-            console.log('Release type is', RELEASE_TYPE);
-            const numbers = PREV_VERSION.split('.');
-            const numberIdx = ['major', 'minor', 'patch'].indexOf(RELEASE_TYPE);
-            numbers[numberIdx] = parseInt(numbers[numberIdx]) + 1;
-            for (let i = numberIdx + 1; i < numbers.length; i++) {
-              numbers[i] = 0;
-            }
-            return numbers.join('.');
-          result-encoding: string
-
-      - name: Store version numbers
-        env:
-          PR_URL: ${{github.event.pull_request.html_url}}
-          GITHUB_TOKEN: ${{secrets.githubToken}}
+      - name: Define variables
+        id: vars
         run: |
-          mkdir output
-          echo 'v${{ steps.prev-version.outputs.result }}' > output/previous-version.txt
-          echo 'v${{ steps.new-version.outputs.result }}' > output/new-version.txt
+          mkdir metadata
+          PLAN_FILE="$(realpath metadata)/${{ matrix.root_module }}-${{ github.event.pull_request.head.sha }}.planfile"
+          SUMMARY_FILE="$(realpath metadata)/summary.md"
 
-      - name: Extract changelog entry
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const { data: prInfo } = await github.rest.pulls.get({
-              owner, repo,
-              pull_number: context.issue.number,
-            });
-            console.log('Found PR body:|');
-            console.log(prInfo.body);
-            const changelogEntry = ((prInfo.body
-              .split(/^#+ ?/m)
-              .find(x => x.startsWith('Changelog'))
-              || '').split(/^```/m)[1] || '').trim();
-            if (!changelogEntry)
-              throw `'Changelog' section not found in PR body! Please add it back.`;
-            if (changelogEntry.match(/^TODO:/m))
-              throw `'Changelog' section needs proper text, instead of 'TODO'`;
-            const { writeFile } = require('fs').promises;
-            await writeFile('output/changelog.md', `
-            * PR [#${ prInfo.number }](${ prInfo.html_url }) - ${ prInfo.title }
-            \`\`\`
-            ${changelogEntry}
-            \`\`\`
-            `.trimLeft(), { encoding: 'utf-8' })
+          echo "plan_file=${PLAN_FILE}" >> $GITHUB_OUTPUT
+          echo "summary_file=${SUMMARY_FILE}" >> $GITHUB_OUTPUT
 
-      - name: Document example 'source' line
+      - name: Terraform Plan
         run: |
-          cat > output/documentation.md <<'EOF'
-          # Module Location
-          To use this module in your Terraform, use the below source value.
-          ```hcl
-          module "${{ inputs.moduleRootDirectory }}" {
-            source = "git::${{ github.server_url }}/${{ github.repository }}.git?ref=${{ inputs.moduleRootDirectory }}/v${{ steps.new-version.outputs.result }}"
-            # also any inputs for the module (see below)
-          }
-          ```
-          EOF
+          set +e  # don't exit on error
+          TERRAFORM_OUTPUT_FILE="./terraform-${GITHUB_RUN_ID}-output.txt"
 
-      - name: Install terraform docs
+          tfcmt \
+          --config ../../config/summary.yaml \
+          -owner "${{ github.repository_owner }}" \
+          -repo "${{ github.event.repository.name }}" \
+          -var "target:${{ matrix.root_module }}" \
+          -var "commitSHA:${{ github.event.pull_request.head.sha }}" \
+          -var "job:${{ github.job }}" \
+          -var "logoImage:'https://itoc.dk/_img/hellpoundercorp.png'" \
+          -var "logoUrl:https://jppol.dk'" \
+          -var "infracost_enabled: true" \
+          -var "driftModeEnabled: true" \
+          --output ${{ steps.vars.outputs.summary_file }} \
+          --log-level $([[ "asdf" == "true" ]] && echo "DEBUG" || echo "INFO") \
+          plan -- \
+            terraform plan \
+            -var github_org=${{ secrets.GH_ORG }} \
+            -var cost_center="9910" \
+            -out=${{ steps.vars.outputs.plan_file }} \
+            -lock=false \
+            -input=false \
+            -no-color \
+          &> ${TERRAFORM_OUTPUT_FILE}
+
+          TERRAFORM_RESULT=$?
+
+          echo "source: ${{ steps.vars.outputs.plan_file }}"
+
+          set -e
+
+          cat "${TERRAFORM_OUTPUT_FILE}"
+
+          HAS_CHANGES=false
+          HAS_NO_CHANGES=false
+          HAS_ERROR=false
+          if [[ "${TERRAFORM_RESULT}" == "0" ]]; then
+            if grep -q '^No changes. Your infrastructure matches the configuration.' ${TERRAFORM_OUTPUT_FILE} ; then
+              echo "No changes found"
+              HAS_NO_CHANGES=true
+            else
+              HAS_CHANGES=true
+              echo "Found changes"
+            fi
+          else
+            HAS_ERROR=true
+            echo "Error appears"
+          fi
+
+          # One of changes, no-changes, error should be true
+          echo "changes=${HAS_CHANGES}" >> $GITHUB_OUTPUT
+          echo "no-changes=${HAS_NO_CHANGES}" >> $GITHUB_OUTPUT
+          echo "error=${HAS_ERROR}" >> $GITHUB_OUTPUT
+
+          echo "result=${TERRAFORM_RESULT}" >> $GITHUB_OUTPUT
+
+          rm -f ${TERRAFORM_OUTPUT_FILE}
+
+      - name: Store plan
         run: |
-          wget https://github.com/terraform-docs/terraform-docs/releases/download/v0.15.0/terraform-docs-v0.15.0-linux-amd64.tar.gz \
-            --output-document - \
-            --progress dot:mega \
-          | tar -xvz
-
-      - name: Clone repository for analysis
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.sha }}
-          path: src
-
-      - name: Render terraform docs
-        run: |
-          echo '# Module Attributes' >> output/documentation.md
-          ./terraform-docs markdown table \
-            --output-file "$(pwd)"/output/documentation.md \
-            --sort-by required \
-            'src/${{ inputs.moduleRootDirectory }}'
-
-      - name: Bundle up Terraform module
-        working-directory: src/${{ inputs.moduleRootDirectory }}
-        run: zip -vr ../../output/terraform-module.zip *
-
-      - name: Upload result artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: '${{ inputs.moduleRootDirectory }}'
-          path: output
-          retention-days: ${{ inputs.artifactsRetentionDays }}
+           aws s3 cp ${{ steps.vars.outputs.plan_file }} \
+           s3://${{ secrets.S3_STATE_BUCKET }}/${{ github.event.repository.name }}/metadata/ --sse
