@@ -65,6 +65,7 @@ jobs:
           return {
             include: directories.map(directory => ({ directory })),
           };
+          console.log('asdf', directories, 'asdf');
 
   validate:
     needs: detect
