@@ -59,13 +59,13 @@ jobs:
           const directories = Array.from(new Set(raw
             .filter(x => !x.startsWith('.'))
             .filter(x => x.includes('/'))
+            .map(x)
           ));
           if (directories.length < 1) return {};
           return {
             include: directories.map(directory => ({ directory })),
           };
           console.log(`asdfasdf ${directories} asdf`);
-          #.map(x => x.split('/')[1])
 
   validate:
     needs: detect
