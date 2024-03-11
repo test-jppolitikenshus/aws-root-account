@@ -30,7 +30,7 @@ jobs:
           #GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         GH_TOKEN: ${{ github.token }}
       run: |
-        LABELS=$(gh pr view $PR_URL --json labels  --jq '.labels[]| ((.name=="test") or (.name=="prod") (.name=="no-release")) |.name')
+        LABELS=$(gh pr view $PR_URL --json labels  --jq '.labels[]| select ((.name=="test") or (.name=="prod") or (.name=="no-release")) |.name')
         NUMBER_OF_LABELS=$(echo "$LABELS" |wc -w)
         if [ "$NUMBER_OF_LABELS" -eq "1" ] ; then
           echo "Found: $LABELS"
