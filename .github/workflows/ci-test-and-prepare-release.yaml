@@ -58,7 +58,7 @@ jobs:
           const raw = JSON.parse(process.env.RAW_FILES);
           const directories = Array.from(new Set(raw
             .filter(x => !x.startsWith('.'))
-            .filter(x => x.includes('/'))
+            .filter(x => x.includes('/')))
             #.map(x => x.split('/')[1])
           ));
           if (directories.length < 1) return {};
