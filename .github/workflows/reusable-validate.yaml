@@ -23,7 +23,6 @@ on:
 
 jobs:
   validate:
-    environment: test
     runs-on: ubuntu-latest
     defaults:
       run:
