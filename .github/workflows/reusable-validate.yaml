@@ -20,7 +20,7 @@ on:
         description: 'Defines root module directory'
         required: true
         type: string
-        
+
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -46,7 +46,7 @@ jobs:
         with:
           app_id: ${{ secrets.appId }}
           private_key: ${{ secrets.appPrivateKey }}
-    
+
       - name: authenticate to git with app token  # Why ?
         env:
           APP_ID: ${{ secrets.appId }}
@@ -59,8 +59,14 @@ jobs:
       - name: Format
         run: |
           terraform fmt -write=false -diff -check
-          
+
+      - name: Init
+        run: |
+          #terraform init --backend=false
+          terraform init -backend-config key=${{ github.event.repository.name }}/${{ matrix.root_module }} \
+          -backend-config bucket=${{ secrets.S3_STATE_BUCKET }} \
+          -backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock #-compact-warnings
+
       - name: Validate
         run: |
-          terraform init --backend=false
-          terraform validate
+          terraform validate -no-color
