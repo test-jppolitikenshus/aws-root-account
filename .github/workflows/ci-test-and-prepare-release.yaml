@@ -80,8 +80,8 @@ jobs:
       terraformVersion: '1.3.4'
       moduleRootDirectory: ${{ matrix.directory }}
     secrets:
-      appId: ${{ secrets.appId }}
-      appPrivateKey: ${{ secrets.appPrivateKey }}
+      appId: ${{ secrets.GH_APP_ID }}
+      appPrivateKey: ${{ secrets.GH_APP_PEM_FILE }}
       s3StateBucket: ${{ secrets.S3_STATE_BUCKET }}
       awsRootAccountId: ${{ secrets.AWS_ROOT_ACCOUNT_ID }}
 
