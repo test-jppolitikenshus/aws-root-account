@@ -3,6 +3,7 @@ concurrency:  #avoid concurrent runs on label events, might cause issues on supe
   group: ${{ github.head_ref }}
   cancel-in-progress: true
 
+
 on:
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
@@ -11,6 +12,7 @@ on:
 
 jobs:
   detect:
+    environment: test
     runs-on: ubuntu-latest
     name: 'Detect pull request context'
     outputs:
