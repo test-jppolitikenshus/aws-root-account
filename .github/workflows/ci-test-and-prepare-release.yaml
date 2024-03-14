@@ -69,6 +69,7 @@ jobs:
           };
 
   validate:
+    permissions: write-all
     needs: detect
     if: ${{ needs.detect.outputs.directories != '{}' && github.event.action != 'closed' }}
     strategy:
