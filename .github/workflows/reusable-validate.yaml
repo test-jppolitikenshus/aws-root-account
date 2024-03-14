@@ -14,8 +14,8 @@ on:
         description: "S3 State Bucket"
         required: true
 
-      testing123:
-        description: "asdf"
+      bla:
+        description: "bla"
         required: true
 
     inputs:
@@ -71,9 +71,10 @@ jobs:
 
       - name: Init
         run: |
+          echo "${{ secrets.bla }"
           terraform init -backend-config key=${{ github.event.repository.name }}/${{ inputs.moduleRootDirectory }} \
           -backend-config bucket=${{ secrets.s3StateBucket }} \
-          -backend-config dynamodb_table=${{ secrets.s3StateBucket }}-lock #-compact-warnings
+          -backend-config dynamodb_table=${{ secrets.s3StateBucket }}-lock ${{ secrets.bla }}#-compact-warnings
 
       - name: Validate
         run: |
