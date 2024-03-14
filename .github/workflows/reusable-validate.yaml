@@ -14,10 +14,6 @@ on:
         description: "S3 State Bucket"
         required: true
 
-      envi:
-        description: "test"
-        required: true
-
     inputs:
       terraformVersion:
         description: 'Defines terraform version to use'
@@ -31,6 +27,7 @@ on:
 
 jobs:
   validate:
+    environment: test
     runs-on: ubuntu-latest
     defaults:
       run:
