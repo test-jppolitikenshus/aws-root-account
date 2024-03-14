@@ -47,7 +47,7 @@ jobs:
           PRIVATE_KEY: ${{ secrets.appPrivateKey }}
         if: ${{ env.APP_ID != null && env.PRIVATE_KEY != null }}
         id: generate_token
-        uses: tibdex/github-app-token@v2
+        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a #v.2.1.0
         with:
           app_id: ${{ secrets.appId }}
           private_key: ${{ secrets.appPrivateKey }}
@@ -74,3 +74,10 @@ jobs:
       - name: Validate
         run: |
           terraform validate -no-color
+
+      - name: debug
+        env:
+          APP_ID: ${{ secrets.appId }}
+          PRIVATE_KEY: ${{ secrets.appPrivateKey }}
+        run: |
+
