@@ -82,7 +82,6 @@ jobs:
       appId: ${{ secrets.appId }}
       appPrivateKey: ${{ secrets.appPrivateKey }}
       s3StateBucket: ${{ secrets.S3_STATE_BUCKET }}
-      bla: ${{ secrets.BLA }}
 
   lint:
     needs: detect
