@@ -82,6 +82,7 @@ jobs:
       appId: ${{ secrets.appId }}
       appPrivateKey: ${{ secrets.appPrivateKey }}
       s3StateBucket: ${{ secrets.S3_STATE_BUCKET }}
+      awsRootAccountId: ${{ secrets.AWS_ROOT_ACCOUNT_ID }}
 
   lint:
     needs: detect
