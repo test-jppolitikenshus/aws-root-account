@@ -115,7 +115,7 @@ jobs:
         id: vars
         run: |
           mkdir metadata
-          PLAN_FILE="$(realpath metadata)/output-${{ github.event.pull_request.head.sha }}.planfile"
+          PLAN_FILE="$(realpath metadata)/plan-${{ github.event.pull_request.head.sha }}.planfile"
           SUMMARY_FILE="$(realpath metadata)/summary.md"
 
           echo "plan_file=${PLAN_FILE}" >> $GITHUB_OUTPUT
