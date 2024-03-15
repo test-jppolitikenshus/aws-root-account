@@ -45,11 +45,13 @@ jobs:
           echo "::error ::No release type labels found(test/prod/no-release)"
           exit 2
         fi
+
     - name: Get changed files
       uses: Ana06/get-changed-files@e0c398b7065a8d84700c471b6afc4116d1ba4e96 # v2.2.0
       id: raw-files
       with:
         format: 'json'
+
     - name: Condense to directory list
       uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
       id: condense
@@ -76,7 +78,7 @@ jobs:
         echo "$GITHUB_CONTEXT"
 
     - name: Modules to work on
-      run: echo ${{ fromJson(needs.detect.output.directories) }}
+      run: echo ${{ steps.condense.outputs.result }}
 
   validate:
     permissions: write-all
