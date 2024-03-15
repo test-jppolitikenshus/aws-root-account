@@ -124,6 +124,11 @@ jobs:
       releaseType: ${{ needs.detect.outputs.release-type }}
     secrets:
       githubToken: ${{ secrets.GITHUB_TOKEN }}
+      GH_APP_ID: ${{ secrets.GH_APP_ID }}
+      GH_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
+      GH_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
+      s3StateBucket: ${{ secrets.S3_STATE_BUCKET }}
+      awsRootAccountId: ${{ secrets.AWS_ROOT_ACCOUNT_ID }}
 
   comment:
     permissions: write-all
