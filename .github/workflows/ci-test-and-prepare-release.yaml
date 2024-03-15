@@ -68,6 +68,16 @@ jobs:
             include: directories.map(directory => ({ directory })),
           };
 
+    - name: Dump github context # to see whats going on
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      shell: bash
+      run: |  
+        echo "$GITHUB_CONTEXT"
+
+    - name: Modules to work on
+      run: echo ${{ needs.detect.output.directories }}
+
   validate:
     permissions: write-all
     needs: detect
