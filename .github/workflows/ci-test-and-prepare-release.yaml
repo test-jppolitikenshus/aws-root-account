@@ -95,7 +95,7 @@ jobs:
     uses: ./.github/workflows/reusable-lint.yaml
     with:
       moduleRootDirectory: ${{ matrix.directory }}
-      tflintVersion: 'v0.45.0'
+      tflintVersion: 'v0.48.0'
     secrets:
       githubToken: ${{ secrets.GITHUB_TOKEN }}
 
