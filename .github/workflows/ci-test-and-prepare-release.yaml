@@ -72,11 +72,11 @@ jobs:
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       shell: bash
-      run: |  
+      run: |
         echo "$GITHUB_CONTEXT"
 
     - name: Modules to work on
-      run: echo ${{ needs.detect.output.directories }}
+      run: echo ${{ fromJson(needs.detect.output.directories) }}
 
   validate:
     permissions: write-all
