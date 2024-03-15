@@ -61,6 +61,7 @@ jobs:
           const directories = Array.from(new Set(raw
             .filter(x => !x.startsWith('.'))
             .filter(x => x.includes('/'))
+            .filter(x => x.startsWith("\\d{2}\\."))
             .map(x => x.substring(0, x.lastIndexOf('/')))   // remove file name
           ));
           if (directories.length < 1) return {};
