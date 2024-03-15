@@ -45,6 +45,7 @@ on:
 
 jobs:
   plan:
+    environment: test
     runs-on: ubuntu-latest
     permissions: write-all # try if 'Resource not accessible by integration' is fixed
     name: 'Module: ${{ inputs.moduleRootDirectory }}'
