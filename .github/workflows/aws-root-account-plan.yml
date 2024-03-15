@@ -1,6 +1,10 @@
 name: 'CI/terraform plan (aws-root-account)'
 
 on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  pull_request_target: # in case of PRs from forks
+    types: [closed]
   #push:
   #  branches: [ "main" ]
   #pull_request:

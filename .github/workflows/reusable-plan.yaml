@@ -47,6 +47,10 @@ on:
       awsRootAccountId:
         description: "Root Account ID"
         required: true
+            
+      GH_ORG:
+        description: 'GitHub Organisation'
+        required: true
 
 jobs:
   plan:
