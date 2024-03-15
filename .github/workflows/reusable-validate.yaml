@@ -10,6 +10,10 @@ on:
         description: 'GitHub Application private key'
         required: false
 
+      GH_APP_INSTALLATION_ID:
+        description: 'GitHub Application Installation Id'
+        required: false
+
       s3StateBucket:
         description: "S3 State Bucket"
         required: true
