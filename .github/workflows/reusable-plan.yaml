@@ -30,7 +30,7 @@ jobs:
     name: 'Module: ${{ inputs.moduleRootDirectory }}'
     defaults:
       run:
-        working-directory: ${{ inputs.moduleRootDirectory }}
+        working-directory: ${{ github.event.repository.name }}/${{ inputs.moduleRootDirectory }}
     steps:
       - name: Label PR with module name
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
