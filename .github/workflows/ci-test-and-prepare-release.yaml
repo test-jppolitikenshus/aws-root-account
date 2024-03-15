@@ -60,7 +60,7 @@ jobs:
           const raw = JSON.parse(process.env.RAW_FILES);
           const directories = Array.from(new Set(raw
             .filter(x => !x.startsWith('.'))
-            .filter(x => x.startsWith('/terraform/')
+            .filter(x => x.startsWith('/terraform/'))
             .map(x => x.substring(0, x.lastIndexOf('/')))   // remove file name
           ));
           if (directories.length < 1) return {};
