@@ -83,9 +83,9 @@ jobs:
 
       - name: Init
         run: |
-          terraform init -backend-config key=${{ github.event.repository.name }}/${{ inputs.moduleRootDirectory }} \
+          terraform init -backend-config key=${{ github.event.repository.name }}/${{ inputs.moduleRootDirectory##*/ }} \
           -backend-config bucket=${{ secrets.s3StateBucket }} \
-          -backend-config dynamodb_table=${{ secrets.s3StateBucket }}-lock #-compact-warnings
+          -backend-config dynamodb_table=${{ secrets.s3StateBucket }}-lock #-compact-warnings  ##*/ splits terraform/<module> to <module>
 
       - name: Validate
         env:
