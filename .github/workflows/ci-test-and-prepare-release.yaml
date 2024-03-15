@@ -76,7 +76,7 @@ jobs:
         echo "$GITHUB_CONTEXT"
 
     - name: Modules to work on
-      run: echo ${{ detect.output.directories }}
+      run: echo ${{ needs.detect.output.directories }}
 
   validate:
     permissions: write-all
