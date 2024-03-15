@@ -17,6 +17,11 @@ on:
         required: false
         type: number
         default: 5
+      
+      terraformVersion:
+        description: 'Defines terraform version to use'
+        required: true
+        type: string
 
     secrets:
       githubToken:
