@@ -106,7 +106,7 @@ jobs:
         id: vars
         run: |
           mkdir metadata
-          PLAN_FILE="$(realpath metadata)/${{ inputs.moduleRootDirectory }}-${{ github.event.pull_request.head.sha }}.planfile"
+          PLAN_FILE="$(realpath metadata)/output-${{ github.event.pull_request.head.sha }}.planfile"
           SUMMARY_FILE="$(realpath metadata)/summary.md"
 
           echo "plan_file=${PLAN_FILE}" >> $GITHUB_OUTPUT
@@ -117,6 +117,12 @@ jobs:
         with:
           repo: suzuki-shunsuke/tfcmt
           tag: v4.6.0
+
+      - name: Init
+        run: |
+          terraform init -backend-config key=${{ github.event.repository.name }}/${{ inputs.moduleRootDirectory }} \
+          -backend-config bucket=${{ secrets.s3StateBucket }} \
+          -backend-config dynamodb_table=${{ secrets.s3StateBucket }}-lock #-compact-warnings
 
       - name: Terraform Plan
         env:
