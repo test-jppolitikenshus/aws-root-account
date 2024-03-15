@@ -53,6 +53,12 @@ jobs:
           echo "plan_file=${PLAN_FILE}" >> $GITHUB_OUTPUT
           echo "summary_file=${SUMMARY_FILE}" >> $GITHUB_OUTPUT
 
+      - name: Install tfcmt
+        uses: jaxxstorm/action-install-gh-release@v1.10.0 # v1.11.0
+        with:
+          repo: suzuki-shunsuke/tfcmt
+          tag: v4.6.0
+
       - name: Terraform Plan
         run: |
           set +e  # don't exit on error
