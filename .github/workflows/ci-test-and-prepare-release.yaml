@@ -60,7 +60,7 @@ jobs:
           const raw = JSON.parse(process.env.RAW_FILES);
           const directories = Array.from(new Set(raw
             .filter(x => !x.startsWith('.'))
-            .filter(x => /^\/.*\/\d{2}\./.test(x)) // filter out files that are not in the format /<directory>/<2 digits>.<file extension>
+            .filter(x => /\/.*\/\d{2}\./.test(x)) // filter out files that are not in the format /<directory>/<2 digits>.<file extension>
             .map(x => x.substring(0, x.lastIndexOf('/')))   // remove file name
           ));
           if (directories.length < 1) return {};
