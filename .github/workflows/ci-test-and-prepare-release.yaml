@@ -146,7 +146,7 @@ jobs:
   
   apply:
     permissions: write-all
-    needs: plan
+    needs: detect, plan
     if: ${{ needs.detect.outputs.directories != '{}' && ( needs.detect.outputs.is-merge-event == 'true' || github.event.action != 'closed' )}}
     strategy:
       matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
