@@ -1,0 +1,195 @@
+name: reusable/apply
+on:
+  workflow_call:
+    inputs:
+      moduleRootDirectory:
+        description: 'Defines root module directory'
+        required: true
+        type: string
+
+      releaseType:
+        description: 'Defines github release type'
+        required: true
+        type: string
+
+      artifactsRetentionDays:
+        description: 'How many days artifacts should be stored'
+        required: false
+        type: number
+        default: 5
+      
+      terraformVersion:
+        description: 'Defines terraform version to use'
+        required: true
+        type: string
+
+    secrets:
+      githubToken:
+        description: 'GitHub Token value'
+        required: true
+      
+      GH_APP_ID:
+        description: 'GitHub Application ID'
+        required: false
+
+      GH_APP_PEM_FILE:
+        description: 'GitHub Application private key'
+        required: false
+
+      GH_APP_INSTALLATION_ID:
+        description: 'GitHub Application Installation Id'
+        required: false
+
+      s3StateBucket:
+        description: "S3 State Bucket"
+        required: true
+
+      awsRootAccountId:
+        description: "Root Account ID"
+        required: true
+            
+      GH_ORG:
+        description: 'GitHub Organisation'
+        required: true
+
+jobs:
+  apply:
+    environment: test
+    runs-on: ubuntu-latest
+    permissions: write-all # try if 'Resource not accessible by integration' is fixed
+    name: 'Module: ${{ inputs.moduleRootDirectory }}'
+    defaults:
+      run:
+        working-directory: ${{ inputs.moduleRootDirectory }}
+    steps:
+      - name: Terraform-SetupWithCloud
+        uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
+        with:
+          terraform_version: ${{ inputs.terraformVersion }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+          #- name: Generate token  # Why ?
+          #  env:
+          #    APP_ID: ${{ secrets.GH_APP_ID }}
+          #    PRIVATE_KEY: ${{ secrets.GH_APP_PEM_FILE }}
+          #  if: ${{ env.APP_ID != null && env.PRIVATE_KEY != null }}
+          #  id: generate_token
+          #  uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a #v.2.1.0
+          #  with:
+          #    app_id: ${{ secrets.GH_APP_ID }}
+          #    private_key: ${{ secrets.GH_APP_PEM_FILE }}
+
+          #- name: authenticate to git with app token  # Why ?
+          #  env:
+          #    APP_ID: ${{ secrets.GH_APP_ID }}
+          #    PRIVATE_KEY: ${{ secrets.GH_APP_PEM_FILE }}
+          #  if: ${{ env.APP_ID != null && env.PRIVATE_KEY != null }}
+          #  run: |
+          #    echo ${{ steps.generate_token.outputs.token }} | gh auth login --with-token
+          #    gh auth setup-git
+
+      - name: Authenticate to AWS # to access S3 bucket in init step
+        uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a # v4.0.1
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.awsRootAccountId }}:role/AWS-GitHubActions-OIDC_role # FIX ROLE NAME role-to-assume: arn:aws:iam::${{secrets.AWS_ROOT_ACCOUNT_ID}}:role/github-actions-plan
+          role-session-name: GitHubActions
+          aws-region: eu-north-1
+
+      - name: Label PR with module name
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        if: ${{ github.event_name == 'pull_request' }}
+        id: label
+        with:
+          github-token: ${{ secrets.githubToken }}
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["${{ inputs.moduleRootDirectory }}"]
+            })
+
+      - name: Define variables
+        id: vars
+        run: |
+          mkdir metadata
+          PLAN_FILE="$(realpath metadata)/plan-${{ github.event.pull_request.head.sha }}.planfile"
+          SUMMARY_FILE="$(realpath metadata)/summary.md"
+
+          echo "plan_file=${PLAN_FILE}" >> $GITHUB_OUTPUT
+          echo "summary_file=${SUMMARY_FILE}" >> $GITHUB_OUTPUT
+
+      - name: Install tfcmt
+        uses: jaxxstorm/action-install-gh-release@v1.10.0 # v1.11.0
+        with:
+          repo: suzuki-shunsuke/tfcmt
+          tag: v4.6.0
+
+      - name: Init
+        run: |
+          module="${{ inputs.moduleRootDirectory }}"
+          rootmodule=${module##*/} ##*/ splits terraform/<module> to <module>
+          terraform init -backend-config key=${{ github.event.repository.name }}/${rootmodule} \
+          -backend-config bucket=${{ secrets.s3StateBucket }} \
+          -backend-config dynamodb_table=${{ secrets.s3StateBucket }}-lock #-compact-warnings
+
+      - name: Retrieve Plan
+        run: |
+           aws s3 cp s3://${{ secrets.s3StateBucket }}/${{ github.event.repository.name }}/metadata/${{ steps.vars.outputs.plan_file }} --sse .
+
+
+      - name: Terraform Apply
+        env:
+          GITHUB_APP_ID: ${{ secrets.GH_APP_ID }}   # TODO: only include these in the github root module
+          GITHUB_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
+          GITHUB_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
+        run: |
+          set +e  # don't exit on error
+          TERRAFORM_OUTPUT_FILE="./terraform-${GITHUB_RUN_ID}-output.txt"
+
+          tfcmt \
+          --config ../../config/summary.yaml \
+          -owner "${{ github.repository_owner }}" \
+          -repo "${{ github.event.repository.name }}" \
+          -var "target:${{ inputs.moduleRootDirectory }}" \
+          -var "commitSHA:${{ github.event.pull_request.head.sha }}" \
+          -var "job:${{ github.job }}" \
+          -var "logoImage:'https://itoc.dk/_img/hellpoundercorp.png'" \
+          -var "logoUrl:https://jppol.dk'" \
+          -var "infracost_enabled: true" \
+          -var "driftModeEnabled: true" \
+          --output ${{ steps.vars.outputs.summary_file }} \
+          --log-level $([[ "asdf" == "true" ]] && echo "DEBUG" || echo "INFO") \
+          apply -- \
+            terraform apply \
+            -var github_org=${{ secrets.GH_ORG }} \
+            -var cost_center="9910" \
+            -input=false \
+            -no-color \
+          &> ${TERRAFORM_OUTPUT_FILE}
+
+          TERRAFORM_RESULT=$?
+
+          set -e
+
+          cat "${TERRAFORM_OUTPUT_FILE}"
+
+          cat "${{ steps.vars.outputs.summary_file }}" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ "${TERRAFORM_RESULT}" == "0" ]]; then
+            echo "status=succeeded" >> $GITHUB_OUTPUT
+            echo "Terraform apply executed successfully"
+          else
+            echo "status=failed" >> $GITHUB_OUTPUT
+            echo "Terraform apply failed"
+          fi
+
+          # Link to a job that executed this action
+          echo "[Job](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> "${{ steps.vars.outputs.summary_file }}"
+
+
+          rm -f ${TERRAFORM_OUTPUT_FILE}
+
+          exit $TERRAFORM_RESULT
