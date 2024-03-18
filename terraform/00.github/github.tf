@@ -1,6 +1,6 @@
 
 # Define settings for the GitHub organization
-resource "github_organization_settings" "default_org_settings" {
+resource "github_organization_settings" "default-org-settings" {
   name          = "JP/Politikens Hus"
   billing_email = "platform@jppol.dk"
   company       = "JP/Politikens Hus"
