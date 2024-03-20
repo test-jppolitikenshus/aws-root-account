@@ -137,7 +137,8 @@ jobs:
 
       - name: Retrieve Plan
         run: |
-           aws s3 cp s3://${{ secrets.s3StateBucket }}/${{ github.event.repository.name }}/metadata/${{ steps.vars.outputs.plan_file }} . --sse AES256
+           echo "aws s3 cp s3://${{ secrets.s3StateBucket }}/${{ github.event.repository.name }}/metadata/${{ steps.vars.outputs.plan_file }} ."
+           aws s3 cp s3://${{ secrets.s3StateBucket }}/${{ github.event.repository.name }}/metadata/${{ steps.vars.outputs.plan_file }} .
 
 
       - name: Terraform Apply
