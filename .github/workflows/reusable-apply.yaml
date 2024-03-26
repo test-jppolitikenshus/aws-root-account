@@ -169,7 +169,7 @@ jobs:
             -var cost_center="9910" \
             -input=false \
             -no-color \
-            {{ steps.vars.output.planfile }}
+            {{ steps.vars.output.planfile }} \
           &> ${TERRAFORM_OUTPUT_FILE}
 
           TERRAFORM_RESULT=$?
