@@ -165,7 +165,7 @@ jobs:
           --log-level $([[ "asdf" == "true" ]] && echo "DEBUG" || echo "INFO") \
           apply -- \
             terraform apply \
-            {{ steps.vars.output.planfile }} \
+            "{{ steps.vars.output.plan_file }}" \
           &> ${TERRAFORM_OUTPUT_FILE}
 
           TERRAFORM_RESULT=$?
