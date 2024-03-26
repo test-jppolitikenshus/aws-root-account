@@ -149,6 +149,9 @@ jobs:
         run: |
           set +e  # don't exit on error
           TERRAFORM_OUTPUT_FILE="./terraform-${GITHUB_RUN_ID}-output.txt"
+            
+          echo "terraform apply {{ steps.vars.outputs.plan_file }}"
+          terraform apply {{ steps.vars.outputs.plan_file }}
 
           tfcmt \
           --config ../../config/summary.yaml \
