@@ -165,10 +165,6 @@ jobs:
           --log-level $([[ "asdf" == "true" ]] && echo "DEBUG" || echo "INFO") \
           apply -- \
             terraform apply \
-            -var github_org=${{ secrets.GH_ORG }} \
-            -var cost_center="9910" \
-            -input=false \
-            -no-color \
             {{ steps.vars.output.planfile }} \
           &> ${TERRAFORM_OUTPUT_FILE}
 
