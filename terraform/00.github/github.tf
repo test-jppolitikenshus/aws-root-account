@@ -1,9 +1,9 @@
 
 # Define settings for the GitHub organization
 resource "github_organization_settings" "default-org-settings" {
-  name          = "JP/Politikens Hus"
+  name          = "Test JP/Politikens Hus"
   billing_email = "platform@jppol.dk"
-  company       = "JP/Politikens Hus"
+  company       = "Test JP/Politikens Hus"
   blog          = "https://jppol.dk"
   location      = "Denmark"
   #advanced_security_enabled_for_new_repositories               = true # disabled, public repos automatically has advanced security enabled

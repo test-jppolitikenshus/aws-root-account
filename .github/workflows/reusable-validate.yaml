@@ -88,6 +88,8 @@ jobs:
           terraform init -backend-config key=${{ github.event.repository.name }}/${rootmodule} \
           -backend-config bucket=${{ secrets.s3StateBucket }} \
           -backend-config dynamodb_table=${{ secrets.s3StateBucket }}-lock #-compact-warnings
+          # consider backup hcl.lock to make sure providers from init is the same
+          # remember to apply retention policy to state/plan bucket
 
       - name: Validate
         env:
