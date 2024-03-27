@@ -220,9 +220,9 @@ jobs:
             --output-file "$(pwd)"/output/documentation.md \
             --sort-by required .
 
-      - name: Bundle up Terraform module
-        working-directory: output
-        run: zip -vr output/terraform-module.zip *
+            #- name: Bundle up Terraform module
+            # working-directory: ${{ inputs.moduleRootDirectory }}/output
+            # run: zip -vr ${{ inputs.moduleRootDirectory }}/output/terraform-module.zip *
 
       - name: Upload result artifacts
         uses: actions/upload-artifact@v4
