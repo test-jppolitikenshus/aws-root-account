@@ -168,6 +168,7 @@ jobs:
           --log-level $([[ "asdf" == "true" ]] && echo "DEBUG" || echo "INFO") \
           apply -- \
             terraform apply \
+            -no-color \
             ${{ steps.vars.outputs.plan_file }} \
           &> ${TERRAFORM_OUTPUT_FILE}
 
