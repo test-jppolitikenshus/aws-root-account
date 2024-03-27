@@ -177,11 +177,11 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          path: ${{ matrix.directory }}/outputs
+          path: ${{ matrix.directory }}/output
 
       - name: Display structure of downloaded files
         run: ls -R
-        working-directory: outputs
+        working-directory: output
 
       - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
@@ -196,15 +196,15 @@ jobs:
               '|--|--|--|',
             ];
             const sections = [];
-            for (const folder of await readdir('outputs', { withFileTypes: true })) {
+            for (const folder of await readdir('output', { withFileTypes: true })) {
               if (!folder.isDirectory()) continue;
               const readText = (name) => readFile(name, utf8).then(x => x.trim());
               lines.push('| '+[
                 `\`${folder.name}\``,
-                `${await readText(`outputs/${folder.name}/previous-version.txt`)}`,
-                `**${await readText(`outputs/${folder.name}/new-version.txt`)}**`,
+                `${await readText(`output/${folder.name}/previous-version.txt`)}`,
+                `**${await readText(`output/${folder.name}/new-version.txt`)}**`,
               ].join(' | ')+' |');
-              sections.push(`<details><summary>Changelog preview: ${folder.name}</summary>\n\n${await readText(`outputs/${folder.name}/changelog.md`)}\n</details>`);
+              sections.push(`<details><summary>Changelog preview: ${folder.name}</summary>\n\n${await readText(`output/${folder.name}/changelog.md`)}\n</details>`);
             }
             const finalBody = [lines.join('\n'), ...sections].join('\n\n');
             const {data: allComments} = await github.rest.issues.listComments({ issue_number, owner, repo });

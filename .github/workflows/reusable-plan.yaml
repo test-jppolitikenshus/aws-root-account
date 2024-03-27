@@ -224,6 +224,10 @@ jobs:
             # working-directory: ${{ inputs.moduleRootDirectory }}/output
             # run: zip -vr ${{ inputs.moduleRootDirectory }}/output/terraform-module.zip *
 
+      - name: Display files
+        run: ls -R
+        working-directory: output
+
       - name: Upload result artifacts
         uses: actions/upload-artifact@v4
         with:
