@@ -181,7 +181,7 @@ jobs:
 
       - name: Display structure of downloaded files
         run: ls -R
-        working-directory: output
+        working-directory: ${{ matrix.directory }}/output
 
       - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
