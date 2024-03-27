@@ -192,7 +192,7 @@ jobs:
             \`\`\`
             `.trimLeft(), { encoding: 'utf-8' })
 
-            - name: Document example 'source' line
+      - name: Document example 'source' line
         run: |
           cat > output/documentation.md <<'EOF'
           # Module Location
