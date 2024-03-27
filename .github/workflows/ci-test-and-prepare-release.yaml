@@ -169,12 +169,15 @@ jobs:
     permissions: write-all
     needs: [detect, plan]
     if: github.event.action != 'closed'
+    strategy:
+      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
+      fail-fast: false
     runs-on: ubuntu-latest
     name: 'Comment on PR'
     steps:
       - uses: actions/download-artifact@v4
         with:
-          path: outputs
+          path: ${{ matrix.directory }}/outputs
 
       - name: Display structure of downloaded files
         run: ls -R
