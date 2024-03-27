@@ -67,21 +67,6 @@ jobs:
         with:
           terraform_version: ${{ inputs.terraformVersion }}
 
-      - name: Define variables
-        id: vars
-        run: |
-          mkdir metadata
-          PLAN_FILE="$(realpath metadata)/plan-${{ github.event.pull_request.head.sha }}.planfile"
-          SUMMARY_FILE="$(realpath metadata)/summary.md"
-
-          echo "plan_file=${PLAN_FILE}" >> $GITHUB_OUTPUT
-          echo "summary_file=${SUMMARY_FILE}" >> $GITHUB_OUTPUT
-          
-          MODULE="${{ inputs.moduleRootDirectory }}"
-          ROOTMODULE=${module##*/} ##*/ splits terraform/<module> to <module>
-
-          echo "rootmodule=${ROOTMODULE}" >> $GITHUB_OUTPUT
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -111,6 +96,21 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.awsRootAccountId }}:role/AWS-GitHubActions-OIDC_role # FIX ROLE NAME role-to-assume: arn:aws:iam::${{secrets.AWS_ROOT_ACCOUNT_ID}}:role/github-actions-plan
           role-session-name: GitHubActions
           aws-region: eu-north-1
+
+      - name: Define variables
+        id: vars
+        run: |
+          mkdir metadata
+          PLAN_FILE="$(realpath metadata)/plan-${{ github.event.pull_request.head.sha }}.planfile"
+          SUMMARY_FILE="$(realpath metadata)/summary.md"
+
+          echo "plan_file=${PLAN_FILE}" >> $GITHUB_OUTPUT
+          echo "summary_file=${SUMMARY_FILE}" >> $GITHUB_OUTPUT
+          
+          MODULE="${{ inputs.moduleRootDirectory }}"
+          ROOTMODULE=${module##*/} ##*/ splits terraform/<module> to <module>
+
+          echo "rootmodule=${ROOTMODULE}" >> $GITHUB_OUTPUT
 
       - name: Label PR with module name
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
