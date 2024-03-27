@@ -68,12 +68,12 @@ resource "github_repository" "default" {
   }
 }
 
-#checkov:skip=CKV_GIT_6:"Following discussions with other teams we will not be enforcing signed commits currently"
 resource "github_branch_protection" "default" {
-  repository_id          = github_repository.default.id
-  pattern                = "main"
-  enforce_admins         = false # allow admins to override PR
-  require_signed_commits = true  # true prevents terraform from provisioning
+  repository_id  = github_repository.default.id
+  pattern        = "main"
+  enforce_admins = false # allow admins to override PR
+  #checkov:skip=CKV_GIT_6:"Following discussions with other teams we will not be enforcing signed commits currently"
+  require_signed_commits = false # true prevents terraform from provisioning
 
   required_status_checks {
     strict   = false
@@ -105,3 +105,53 @@ resource "github_repository_tag_protection" "default" {
 #  secret_name     = each.key
 #  plaintext_value = each.value
 #}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
