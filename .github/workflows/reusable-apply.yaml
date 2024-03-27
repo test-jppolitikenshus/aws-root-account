@@ -121,10 +121,10 @@ jobs:
           echo "plan_file=${PLAN_FILE}" >> $GITHUB_OUTPUT
           echo "summary_file=${SUMMARY_FILE}" >> $GITHUB_OUTPUT
           
-          MODULE="${{ inputs.moduleRootDirectory }}"
-          ROOTMODULE=${module##*/} ##*/ splits terraform/<module> to <module>
+          MODULE_DIR="${{ inputs.moduleRootDirectory }}"
+          ROOT_MODULE=${MODULE_DIR##*/} ##*/ splits terraform/<module> to <module>
 
-          echo "rootmodule=${ROOTMODULE}" >> $GITHUB_OUTPUT
+          echo "root_module=${ROOT_MODULE}" >> $GITHUB_OUTPUT
 
       - name: Install tfcmt
         uses: jaxxstorm/action-install-gh-release@v1.10.0 # v1.11.0
@@ -134,7 +134,7 @@ jobs:
 
       - name: Init
         run: |
-          terraform init -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.rootmodule }} \
+          terraform init -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.root_module }} \
           -backend-config bucket=${{ secrets.s3StateBucket }} \
           -backend-config dynamodb_table=${{ secrets.s3StateBucket }}-lock #-compact-warnings
 

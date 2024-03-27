@@ -107,10 +107,10 @@ jobs:
           echo "plan_file=${PLAN_FILE}" >> $GITHUB_OUTPUT
           echo "summary_file=${SUMMARY_FILE}" >> $GITHUB_OUTPUT
           
-          MODULE="${{ inputs.moduleRootDirectory }}"
-          ROOTMODULE=${module##*/} ##*/ splits terraform/<module> to <module>
+          MODULE_DIR="${{ inputs.moduleRootDirectory }}"
+          ROOT_MODULE=${MODULE_DIR##*/} # splits terraform/<module> to <module>
 
-          echo "rootmodule=${ROOTMODULE}" >> $GITHUB_OUTPUT
+          echo "root_module=${ROOT_MODULE}" >> $GITHUB_OUTPUT
 
       - name: Label PR with module name
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
@@ -123,14 +123,14 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              labels: ["${{ inputs.moduleRootDirectory }}"]
+              labels: ["${{ steps.vars.outputs.root_module }}"]
             })
 
       - name: Detect previous version number
         uses: actions/github-script@v7
         id: prev-version
         env:
-          PACKAGE_NAME: '${{ inputs.moduleRootDirectory }}'
+          PACKAGE_NAME: '${{ steps.vars.outputs.root_module }}'
         with:
           script: |
             const { owner, repo } = context.repo;
@@ -245,7 +245,7 @@ jobs:
       - name: Upload result artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: '${{ steps.vars.outputs.rootmodule }}'
+          name: '${{ steps.vars.outputs.root_module }}'
           path: '${{ inputs.moduleRootDirectory }}/output/'
             #retention-days: ${{ inputs.artifactsRetentionDays }}
 
@@ -257,9 +257,7 @@ jobs:
 
       - name: Init
         run: |
-          module="${{ inputs.moduleRootDirectory }}"
-          rootmodule=${module##*/} ##*/ splits terraform/<module> to <module>
-          terraform init -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.rootmodule }} \
+          terraform init -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.root_module }} \
           -backend-config bucket=${{ secrets.s3StateBucket }} \
           -backend-config dynamodb_table=${{ secrets.s3StateBucket }}-lock #-compact-warnings
 
