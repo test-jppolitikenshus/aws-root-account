@@ -67,6 +67,21 @@ jobs:
         with:
           terraform_version: ${{ inputs.terraformVersion }}
 
+      - name: Define variables
+        id: vars
+        run: |
+          mkdir metadata
+          PLAN_FILE="$(realpath metadata)/plan-${{ github.event.pull_request.head.sha }}.planfile"
+          SUMMARY_FILE="$(realpath metadata)/summary.md"
+
+          echo "plan_file=${PLAN_FILE}" >> $GITHUB_OUTPUT
+          echo "summary_file=${SUMMARY_FILE}" >> $GITHUB_OUTPUT
+          
+          MODULE="${{ inputs.moduleRootDirectory }}"
+          ROOTMODULE=${module##*/} ##*/ splits terraform/<module> to <module>
+
+          echo "rootmodule=${ROOTMODULE}" >> $GITHUB_OUTPUT
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -233,21 +248,6 @@ jobs:
           name: '${{ steps.vars.outputs.rootmodule }}'
           path: '${{ inputs.moduleRootDirectory }}/output/'
             #retention-days: ${{ inputs.artifactsRetentionDays }}
-
-      - name: Define variables
-        id: vars
-        run: |
-          mkdir metadata
-          PLAN_FILE="$(realpath metadata)/plan-${{ github.event.pull_request.head.sha }}.planfile"
-          SUMMARY_FILE="$(realpath metadata)/summary.md"
-
-          echo "plan_file=${PLAN_FILE}" >> $GITHUB_OUTPUT
-          echo "summary_file=${SUMMARY_FILE}" >> $GITHUB_OUTPUT
-          
-          MODULE="${{ inputs.moduleRootDirectory }}"
-          ROOTMODULE=${module##*/} ##*/ splits terraform/<module> to <module>
-
-          echo "rootmodule=${ROOTMODULE}" >> $GITHUB_OUTPUT
 
       - name: Install tfcmt
         uses: jaxxstorm/action-install-gh-release@v1.10.0 # v1.11.0
