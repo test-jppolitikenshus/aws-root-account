@@ -231,7 +231,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: '${{ inputs.moduleRootDirectory }}'
-          path: ${{ inputs.moduleRootDirectory }}/output/
+          path: '${{ inputs.moduleRootDirectory }}/output/'
             #retention-days: ${{ inputs.artifactsRetentionDays }}
 
       - name: Define variables
