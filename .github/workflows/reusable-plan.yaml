@@ -164,6 +164,7 @@ jobs:
           mkdir output
           echo 'v${{ steps.prev-version.outputs.result }}' > output/previous-version.txt
           echo 'v${{ steps.new-version.outputs.result }}' > output/new-version.txt
+          echo 'blabla' > output/changelog.md
 
       - name: Extract changelog entry
         uses: actions/github-script@v7
