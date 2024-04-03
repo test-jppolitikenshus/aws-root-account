@@ -47,7 +47,7 @@ templates:
     To reproduce this locally, run:<br/><br/>
     
     ```shell
-    atmos terraform plan {{.Vars.component}} -s {{.Vars.stack}}
+    terraform plan (fix this) {{.Vars.component}} -s {{.Vars.stack}}
     ```
     {{ template "error_messages" .}}
     {{ if eq .ExitCode 0 }}    
