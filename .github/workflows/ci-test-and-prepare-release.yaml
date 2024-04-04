@@ -61,9 +61,14 @@ jobs:
         script: |
           const raw = JSON.parse(process.env.RAW_FILES);
           const directories = Array.from(new Set(raw
-            .filter(x => !x.startsWith('.'))
-            .filter(x => /^terraform\/\d{2}\..*/.test(x)) // filter out files that are not in the format /<directory>/<2 digits>.<file extension>
-            .map(x => x.substring(0, x.lastIndexOf('/')))   // remove file name
+            .filter(x => !x.startsWith('.')) // Filter out hidden paths
+            //.filter(x => /^terraform\/\d{2}\..*/.test(x)) // filter out files that are not in the format /<directory>/<2 digits>.<file extension>
+            //.map(x => x.substring(0, x.lastIndexOf('/')))   // remove file name
+            .filter(x => /^terraform\/\d{2}[^/]*\/?/.test(x))  // Adjust the regex to stop at the first directory under 'terraform'
+            .map(x => {
+              const matches = x.match(/^(terraform\/\d{2}[^/]*)\/?/); // Use a match to extract the root directory including 'terraform'
+              return matches ? matches[1] : null;  // Return the matched root directory or null if not matched
+            })
           ));
           if (directories.length < 1) return {};
           return {
