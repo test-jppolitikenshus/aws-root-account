@@ -95,7 +95,7 @@ jobs:
         run: |
           mkdir metadata
           PLAN_FILE="plan-${{ github.event.pull_request.head.sha }}.planfile"
-          PLAN_FILE_TXT=plan-${{ github.event.pull_request.head.sha }}.txt"
+          PLAN_FILE_TXT="plan-${{ github.event.pull_request.head.sha }}.txt"
 
           SUMMARY_FILE="$(realpath metadata)/summary.md"
 
