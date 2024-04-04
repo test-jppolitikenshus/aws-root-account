@@ -62,7 +62,7 @@ jobs:
       run:
         working-directory: ${{ inputs.moduleRootDirectory }}
     steps:
-      - name: Terraform-SetupWithCloud
+      - name: Terraform-Setup
         uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
         with:
           terraform_version: ${{ inputs.terraformVersion }}
@@ -95,6 +95,8 @@ jobs:
         run: |
           mkdir metadata
           PLAN_FILE="plan-${{ github.event.pull_request.head.sha }}.planfile"
+          PLAN_FILE_TXT=plan-${{ github.event.pull_request.head.sha }}.txt"
+
           SUMMARY_FILE="$(realpath metadata)/summary.md"
 
           echo "plan_file=${PLAN_FILE}" >> $GITHUB_OUTPUT
@@ -119,18 +121,19 @@ jobs:
 
       - name: Determine if apply is appropriate 
         run: |
+          terraform show ${PLAN_FILE} -no-color > ${PLAN_FILE_TXT}
           HAS_DESTROY=false
           HAS_CHANGES=false
           HAS_NO_CHANGES=false
           HAS_ERROR=false
-          if grep -q '^No changes. Your infrastructure matches the configuration.' ${PLAN_FILE} ; then
+          if grep -q '^No changes. Your infrastructure matches the configuration.' ${PLAN_FILE_TXT} ; then
             echo "No changes found"
             HAS_NO_CHANGES=true
             exit 0
-          elif grep -qE '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${PLAN_FILE} ; then
+          elif grep -qE '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${PLAN_FILE_TXT} ; then
             echo "Found changes (no resources will be destroyed)"
             HAS_CHANGES=true
-          elif  grep -qE '^Plan: \d+ to add, \d+ to change, [1-9]{1}\d* to destroy.' ${PLAN_FILE} ; then
+          elif  grep -qE '^Plan: \d+ to add, \d+ to change, [1-9]{1}\d* to destroy.' ${PLAN_FILE_TXT} ; then
             HAS_DESTROY=true
             echo "Found changes (resources will be destroyed)"
           else
