@@ -123,14 +123,14 @@ jobs:
           HAS_CHANGES=false
           HAS_NO_CHANGES=false
           HAS_ERROR=false
-          if grep -q '^No changes. Your infrastructure matches the configuration.' ${TERRAFORM_OUTPUT_FILE} ; then
+          if grep -q '^No changes. Your infrastructure matches the configuration.' ${PLAN_FILE} ; then
             echo "No changes found"
             HAS_NO_CHANGES=true
             exit 0
-          elif grep -qE '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE} ; then
+          elif grep -qE '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${PLAN_FILE} ; then
             echo "Found changes (no resources will be destroyed)"
             HAS_CHANGES=true
-          elif  grep -qE '^Plan: \d+ to add, \d+ to change, [1-9]{1}\d* to destroy.' ${TERRAFORM_OUTPUT_FILE} ; then
+          elif  grep -qE '^Plan: \d+ to add, \d+ to change, [1-9]{1}\d* to destroy.' ${PLAN_FILE} ; then
             HAS_DESTROY=true
             echo "Found changes (resources will be destroyed)"
           else
