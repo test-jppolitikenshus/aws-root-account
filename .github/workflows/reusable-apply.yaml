@@ -119,6 +119,12 @@ jobs:
            echo "aws s3 cp s3://${{ secrets.s3StateBucket }}/${{ github.event.repository.name }}/metadata/${{ steps.vars.outputs.plan_file }} ."
            aws s3 cp s3://${{ secrets.s3StateBucket }}/${{ github.event.repository.name }}/metadata/${{ steps.vars.outputs.plan_file }} .
 
+      - name: Init
+        run: |
+          terraform init -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.root_module }} \
+          -backend-config bucket=${{ secrets.s3StateBucket }} \
+          -backend-config dynamodb_table=${{ secrets.s3StateBucket }}-lock #-compact-warnings
+
       - name: Determine if apply is appropriate 
         run: |
           terraform show ${{ steps.vars.outputs.plan_file }} -no-color > ${{ steps.vars.outputs.plan_file_txt }}
@@ -153,12 +159,6 @@ jobs:
         with:
           repo: suzuki-shunsuke/tfcmt
           tag: v4.6.0
-
-      - name: Init
-        run: |
-          terraform init -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.root_module }} \
-          -backend-config bucket=${{ secrets.s3StateBucket }} \
-          -backend-config dynamodb_table=${{ secrets.s3StateBucket }}-lock #-compact-warnings
 
       - name: Terraform Apply
         env:
