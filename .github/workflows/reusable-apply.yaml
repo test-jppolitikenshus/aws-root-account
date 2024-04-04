@@ -96,10 +96,10 @@ jobs:
           mkdir metadata
           PLAN_FILE="plan-${{ github.event.pull_request.head.sha }}.planfile"
           PLAN_FILE_TXT="plan-${{ github.event.pull_request.head.sha }}.txt"
-
           SUMMARY_FILE="$(realpath metadata)/summary.md"
 
           echo "plan_file=${PLAN_FILE}" >> $GITHUB_OUTPUT
+          echo "plan_file_txt=${PLAN_FILE_TXT}" >> $GITHUB_OUTPUT
           echo "summary_file=${SUMMARY_FILE}" >> $GITHUB_OUTPUT
           
           MODULE_DIR="${{ inputs.moduleRootDirectory }}"
