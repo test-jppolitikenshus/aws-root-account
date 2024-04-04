@@ -291,6 +291,7 @@ jobs:
             -lock=false \
             -input=false \
             -no-color \
+            -detailed-exitcode \
           &> ${TERRAFORM_OUTPUT_FILE}
 
           TERRAFORM_RESULT=$?
@@ -301,6 +302,7 @@ jobs:
 
           cat "${TERRAFORM_OUTPUT_FILE}"
 
+          HAS_DESTROY=false
           HAS_CHANGES=false
           HAS_NO_CHANGES=false
           HAS_ERROR=false
@@ -308,9 +310,14 @@ jobs:
             if grep -q '^No changes. Your infrastructure matches the configuration.' ${TERRAFORM_OUTPUT_FILE} ; then
               echo "No changes found"
               HAS_NO_CHANGES=true
-            else
+            fi
+          elif [[ "${TERRAFORM_RESULT}" == "2" ]]; then
+            if  grep -qE '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE} ; then
+              echo "Found changes (no resources will be destroyed)"
               HAS_CHANGES=true
-              echo "Found changes"
+            elif  grep -qE '^Plan: \d+ to add, \d+ to change, [1-9]{1}\d* to destroy.' ${TERRAFORM_OUTPUT_FILE} ; then
+              HAS_DESTROY=true
+              echo "Found changes (resources will be destroyed)"
             fi
           else
             HAS_ERROR=true
@@ -319,6 +326,7 @@ jobs:
 
           # One of changes, no-changes, error should be true
           echo "changes=${HAS_CHANGES}" >> $GITHUB_OUTPUT
+          echo "destroy=${HAS_DESTROY}" >> $GITHUB_OUTPUT
           echo "no-changes=${HAS_NO_CHANGES}" >> $GITHUB_OUTPUT
           echo "error=${HAS_ERROR}" >> $GITHUB_OUTPUT
 
