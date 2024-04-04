@@ -105,6 +105,13 @@ jobs:
 
           echo "root_module=${ROOT_MODULE}" >> $GITHUB_OUTPUT
       
+      - name: Authenticate to AWS # to access S3 bucket in init step
+        uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a # v4.0.1
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.awsRootAccountId }}:role/AWS-GitHubActions-OIDC_role # FIX ROLE NAME role-to-assume: arn:aws:iam::${{secrets.AWS_ROOT_ACCOUNT_ID}}:role/github-actions-plan
+          role-session-name: GitHubActions
+          aws-region: eu-north-1
+
       - name: Retrieve Plan
         run: |
            echo "aws s3 cp s3://${{ secrets.s3StateBucket }}/${{ github.event.repository.name }}/metadata/${{ steps.vars.outputs.plan_file }} ."
@@ -143,13 +150,6 @@ jobs:
         with:
           repo: suzuki-shunsuke/tfcmt
           tag: v4.6.0
-
-      - name: Authenticate to AWS # to access S3 bucket in init step
-        uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a # v4.0.1
-        with:
-          role-to-assume: arn:aws:iam::${{ secrets.awsRootAccountId }}:role/AWS-GitHubActions-OIDC_role # FIX ROLE NAME role-to-assume: arn:aws:iam::${{secrets.AWS_ROOT_ACCOUNT_ID}}:role/github-actions-plan
-          role-session-name: GitHubActions
-          aws-region: eu-north-1
 
       - name: Init
         run: |
