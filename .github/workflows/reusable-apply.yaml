@@ -121,19 +121,19 @@ jobs:
 
       - name: Determine if apply is appropriate 
         run: |
-          terraform show ${PLAN_FILE} -no-color > ${PLAN_FILE_TXT}
+          terraform show ${{ steps.vars.outputs.plan_file }} -no-color > ${{ steps.vars.outputs.plan_file_txt }}
           HAS_DESTROY=false
           HAS_CHANGES=false
           HAS_NO_CHANGES=false
           HAS_ERROR=false
-          if grep -q '^No changes. Your infrastructure matches the configuration.' ${PLAN_FILE_TXT} ; then
+          if grep -q '^No changes. Your infrastructure matches the configuration.' ${{ steps.vars.outputs.plan_file_txt }} ; then
             echo "No changes found"
             HAS_NO_CHANGES=true
             exit 0
-          elif grep -qE '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${PLAN_FILE_TXT} ; then
+          elif grep -qE '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${{ steps.vars.outputs.plan_file_txt }} ; then
             echo "Found changes (no resources will be destroyed)"
             HAS_CHANGES=true
-          elif  grep -qE '^Plan: \d+ to add, \d+ to change, [1-9]{1}\d* to destroy.' ${PLAN_FILE_TXT} ; then
+          elif  grep -qE '^Plan: \d+ to add, \d+ to change, [1-9]{1}\d* to destroy.' ${{ steps.vars.outputs.plan_file_txt }} ; then
             HAS_DESTROY=true
             echo "Found changes (resources will be destroyed)"
           else
