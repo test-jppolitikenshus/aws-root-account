@@ -22,11 +22,6 @@ on:
         description: "Root Account ID"
         required: true
 
-      environment:
-        description: 'Environment to run tests against'
-        type: string
-        required: true
-
     inputs:
       terraformVersion:
         description: "Defines terraform version to use"
@@ -37,6 +32,12 @@ on:
         description: "Defines root module directory"
         required: true
         type: string
+      
+      environment:
+        description: 'Environment to run tests against'
+        type: string
+        required: true
+
 
 jobs:
   validate:
