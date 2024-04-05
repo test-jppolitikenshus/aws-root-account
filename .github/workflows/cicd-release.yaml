@@ -20,18 +20,25 @@ jobs:
   test-release:
     needs: test-cicd 
     uses: ./.github/workflows/reusable-release.yaml
+    permissions:
+      contents: write
+      issues: read
     with:
       environment: test
     
   prod-cicd:
     needs: test-release
     uses: ./.github/workflows/cicd-runner.yaml
+    permissions: write-all
     with:
       environment: prod
   
   prod-release:
     needs: prod-cicd
     uses: ./.github/workflows/reusable-release.yaml
+    permissions:
+      contents: write
+      issues: read
     with:
       environment: prod
 
