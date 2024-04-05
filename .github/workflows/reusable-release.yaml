@@ -5,7 +5,7 @@ on:
     inputs:
       environment:
         description: 'Environment to run tests against'
-        type: environment
+        type: string
         required: true
 
     secrets:
