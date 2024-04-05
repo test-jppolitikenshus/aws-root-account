@@ -97,6 +97,7 @@ jobs:
     with:
       terraformVersion: '1.3.4'
       moduleRootDirectory: ${{ matrix.directory }}
+      environment: ${{ inputs.environment }}
     secrets:
       GH_APP_ID: ${{ secrets.GH_APP_ID }}
       GH_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
@@ -114,6 +115,7 @@ jobs:
     with:
       moduleRootDirectory: ${{ matrix.directory }}
       tflintVersion: 'v0.48.0'
+      environment: ${{ inputs.environment }}
     secrets:
       githubToken: ${{ secrets.GITHUB_TOKEN }}
 
@@ -126,6 +128,7 @@ jobs:
     uses: ./.github/workflows/reusable-analysis.yaml
     with:
       moduleRootDirectory: ${{ matrix.directory }}
+      environment: ${{ inputs.environment }}
     secrets:
       githubToken: ${{ secrets.GITHUB_TOKEN }}
 
@@ -141,6 +144,7 @@ jobs:
       moduleRootDirectory: ${{ matrix.directory }}
       releaseType: ${{ needs.detect.outputs.release-type }}
       terraformVersion: '1.5.2'
+      environment: ${{ inputs.environment }}
     secrets:
       githubToken: ${{ secrets.GITHUB_TOKEN }}
       GH_APP_ID: ${{ secrets.GH_APP_ID }}
@@ -162,6 +166,7 @@ jobs:
       moduleRootDirectory: ${{ matrix.directory }}
       releaseType: ${{ needs.detect.outputs.release-type }}
       terraformVersion: '1.5.2'
+      environment: ${{ inputs.environment }}
     secrets:
       githubToken: ${{ secrets.GITHUB_TOKEN }}
       GH_APP_ID: ${{ secrets.GH_APP_ID }}
