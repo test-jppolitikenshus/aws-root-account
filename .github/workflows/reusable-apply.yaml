@@ -23,6 +23,11 @@ on:
         required: true
         type: string
 
+      environment:
+        description: 'Environment to run tests against'
+        type: environment
+        required: true
+
     secrets:
       githubToken:
         description: 'GitHub Token value'
@@ -54,7 +59,7 @@ on:
 
 jobs:
   apply:
-    environment: test
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     permissions: write-all # try if 'Resource not accessible by integration' is fixed
     name: 'Module: ${{ inputs.moduleRootDirectory }}'
@@ -135,13 +140,13 @@ jobs:
           if grep -q '^No changes. Your infrastructure matches the configuration.' ${{ steps.vars.outputs.plan_file_txt }} ; then
             echo "No changes found"
             HAS_NO_CHANGES=true
-            exit 0
+            exit 1
           elif grep -qE '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${{ steps.vars.outputs.plan_file_txt }} ; then
-            echo "Found changes (no resources will be destroyed)"
+            echo "Found non-destructive changes"
             HAS_CHANGES=true
           elif  grep -qE '^Plan: \d+ to add, \d+ to change, [1-9]{1}\d* to destroy.' ${{ steps.vars.outputs.plan_file_txt }} ; then
             HAS_DESTROY=true
-            echo "Found changes (resources will be destroyed)"
+            echo "Found destructive changes"
           else
             HAS_ERROR=true
             echo "Error appears"

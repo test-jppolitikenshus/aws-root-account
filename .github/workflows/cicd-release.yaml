@@ -1,0 +1,36 @@
+name: 'cicd release'
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  pull_request_target: # in case of PRs from forks
+    types: [closed]
+
+      #workflow_run:
+      #workflows: [cicd test run]
+      #types: [completed]
+
+jobs:
+  test-cicd:
+    uses: ./.github/workflows/cicd-runner.yaml
+    with:
+      environment: test
+
+  test-release:
+    needs: test-cicd 
+    uses: ./.github/workflows/reusable-release.yaml
+    with:
+      environment: test
+    
+  prod-cicd:
+    needs: test-release
+    uses: ./.github/workflows/cicd-runner.yaml
+    with:
+      environment: prod
+  
+  prod-release:
+    needs: prod-cicd
+    uses: ./.github/workflows/reusable-release.yaml
+    with:
+      environment: prod
+

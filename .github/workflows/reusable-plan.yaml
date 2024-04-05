@@ -23,6 +23,11 @@ on:
         required: true
         type: string
 
+      environment:
+        description: 'Environment to run tests against'
+        type: environment
+        required: true
+
     secrets:
       githubToken:
         description: 'GitHub Token value'
@@ -54,7 +59,7 @@ on:
 
 jobs:
   plan:
-    environment: test
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     permissions: write-all # try if 'Resource not accessible by integration' is fixed
     name: 'Module: ${{ inputs.moduleRootDirectory }}'
@@ -109,8 +114,10 @@ jobs:
           
           MODULE_DIR="${{ inputs.moduleRootDirectory }}"
           ROOT_MODULE=${MODULE_DIR##*/} # splits terraform/<module> to <module>
+          ROOT_MODULE_METADATA=${ROOT_MODULE}-metadata
 
           echo "root_module=${ROOT_MODULE}" >> $GITHUB_OUTPUT
+          echo "root_module_metadata=${ROOT_MODULE_METADATA}" >> $GITHUB_OUTPUT
 
       - name: Label PR with module name
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
@@ -245,7 +252,7 @@ jobs:
       - name: Upload result artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: '${{ steps.vars.outputs.root_module }}'
+          name: '${{ steps.vars.outputs.root_module_metadata }}'
           path: '${{ inputs.moduleRootDirectory }}/output/'
             #retention-days: ${{ inputs.artifactsRetentionDays }}
 

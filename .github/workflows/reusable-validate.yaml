@@ -22,6 +22,11 @@ on:
         description: "Root Account ID"
         required: true
 
+      environment:
+        description: 'Environment to run tests against'
+        type: environment
+        required: true
+
     inputs:
       terraformVersion:
         description: "Defines terraform version to use"
@@ -35,7 +40,7 @@ on:
 
 jobs:
   validate:
-    environment: test
+    environment: ${{ inputs.environment }}
     permissions: write-all
     runs-on: ubuntu-latest
     defaults:

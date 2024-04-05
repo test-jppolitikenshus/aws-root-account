@@ -1,18 +1,19 @@
-name: 'CI/test and prepare release'
+name: 'cicd reusable runner'
 concurrency:  #avoid concurrent runs on label events, might cause issues on super fast commits  ¯\_(ツ)_/¯
   group: ${{ github.head_ref }}
   cancel-in-progress: true
 
-
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, labeled, unlabeled]
-  pull_request_target: # in case of PRs from forks
-    types: [closed]
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Environment to run tests against'
+        type: environment
+        required: true
 
 jobs:
   detect:
-    environment: test
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     name: 'Detect pull request context'
     outputs:

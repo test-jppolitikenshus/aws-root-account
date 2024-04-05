@@ -7,6 +7,11 @@ on:
         required: true
         type: string
 
+      environment:
+        description: 'Environment to run tests against'
+        type: environment
+        required: true
+
     secrets:
       githubToken:
         description: 'GitHub Token value'
@@ -14,6 +19,7 @@ on:
 
 jobs:
   checkov:
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -39,6 +45,7 @@ jobs:
           sarif_file: ./checkov.sarif
 
   tfsec:
+    environment: ${{ inputs.environments }}
     runs-on: ubuntu-latest
     defaults:
       run:
