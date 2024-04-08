@@ -2,7 +2,7 @@ name: reusable/plan
 on:
   workflow_call:
     inputs:
-      moduleRootDirectory:
+      rootModule:
         description: 'Defines root module directory'
         required: true
         type: string
@@ -62,10 +62,10 @@ jobs:
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     permissions: write-all # try if 'Resource not accessible by integration' is fixed
-    name: 'Module: ${{ inputs.moduleRootDirectory }}'
+    name: 'Root Module: ${{ inputs.rootModule }}'
     defaults:
       run:
-        working-directory: ${{ inputs.moduleRootDirectory }}
+        working-directory: terraform/${{ inputs.rootModule }}
     steps:
       - name: Terraform-Setup
         uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
@@ -112,8 +112,7 @@ jobs:
           echo "plan_file=${PLAN_FILE}" >> $GITHUB_OUTPUT
           echo "summary_file=${SUMMARY_FILE}" >> $GITHUB_OUTPUT
           
-          MODULE_DIR="${{ inputs.moduleRootDirectory }}"
-          ROOT_MODULE=${MODULE_DIR##*/} # splits terraform/<module> to <module>
+          ROOT_MODULE="${{ inputs.rootModule }}"
           ROOT_MODULE_METADATA=${ROOT_MODULE}-metadata
 
           echo "root_module=${ROOT_MODULE}" >> $GITHUB_OUTPUT
@@ -208,7 +207,7 @@ jobs:
               throw `'Changelog' section needs proper text, instead of 'TODO'`;
             const { writeFile } = require('fs').promises;
             console.log(process.cwd());
-            await writeFile("${{ inputs.moduleRootDirectory }}/output/changelog.md", `
+            await writeFile("${{ inputs.rootModule }}/output/changelog.md", `
             * PR [#${ prInfo.number }](${ prInfo.html_url }) - ${ prInfo.title }
             \`\`\`
             ${changelogEntry}
@@ -221,8 +220,8 @@ jobs:
           # Module Location
           To use this module in your Terraform, use the below source value.
           ```hcl
-          module "${{ inputs.moduleRootDirectory }}" {
-            source = "git::${{ github.server_url }}/${{ github.repository }}.git?ref=${{ inputs.moduleRootDirectory }}/v${{ steps.new-version.outputs.result }}"
+          module "${{ inputs.rootModule }}" {
+            source = "git::${{ github.server_url }}/${{ github.repository }}.git?ref=${{ inputs.rootModule }}/v${{ steps.new-version.outputs.result }}"
             # also any inputs for the module (see below)
           }
           ```
@@ -249,13 +248,6 @@ jobs:
       - name: Display files
         run: ls -R
 
-      - name: Upload result artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: '${{ steps.vars.outputs.root_module_metadata }}'
-          path: '${{ inputs.moduleRootDirectory }}/output/'
-            #retention-days: ${{ inputs.artifactsRetentionDays }}
-
       - name: Install tfcmt
         uses: jaxxstorm/action-install-gh-release@71d17cb091aa850acb2a1a4cf87258d183eb941b # v1.11.0
         with:
@@ -281,7 +273,7 @@ jobs:
           --config ../../config/summary.yaml \
           -owner "${{ github.repository_owner }}" \
           -repo "${{ github.event.repository.name }}" \
-          -var "target:${{ inputs.moduleRootDirectory }}" \
+          -var "target:${{ inputs.rootModule }}" \
           -var "commitSHA:${{ github.event.pull_request.head.sha }}" \
           -var "job:${{ github.job }}" \
           -var "logoImage:'https://itoc.dk/_img/hellpoundercorp.png'" \
@@ -309,6 +301,8 @@ jobs:
 
           cat "${TERRAFORM_OUTPUT_FILE}"
 
+          control_count=0
+
           HAS_DESTROY=false
           HAS_CHANGES=false
           HAS_NO_CHANGES=false
@@ -317,29 +311,52 @@ jobs:
             if grep -q '^No changes. Your infrastructure matches the configuration.' ${TERRAFORM_OUTPUT_FILE} ; then
               echo "No changes found"
               HAS_NO_CHANGES=true
+              ((control_count++))
+              PLAN_STATUS="has_no_changes"
             fi
           elif [[ "${TERRAFORM_RESULT}" == "2" ]]; then
             if  grep -qE '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE} ; then
               echo "Found changes (no resources will be destroyed)"
               HAS_CHANGES=true
+              ((control_count++))
+              PLAN_STATUS="has_changes"
             elif  grep -qE '^Plan: \d+ to add, \d+ to change, [1-9]{1}\d* to destroy.' ${TERRAFORM_OUTPUT_FILE} ; then
               HAS_DESTROY=true
               echo "Found changes (resources will be destroyed)"
+              ((control_count++))
+              PLAN_STATUS="has_destroy"
             fi
           else
             HAS_ERROR=true
             echo "Error appears"
+            ((control_count++))
+            PLAN_STATUS="has_error"
           fi
 
+          if [[ ! $control_count -eq 1 ]]; then
+            echo "Bad coding"
+            exit 1
+          fi
+
+          # reusable matrix jobs cannot output variables, so we upload artifact
+          echo ${PLAN_STATUS} > output/plan_status-${{ github.event.pull_request.head.sha }}-${{ steps.vars.outputs.root_module }}.txt
+
           # One of changes, no-changes, error should be true
-          echo "changes=${HAS_CHANGES}" >> $GITHUB_OUTPUT
-          echo "destroy=${HAS_DESTROY}" >> $GITHUB_OUTPUT
-          echo "no-changes=${HAS_NO_CHANGES}" >> $GITHUB_OUTPUT
-          echo "error=${HAS_ERROR}" >> $GITHUB_OUTPUT
+          echo "has_changes=${HAS_CHANGES}" >> $GITHUB_OUTPUT
+          echo "has_destroy=${HAS_DESTROY}" >> $GITHUB_OUTPUT
+          echo "has_no_changes=${HAS_NO_CHANGES}" >> $GITHUB_OUTPUT
+          echo "has_error=${HAS_ERROR}" >> $GITHUB_OUTPUT
 
           echo "result=${TERRAFORM_RESULT}" >> $GITHUB_OUTPUT
 
           rm -f ${TERRAFORM_OUTPUT_FILE}
+      
+      - name: Upload result artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: '${{ steps.vars.outputs.root_module_metadata }}-${{ github.event.pull_request.head.sha }}'
+          path: '${{ inputs.rootModule }}/output/'
+            #retention-days: ${{ inputs.artifactsRetentionDays }}
 
       - name: Store plan
         run: |

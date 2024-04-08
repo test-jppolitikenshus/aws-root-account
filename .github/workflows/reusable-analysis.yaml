@@ -2,7 +2,7 @@ name: reusable/analysis
 on:
   workflow_call:
     inputs:
-      moduleRootDirectory:
+      rootModule:
         description: 'Defines root module directory'
         required: true
         type: string
@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{ inputs.moduleRootDirectory }}
+        working-directory: terraform/${{ inputs.rootModule }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,7 +31,7 @@ jobs:
       - name: Scan module with checkov
         uses: bridgecrewio/checkov-action@v12
         with:
-          directory: ${{ inputs.moduleRootDirectory }}
+          directory: ${{ inputs.rootModule }}
           quiet: false
           soft_fail: false
           compact: false
@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{ inputs.moduleRootDirectory }}
+        working-directory: terraform/${{ inputs.rootModule }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

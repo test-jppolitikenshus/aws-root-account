@@ -1,4 +1,4 @@
-name: 'cicd reusable runner'
+name: 'reusable cd runner'
 concurrency:  #avoid concurrent runs on label events, might cause issues on super fast commits  ¯\_(ツ)_/¯
   group: ${{ github.head_ref }}
   cancel-in-progress: true
@@ -12,69 +12,6 @@ on:
         required: true
 
 jobs:
-  validate:
-    permissions: write-all
-    if: ${{ needs.detect.outputs.directories != '{}' && github.event.action != 'closed' }}
-    strategy:
-      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
-      fail-fast: false
-    uses: ./.github/workflows/reusable-validate.yaml
-    with:
-      terraformVersion: '1.3.4'
-      moduleRootDirectory: ${{ matrix.directory }}
-      environment: ${{ inputs.environment }}
-    secrets:
-      GH_APP_ID: ${{ secrets.GH_APP_ID }}
-      GH_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
-      GH_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
-      s3StateBucket: ${{ secrets.S3_STATE_BUCKET }}
-      awsRootAccountId: ${{ secrets.AWS_ROOT_ACCOUNT_ID }}
-
-  lint:
-    if: ${{ needs.detect.outputs.directories != '{}' && github.event.action != 'closed' }}
-    strategy:
-      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
-      fail-fast: false
-    uses: ./.github/workflows/reusable-lint.yaml
-    with:
-      moduleRootDirectory: ${{ matrix.directory }}
-      tflintVersion: 'v0.48.0'
-      environment: ${{ inputs.environment }}
-    secrets:
-      githubToken: ${{ secrets.GITHUB_TOKEN }}
-
-  analysis:
-    if: ${{ needs.detect.outputs.directories != '{}' && github.event.action != 'closed' }}
-    strategy:
-      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
-      fail-fast: false
-    uses: ./.github/workflows/reusable-analysis.yaml
-    with:
-      moduleRootDirectory: ${{ matrix.directory }}
-      environment: ${{ inputs.environment }}
-    secrets:
-      githubToken: ${{ secrets.GITHUB_TOKEN }}
-
-  plan:
-    permissions: write-all
-    if: ${{ needs.detect.outputs.directories != '{}' && ( needs.detect.outputs.is-merge-event == 'true' || github.event.action != 'closed' )}}
-    strategy:
-      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
-      fail-fast: false
-    uses: ./.github/workflows/reusable-plan.yaml
-    with:
-      moduleRootDirectory: ${{ matrix.directory }}
-      releaseType: ${{ needs.detect.outputs.release-type }}
-      terraformVersion: '1.5.2'
-      environment: ${{ inputs.environment }}
-    secrets:
-      githubToken: ${{ secrets.GITHUB_TOKEN }}
-      GH_APP_ID: ${{ secrets.GH_APP_ID }}
-      GH_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
-      GH_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
-      s3StateBucket: ${{ secrets.S3_STATE_BUCKET }}
-      awsRootAccountId: ${{ secrets.AWS_ROOT_ACCOUNT_ID }}
-      GH_ORG: ${{ secrets.GH_ORG }}
 
 
   apply-approve:

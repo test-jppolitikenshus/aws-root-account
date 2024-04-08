@@ -28,7 +28,7 @@ on:
         required: true
         type: string
 
-      moduleRootDirectory:
+      rootModule:
         description: "Defines root module directory"
         required: true
         type: string
@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{ inputs.moduleRootDirectory }}
+        working-directory: terraform/${{ inputs.rootModule }}
     steps:
       - name: Terraform-Setup
         uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
@@ -89,9 +89,7 @@ jobs:
 
       - name: Init
         run: |
-          module="${{ inputs.moduleRootDirectory }}"
-          rootmodule=${module##*/} ## splits terraform/<module> to <module>
-          terraform init -backend-config key=${{ github.event.repository.name }}/${rootmodule} \
+          terraform init -backend-config key=${{ github.event.repository.name }}/${{ inputs.rootModule }} \
           -backend-config bucket=${{ secrets.s3StateBucket }} \
           -backend-config dynamodb_table=${{ secrets.s3StateBucket }}-lock #-compact-warnings
           # consider backup hcl.lock to make sure providers from init is the same

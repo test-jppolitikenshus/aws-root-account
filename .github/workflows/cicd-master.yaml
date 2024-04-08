@@ -1,0 +1,136 @@
+name: 'cicd master'
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  pull_request_target: # in case of PRs from forks
+    types: [closed]
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    name: 'Detect root modules'
+    outputs:
+      directories: ${{ steps.condense.outputs.result }}
+      release-type: ${{ steps.check_pr_label.outputs.release-type}}
+      is-merge-event: >- # yaml folded style with stripped newlines
+        ${{ github.event_name == 'pull_request_target'
+         && github.event.action == 'closed'
+         && github.event.pull_request.merged == true }}
+    steps:
+      # I'm getting the labels from the API and not the context("contains(github.event.pull_request.labels.*.name, 'Env Promote')") as the labels
+      # are added in 2nd API call so they aren't included in the PR context
+    - name: Check PR labels
+      id: check_pr_label
+      env:
+        PR_URL: ${{github.event.pull_request.html_url}}
+          #GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        LABELS=$(gh pr view $PR_URL --json labels  --jq '.labels[]| select ((.name=="test") or (.name=="prod") or (.name=="no-release")) |.name')
+        NUMBER_OF_LABELS=$(echo "$LABELS" |wc -w)
+        if [ "$NUMBER_OF_LABELS" -eq "1" ] ; then
+          echo "Found: $LABELS"
+            #echo "::set-output name=release-type::$LABELS"
+          echo "release-type=${LABELS}" >> $GITHUB_OUTPUT
+        elif [ "$NUMBER_OF_LABELS" -gt "1" ] ; then
+          echo "::error ::Too many release type labels: $( echo $LABELS | tr '\n' ' ' )"
+          exit 1
+        else
+          echo "::error ::No release type labels found(test/prod/no-release)"
+          exit 2
+        fi
+
+    - name: Get changed files
+      uses: Ana06/get-changed-files@25f79e676e7ea1868813e21465014798211fad8c # v2.3.0
+      id: raw-files
+      with:
+        format: 'json'
+
+    - name: Condense to directory list
+      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+      id: condense
+      env:
+        RAW_FILES: '${{ steps.raw-files.outputs.all }}'
+      with:
+        script: |
+          const raw = JSON.parse(process.env.RAW_FILES);
+          const directories = Array.from(new Set(raw
+            .filter(x => !x.startsWith('.')) // Filter out hidden paths
+            .filter(x => /^terraform\/\d{2}[^/]*\/?/.test(x))  // Adjust the regex to stop at the first directory under 'terraform'
+            .map(x => {
+              const matches = x.match(/^(terraform\/\d{2}[^/]*)\/?/); // Use a match to extract the root directory including 'terraform'
+              return matches ? matches[1].replace(/^terraform\//, '') : null;  // Return the matched root directory or null if not matched
+            })
+            .filter(x => x !== null) // filter out null values
+          ));
+          if (directories.length < 1) return {};
+          return {
+            include: directories.map(directory => ({ directory })),
+          };
+
+    - name: Dump github context # to see whats going on
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      shell: bash
+      run: |
+        echo "$GITHUB_CONTEXT"
+
+    - name: Modules to work on
+      run: echo ${{ steps.condense.outputs.result }}
+
+  test-ci:
+    needs: detect
+    strategy:
+      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
+      fail-fast: false
+    uses: ./.github/workflows/ci-runner.yaml
+    permissions: write-all
+    with:
+      environment: test
+      rootModule: ${{ matrix.directory }}
+
+        #   determine:
+        #     runs-on: something
+        #     steps:
+        #     - uses: actions/checkout@master
+        #     
+        #     - uses: actions/download-artifact@master
+        #       with:
+        #         name: 
+        # 
+        # 
+        # 
+        # 
+        #   test-cd:
+        #     uses: ./.github/workflows/cd-runner.yaml
+        #     if:  
+        #     permissions: write-all
+        #     with:
+        #       environment: test
+        # 
+        #   test-release:
+        #     needs: test-cicd 
+        #     uses: ./.github/workflows/reusable-release.yaml
+        #     permissions:
+        #       contents: write
+        #       issues: read
+        #     with:
+        #       environment: test
+        #     
+        #   prod-cicd:
+        #     needs: test-release
+        #     uses: ./.github/workflows/cicd-runner.yaml
+        #     permissions: write-all
+        #     with:
+        #       environment: prod
+        #   
+        #   prod-release:
+        #     needs: prod-cicd
+        #     uses: ./.github/workflows/reusable-release.yaml
+        #     permissions:
+        #       contents: write
+        #       issues: read
+        #     with:
+        #       environment: prod
+        # 
