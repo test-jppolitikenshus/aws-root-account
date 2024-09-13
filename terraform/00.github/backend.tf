@@ -8,19 +8,20 @@ terraform {
   required_providers {
     github = {
       source  = "integrations/github"
-      version = "6.0.0-alpha"
+      version = "6.2.3"
     }
   }
 }
 
-# Configure the GitHub Provider
-#  access to Github Organisation is via GitHub CLI (gh auth login)
 provider "github" {
-  owner = var.github_org
+  #owner = var.github_org # `GITHUB_OWNER`
   app_auth { # GHA uses github app to perform changes to github, since GHA runner only have permissions to current repository
+    #id              = var.app_id              # or `GITHUB_APP_ID`
+    #installation_id = var.app_installation_id # or `GITHUB_APP_INSTALLATION_ID`
+    #pem_file        = var.app_pem_file        # or `GITHUB_APP_PEM_FILE`
   }
 }
 
 
-
+# To determine if GHA is running, check for CI and GITHUB_RUN_ID variables
 

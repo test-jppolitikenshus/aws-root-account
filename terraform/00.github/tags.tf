@@ -10,7 +10,7 @@ module "tags" {
 variable "stage" {
   type        = string
   description = "gets the stage from TF_VAR_stage"
-  default     = "test"
+  default     = "oops"
   validation {
     condition     = var.stage == "test" || var.stage == "prod"
     error_message = "stage must be either test or prod"
@@ -19,18 +19,19 @@ variable "stage" {
 
 variable "repos" {
   type        = string
-  default     = ""
+  default     = "oops"
   description = "gets the repository name from TF_VAR_repos"
 }
 
 variable "module" {
   type        = string
-  default     = ""
+  default     = "oops"
   description = "gets the root module from TF_VAR_module"
 }
 
 variable "cost_center" {
   type        = number
+  default     = "0000"
   description = "cost center code"
 
 }

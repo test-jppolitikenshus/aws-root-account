@@ -83,10 +83,10 @@ resource "github_branch_protection" "default" {
   }
 }
 
-resource "github_repository_tag_protection" "default" {
-  repository = github_repository.default.id
-  pattern    = "*"
-}
+#resource "github_repository_tag_protection" "default" {
+#  repository = github_repository.default.id
+#  pattern    = "*"
+#}
 
 ## Secrets
 #data "github_actions_public_key" "default" {

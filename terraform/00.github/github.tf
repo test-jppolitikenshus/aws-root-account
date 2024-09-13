@@ -1,9 +1,9 @@
 
 # Define settings for the GitHub organization
 resource "github_organization_settings" "default-org-settings" {
-  name          = "JP/Politikens Hus"
+  name          = "Test JP/Politikens Hus"
   billing_email = "platform@jppol.dk"
-  company       = "JP/Politikens Hus"
+  company       = "Test JP/Politikens Hus"
   blog          = "https://jppol.dk"
   location      = "Denmark"
   #advanced_security_enabled_for_new_repositories               = true # disabled, public repos automatically has advanced security enabled
@@ -17,16 +17,16 @@ resource "github_organization_settings" "default-org-settings" {
   secret_scanning_push_protection_enabled_for_new_repositories = true
 }
 
-output "github_organization_settings-2fa-reminder" {
-  description = "something"
-  value       = <<EOT
-************* Manually settings required:
-- enforce 2FA in org: https://github.com/organizations/${var.github_org}/settings/security
-- enable "Private vulnerability reporting for new public repositories"
-- "Code scanning" and "Recommend the extended query suite for repositories enabling default setup"
-*************
-EOT
-}
+#output "github_organization_settings-2fa-reminder" {
+#  description = "something"
+#  value       = <<EOT
+#************* Manually settings required:
+#- enforce 2FA in org: https://github.com/organizations/${var.github_org}/settings/security
+#- enable "Private vulnerability reporting for new public repositories"
+#- "Code scanning" and "Recommend the extended query suite for repositories enabling default setup"
+#*************
+#EOT
+#}
 
 #output "testing123" {
 #  description = "testing123"
