@@ -1,36 +1,39 @@
-variable "aws_account" {
-  type        = string
-  default     = ""
-  description = "AWS account"
+variable "TF_aws_account_number" {
+  type        = number
+  description = "AWS account number"
 }
 
-variable "github_org" {
+variable "TF_aws_account_name" {
   type        = string
-  default     = ""
+  description = "AWS account name"
+}
+
+variable "TF_github_org" {
+  type        = string
   description = "github_organisation"
 }
 
-variable "stage" {
+variable "TF_stage" {
   type        = string
-  description = "get the stage from TF_VAR_stage"
+  description = "get the stage from TF_VAR_TF_stage"
   validation {
-    condition     = var.stage == "test" || var.stage == "prod"
+    condition     = var.TF_stage == "test" || var.TF_stage == "prod"
     error_message = "stage must be either test or prod"
   }
 }
 
-variable "repos" {
+variable "TF_repos" {
   type        = string
-  description = "get the repository name from TF_VAR_repos"
+  description = "get the repository name from TF_VAR_TF_repos"
 }
 
-variable "module" {
+variable "TF_module" {
   type        = string
-  description = "get the root module from TF_VAR_module"
+  description = "get the root module from TF_VAR_TF_module"
 }
 
-variable "cost_center" {
+variable "TF_cost_center" {
   type        = number
-  description = "cost center code"
+  description = "cost center code from TF_VAR_TF_cost_center"
 }
 
