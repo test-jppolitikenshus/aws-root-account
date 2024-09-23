@@ -24,12 +24,12 @@ jobs:
         terraformVersion: '1.3.4'
         rootModule: ${{ inputs.rootModule }}
         environment: ${{ inputs.environment }}
-      secrets:
-        GH_APP_ID: ${{ secrets.GH_APP_ID }}
-        GH_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
-        GH_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
-        s3StateBucket: ${{ secrets.S3_STATE_BUCKET }}
-        awsRootAccountId: ${{ secrets.AWS_ROOT_ACCOUNT_ID }}
+        # secrets:
+        #GH_APP_ID: ${{ secrets.GH_APP_ID }}
+        #GH_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
+        #GH_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
+        #s3StateBucket: ${{ secrets.S3_STATE_BUCKET }}
+        #awsRootAccountId: ${{ secrets.AWS_ROOT_ACCOUNT_ID }}
   
     lint:
       #if: ${{ needs.detect.outputs.directories != '{}' && github.event.action != 'closed' }}
