@@ -64,7 +64,7 @@ jobs:
           if (directories.length < 1) return {};
           return {
             include: directories.map(directory => ({ directory })),
-          };
+          }; 
 
     - name: Dump github context
       env:
@@ -88,8 +88,10 @@ jobs:
       #    environment: dev 
       #    rootModule: ${{ matrix.directory }}
       
+
   test:
     #if: contains(fromJson('["test"]'), github.jobs.detect.outputs.release-type) 
+    if: !${{ needs.jobs.outputs.directories }}
     needs: detect
     strategy:
       matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
