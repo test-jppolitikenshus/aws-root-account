@@ -91,7 +91,7 @@ jobs:
 
   test:
     #if: contains(fromJson('["test"]'), github.jobs.detect.outputs.release-type) 
-    if: !${{ needs.jobs.outputs.directories }}
+    if: !toJson(needs.jobs.outputs.directories) == '{}'
     needs: detect
     strategy:
       matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
