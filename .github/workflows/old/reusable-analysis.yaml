@@ -2,15 +2,10 @@ name: reusable/analysis
 on:
   workflow_call:
     inputs:
-      rootModule:
+      moduleRootDirectory:
         description: 'Defines root module directory'
         required: true
         type: string
-
-      environment:
-        description: 'Environment to run tests against'
-        type: string
-        required: true
 
     secrets:
       githubToken:
@@ -19,11 +14,10 @@ on:
 
 jobs:
   checkov:
-    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: terraform/${{ inputs.rootModule }}
+        working-directory: ${{ inputs.moduleRootDirectory }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,7 +25,7 @@ jobs:
       - name: Scan module with checkov
         uses: bridgecrewio/checkov-action@v12
         with:
-          directory: terraform/${{ inputs.rootModule }}
+          directory: ${{ inputs.moduleRootDirectory }}
           quiet: false
           soft_fail: false
           compact: false
@@ -40,16 +34,15 @@ jobs:
 
       - name: Upload SARIF file
         if: success() || failure()
-        uses: github/codeql-action/upload-sarif@956f09c2ef1926b580554b9014cfb8a51abf89dd # v2.16.6
+        uses: github/codeql-action/upload-sarif@cdcdbb579706841c47f7063dda365e292e5cad7a # v2.13.4
         with:
           sarif_file: ./checkov.sarif
 
   tfsec:
-    environment: ${{ inputs.environments }}
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: terraform/${{ inputs.rootModule }}
+        working-directory: ${{ inputs.moduleRootDirectory }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -71,6 +64,6 @@ jobs:
 
       - name: Upload Trivy scan results to GitHub Security tab
         if: success() || failure()
-        uses: github/codeql-action/upload-sarif@956f09c2ef1926b580554b9014cfb8a51abf89dd # v2.16.6
+        uses: github/codeql-action/upload-sarif@cdcdbb579706841c47f7063dda365e292e5cad7a # v2.13.4
         with:
           sarif_file: 'trivy-results.sarif'

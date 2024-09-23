@@ -1,0 +1,71 @@
+name: 'reusable ci runner'
+concurrency:  #avoid concurrent runs on label events, might cause issues on super fast commits  ¯\_(ツ)_/¯
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Environment to run tests against'
+        type: string
+        required: true
+      rootModule:
+        description: 'Terraform Root Module'
+        type: string
+        required: true
+
+jobs:
+  validate:
+    permissions: write-all
+      #if: ${{ needs.detect.outputs.directories != '{}' && github.event.action != 'closed' }}
+    uses: ./.github/workflows/reusable-validate.yaml
+    with:
+      terraformVersion: '1.3.4'
+      rootModule: ${{ inputs.rootModule }}
+      environment: ${{ inputs.environment }}
+    secrets:
+      GH_APP_ID: ${{ secrets.GH_APP_ID }}
+      GH_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
+      GH_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
+      s3StateBucket: ${{ secrets.S3_STATE_BUCKET }}
+      awsRootAccountId: ${{ secrets.AWS_ROOT_ACCOUNT_ID }}
+
+  lint:
+    #if: ${{ needs.detect.outputs.directories != '{}' && github.event.action != 'closed' }}
+    uses: ./.github/workflows/reusable-lint.yaml
+    with:
+      tflintVersion: 'v0.48.0'
+      rootModule: ${{ inputs.rootMmodule }}
+      environment: ${{ inputs.environment }}
+    secrets:
+      githubToken: ${{ secrets.GITHUB_TOKEN }}
+
+  analysis:
+    #if: ${{ needs.detect.outputs.directories != '{}' && github.event.action != 'closed' }}
+    uses: ./.github/workflows/reusable-analysis.yaml
+    with:
+      rootModule: ${{ inputs.rootMmodule }}
+      environment: ${{ inputs.environment }}
+    secrets:
+      githubToken: ${{ secrets.GITHUB_TOKEN }}
+
+  plan:
+    permissions: write-all
+      #if: ${{ needs.detect.outputs.directories != '{}' && ( needs.detect.outputs.is-merge-event == 'true' || github.event.action != 'closed' )}}
+    uses: ./.github/workflows/reusable-plan.yaml
+    with:
+      rootModule: ${{ inputs.rootMmodule }}
+        #releaseType: ${{ needs.detect.outputs.release-type }}
+      terraformVersion: '1.5.2'
+      environment: ${{ inputs.environment }}
+    secrets:
+      githubToken: ${{ secrets.GITHUB_TOKEN }}
+      GH_APP_ID: ${{ secrets.GH_APP_ID }}
+      GH_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
+      GH_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
+      s3StateBucket: ${{ secrets.S3_STATE_BUCKET }}
+      awsRootAccountId: ${{ secrets.AWS_ROOT_ACCOUNT_ID }}
+      GH_ORG: ${{ secrets.GH_ORG }}
+
+

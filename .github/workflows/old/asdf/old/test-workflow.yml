@@ -1,0 +1,74 @@
+# This is a basic workflow to help you get started with Actions
+
+name: 'CI/Test Workflow'
+
+on:
+  #pull_request:
+  #  branches: [ "main" ]
+  #pull_request_review:
+  #  types: [submitted]
+  
+  #  push:
+  #  branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  AWS_REGION: "eu-north-1"
+
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  AssumeRoleAndCallIdentity:
+    environment: test
+    #if: github.event.review.state == 'approved'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v3    # get it from https://github.com/actions
+
+      - name: Configure AWS Credentials
+        #if: ${{ !env.ACT }}   # skip step if run locally (act does not work with OIDC, it need AWS credentials)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ROOT_ACCOUNT }}:role/AWS-GitHubActions-OIDC_role
+          role-session-name: "GHA-\
+            user-${{ github.event.pull_request.user.login }}-\
+            pr-${{ github.event.pull_request.number }}-\
+            aprv-${{ github.actor }}"  # max 64 characters
+          #user: "${{ github.event.pull_request.user.login }}"
+          #pr:   "${{ github.event.pull_request.number }}"
+          #aprv: "${{ github.actor }}"
+          #ownr: "${{ github.event.repository.owner.login }}"
+          #repo: "${{ github.event.repository.name }}"
+          #branch: "${{ github.event.pull_request.base.ref }}"
+          output-credentials: true
+
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
+
+      - name: get caller identity
+        run: aws sts get-caller-identity
+
+          # testing:
+          #   runs-on: ubuntu-latest
+          #   steps:
+          #     - uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
+          #       with:
+          #         terraform_version: 1.5.2
+          #       
+          #     - name: get caller identity
+          #       run: aws sts get-caller-identity
+
+  greeting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Say hello
+        run: echo "hello world"

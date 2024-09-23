@@ -12,23 +12,17 @@ on:
         required: true
         type: string
 
-      rootModule:
+      moduleRootDirectory:
         description: 'Defines root module directory'
         required: true
         type: string
 
-      environment:
-        description: 'Environment to run tests against'
-        type: string
-        required: true
-
 jobs:
   lint:
-    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: terraform/${{ inputs.rootModule }}
+        working-directory: ${{ inputs.moduleRootDirectory }}
     steps:
       - name: Install TFLint
         uses: terraform-linters/setup-tflint@19a52fbac37dacb22a09518e4ef6ee234f2d4987 # v4.0.0
@@ -45,3 +39,14 @@ jobs:
         run: |
           tflint -c ${{ github.workspace }}/.tflint.hcl --init && \
           tflint -c ${{ github.workspace }}/.tflint.hcl
+
+
+          #      - name: Setup TFLint
+          #        uses: terraform-linters/setup-tflint@19a52fbac37dacb22a09518e4ef6ee234f2d4987 # v4.0.0
+          #        with:
+          #          tflint_version: v0.48.0
+          #
+          #      - name: Terraform lint
+          #        run: |
+          #          echo "pwd: $(pwd)"
+          #          tflint -f compact
