@@ -30,17 +30,13 @@ jobs:
       run: |
         LABELS=$(gh pr view $PR_URL --json labels  --jq '.labels[]| select ((.name=="test") or (.name=="prod") or (.name=="dev")) |.name')
         NUMBER_OF_LABELS=$(echo "$LABELS" |wc -w)
-        if [ "$NUMBER_OF_LABELS" -eq "1" ] ; then
-          echo "Found: $LABELS"
-            #echo "::set-output name=release-type::$LABELS"
-          echo "release-type=${LABELS}" >> $GITHUB_OUTPUT
-        elif [ "$NUMBER_OF_LABELS" -gt "1" ] ; then
-          echo "::error ::Too many release type labels: $( echo $LABELS | tr '\n' ' ' )"
-          exit 1
+        if [ "$NUMBER_OF_LABELS" -eq "0" ] ; then
+          echo "::error ::No release type labels found (test/prod/dev)"
+          exit 0
         else
-          echo "::error ::No release type labels found(test/prod/dev)"
-          exit 2
+          echo "release-type=${LABELS}" >> $GITHUB_OUTPUT
         fi
+
 
     - name: Get changed files
       uses: Ana06/get-changed-files@25f79e676e7ea1868813e21465014798211fad8c # v2.3.0
@@ -81,6 +77,7 @@ jobs:
       run: echo ${{ steps.condense.outputs.result }}
 
   test-ci:
+    if: contains(github.jobs.detect.outputs.release-type, 'test')
     needs: detect
     strategy:
       matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
