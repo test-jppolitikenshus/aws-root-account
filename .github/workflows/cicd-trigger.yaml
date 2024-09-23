@@ -76,38 +76,38 @@ jobs:
     - name: Modules to work on
       run: echo ${{ steps.condense.outputs.result }}
 
-  dev: 
-    if: contains(github.jobs.detect.outputs.release-type, 'dev')
-    needs: detect
-    strategy:
-      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
-      fail-fast: false
-    uses: ./.github/workflows/ci-runner.yaml
-    permissions: write-all
-    with:
-      environment: dev 
-      rootModule: ${{ matrix.directory }}
-
-  test:
-    if: contains(github.jobs.detect.outputs.release-type, 'dev')
-    needs: detect
-    strategy:
-      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
-      fail-fast: false
-    uses: ./.github/workflows/ci-runner.yaml
-    permissions: write-all
-    with:
-      environment: test 
-      rootModule: ${{ matrix.directory }}
-
-  prod:
-    if: contains(github.jobs.detect.outputs.release-type, 'dev')
-    needs: detect
-    strategy:
-      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
-      fail-fast: false
-    uses: ./.github/workflows/ci-runner.yaml
-    permissions: write-all
-    with:
-      environment: prod 
-      rootModule: ${{ matrix.directory }}
+      #  dev: 
+      #    if: contains(github.jobs.detect.outputs.release-type, 'dev')
+      #    needs: detect
+      #    strategy:
+      #      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
+      #      fail-fast: false
+      #    uses: ./.github/workflows/ci-runner.yaml
+      #    permissions: write-all
+      #    with:
+      #      environment: dev 
+      #      rootModule: ${{ matrix.directory }}
+      #
+      #  test:
+      #    if: contains(github.jobs.detect.outputs.release-type, 'dev')
+      #    needs: detect
+      #    strategy:
+      #      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
+      #      fail-fast: false
+      #    uses: ./.github/workflows/ci-runner.yaml
+      #    permissions: write-all
+      #    with:
+      #      environment: test 
+      #      rootModule: ${{ matrix.directory }}
+      #
+      #  prod:
+      #    if: contains(github.jobs.detect.outputs.release-type, 'dev')
+      #    needs: detect
+      #    strategy:
+      #      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
+      #      fail-fast: false
+      #    uses: ./.github/workflows/ci-runner.yaml
+      #    permissions: write-all
+      #    with:
+      #      environment: prod 
+      #      rootModule: ${{ matrix.directory }}
