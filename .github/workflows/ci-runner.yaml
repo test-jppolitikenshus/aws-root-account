@@ -36,7 +36,7 @@ jobs:
       uses: ./.github/workflows/reusable-lint.yaml
       with:
         tflintVersion: 'v0.48.0'
-        rootModule: ${{ inputs.rootMmodule }}
+        rootModule: ${{ inputs.rootModule }}
         environment: ${{ inputs.environment }}
       secrets:
         githubToken: ${{ secrets.GITHUB_TOKEN }}
@@ -45,7 +45,7 @@ jobs:
       #if: ${{ needs.detect.outputs.directories != '{}' && github.event.action != 'closed' }}
       uses: ./.github/workflows/reusable-analysis.yaml
       with:
-        rootModule: ${{ inputs.rootMmodule }}
+        rootModule: ${{ inputs.rootModule }}
         environment: ${{ inputs.environment }}
       secrets:
         githubToken: ${{ secrets.GITHUB_TOKEN }}
