@@ -6,3 +6,4 @@
 resource "aws_route53_zone" "example_zone" {
   name = "hest.test"
 }
+
