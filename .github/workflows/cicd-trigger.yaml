@@ -32,7 +32,7 @@ jobs:
         NUMBER_OF_LABELS=$(echo "$LABELS" |wc -w)
         if [ "$NUMBER_OF_LABELS" -eq "0" ] ; then
           echo "::error ::No release type labels found (test/prod/dev)"
-          exit 0
+          exit 1
         else
           echo "release-type=${LABELS}" >> $GITHUB_OUTPUT
         fi
