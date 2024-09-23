@@ -1,6 +1,6 @@
 # Entrypoint for github actions
 
-name: 'cicd trigger'
+name: 'trigger'
 
 on:
   pull_request:
@@ -89,7 +89,7 @@ jobs:
       #    rootModule: ${{ matrix.directory }}
       
   test:
-    if: contains(github.jobs.detect.outputs.release-type, 'test')
+    if: contains(fromJson('["test"]', github.jobs.detect.outputs.release-type))
     needs: detect
     strategy:
       matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
