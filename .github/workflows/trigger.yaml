@@ -89,7 +89,7 @@ jobs:
       #    rootModule: ${{ matrix.directory }}
       
   test:
-    if: contains(fromJson('["test"]'), github.jobs.detect.outputs.release-type)
+    #if: contains(fromJson('["test"]'), github.jobs.detect.outputs.release-type) 
     needs: detect
     strategy:
       matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
