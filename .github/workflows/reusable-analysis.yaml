@@ -31,7 +31,7 @@ jobs:
       - name: Scan module with checkov
         uses: bridgecrewio/checkov-action@v12
         with:
-          directory: ${{ inputs.rootModule }}
+          directory: terraform/${{ inputs.rootModule }}
           quiet: false
           soft_fail: false
           compact: false

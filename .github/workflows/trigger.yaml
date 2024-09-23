@@ -10,7 +10,7 @@ jobs:
   detect:
     # This is to identify which terraform root modules was changed (if any)
     runs-on: ubuntu-latest
-    name: 'Detect terraform root modules'
+    name: 'Detect terraform changes'
     outputs:
       directories: ${{ steps.condense.outputs.result }}
       release-type: ${{ steps.check_pr_label.outputs.release-type}}
@@ -44,7 +44,7 @@ jobs:
       with:
         format: 'json'
 
-    - name: Condense to directory list
+    - name: Condense to directory list and match terraform directories (00.main, 01.network, 02.whatever etc..)
       uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
       id: condense
       env:
