@@ -96,7 +96,7 @@ jobs:
     strategy:
       matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
       fail-fast: false
-    uses: ./.github/workflows/ci-runner.yaml
+    uses: ./.github/workflows/reusable-ci.yaml
     permissions: write-all
     with:
       environment: test 
