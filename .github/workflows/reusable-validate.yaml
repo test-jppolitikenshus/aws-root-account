@@ -14,11 +14,11 @@ on:
         description: "GitHub Application Installation Id"
         required: false
 
-      s3StateBucket:
+      S3_STATE_BUCKET:
         description: "S3 State Bucket"
         required: true
 
-      awsRootAccountId:
+      AWS_ROOT_ACCOUNT_ID:
         description: "Root Account ID"
         required: true
 

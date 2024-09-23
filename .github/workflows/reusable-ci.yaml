@@ -1,4 +1,4 @@
-name: 'reusable ci runner'
+name: 'reusable ci'
 concurrency:  #avoid concurrent runs on label events, might cause issues on super fast commits  ¯\_(ツ)_/¯
   group: ${{ github.head_ref }}
   cancel-in-progress: true
