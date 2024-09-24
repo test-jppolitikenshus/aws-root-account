@@ -56,6 +56,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: echo stuff
+        run: | 
+          echo "environment: ${{ inputs.environment }}"
+
       - name: Generate token # Why ?
       #env:
       #    APP_ID: ${{ secrets.GH_APP_ID }}
