@@ -57,10 +57,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Generate token # Why ?
-        env:
-          APP_ID: ${{ secrets.GH_APP_ID }}
-          PRIVATE_KEY: ${{ secrets.GH_APP_PEM_FILE }}
-        if: ${{ env.APP_ID != null && env.PRIVATE_KEY != null }}
+      #env:
+      #    APP_ID: ${{ secrets.GH_APP_ID }}
+      #    PRIVATE_KEY: ${{ secrets.GH_APP_PEM_FILE }}
+        #if: ${{ env.APP_ID != null && env.PRIVATE_KEY != null }}
         id: generate_token
         uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a #v.2.1.0
         with:
@@ -68,10 +68,10 @@ jobs:
           private_key: ${{ secrets.GH_APP_PEM_FILE }}
 
       - name: authenticate to git with app token # Why ?
-        env:
-          APP_ID: ${{ secrets.GH_APP_ID }}
-          PRIVATE_KEY: ${{ secrets.GH_APP_PEM_FILE }}
-        if: ${{ env.APP_ID != null && env.PRIVATE_KEY != null }}
+      #env:
+      #    APP_ID: ${{ secrets.GH_APP_ID }}
+      #    PRIVATE_KEY: ${{ secrets.GH_APP_PEM_FILE }}
+      #  if: ${{ env.APP_ID != null && env.PRIVATE_KEY != null }}
         run: |
           echo ${{ steps.generate_token.outputs.token }} | gh auth login --with-token
           gh auth setup-git
