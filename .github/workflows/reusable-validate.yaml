@@ -61,6 +61,7 @@ jobs:
           echo "environment: ${{ inputs.environment }}"
           echo "hest: ${{ env.HEST }}"
           echo "bucket: ${{ secrets.S3_STATE_BUCKET }}"
+          echo "hest2: ${{ secrets.HEST }}"
 
       - name: Generate token # Why ?
       #env:
