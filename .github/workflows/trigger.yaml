@@ -97,6 +97,7 @@ jobs:
       matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
       fail-fast: false
     uses: ./.github/workflows/reusable-ci.yaml
+    secrets: inherit
     permissions: write-all
     with:
       environment: test 
