@@ -1,4 +1,4 @@
-name: reusable/validate
+name: reusable-validate
 on:
   workflow_call:
     #secrets:
@@ -59,6 +59,8 @@ jobs:
       - name: echo stuff
         run: | 
           echo "environment: ${{ inputs.environment }}"
+          echo "hest: ${{ env.HEST }}"
+          echo "bucket: ${{ secrets.S3_STATE_BUCKET }}"
 
       - name: Generate token # Why ?
       #env:
