@@ -77,7 +77,7 @@ jobs:
         #env:
         #    APP_ID: ${{ secrets.GH_APP_ID }}
         #    PRIVATE_KEY: ${{ secrets.GH_APP_PEM_FILE }}
-        if: ${{ env.APP_ID != null && env.PRIVATE_KEY != null }}
+        # if: ${{ env.APP_ID != null && env.PRIVATE_KEY != null }}
         run: |
           echo ${{ steps.generate_token.outputs.token }} | gh auth login --with-token
           gh auth setup-git
