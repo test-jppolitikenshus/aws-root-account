@@ -102,22 +102,23 @@ jobs:
     #if: contains(fromJson('["test"]'), github.jobs.detect.outputs.release-type)
     #if: toJson(needs.jobs.outputs.directories) != '{}'
 
-  ci-runner:
-    name: "CI Runner"
-    needs: detect
-    runs-on: ubuntu-latest
-    environment: ${{ needs.detect.outputs.release-type }}
+  ci:
+    #name: "CI"
+    #needs: detect
+    #runs-on: ubuntu-latest
+    #environment: ${{ needs.detect.outputs.release-type }}
     strategy:
       matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
       fail-fast: false
-    steps:
-      - name: "CI Runner"
-        uses: ./.github/workflows/ci-runner.yaml
-        permissions: write-all
-        with:
-          environment: ${{ needs.detect.outputs.release-type }}
-          rootModule: ${{ matrix.directory }}
-        secrets: inherit
+    #steps:
+    #  - name: "CI Runner"
+    #    id: ci-runner
+    uses: ./.github/workflows/ci-runner.yaml
+    permissions: write-all
+    with:
+      environment: ${{ needs.detect.outputs.release-type }}
+      rootModule: ${{ matrix.directory }}
+    secrets: inherit
 
     #  prod:
     #    if: contains(github.jobs.detect.outputs.release-type, 'dev')
