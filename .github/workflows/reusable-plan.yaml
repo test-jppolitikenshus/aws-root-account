@@ -163,7 +163,7 @@ jobs:
         id: new-version
         env:
           PREV_VERSION: "${{ steps.prev-version.outputs.result }}"
-          RELEASE_TYPE: "${{ inputs.releaseType }}"
+          RELEASE_TYPE: "${{ inputs.environment }}"
         with:
           script: |
             const { PREV_VERSION, RELEASE_TYPE } = process.env;
@@ -179,9 +179,9 @@ jobs:
           result-encoding: string
 
       - name: Store version numbers
-        env:
-          PR_URL: ${{github.event.pull_request.html_url}}
-          GITHUB_TOKEN: ${{secrets.githubToken}}
+      #env:
+      #    PR_URL: ${{github.event.pull_request.html_url}}
+      #    GITHUB_TOKEN: ${{secrets.githubToken}}
         run: |
           mkdir output
           echo 'v${{ steps.prev-version.outputs.result }}' > output/previous-version.txt
