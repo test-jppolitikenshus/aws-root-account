@@ -107,14 +107,14 @@ jobs:
     #needs: detect
     #runs-on: ubuntu-latest
     #environment: ${{ needs.detect.outputs.release-type }}
-    strategy:
-      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
-      fail-fast: false
+    #strategy:
+    #  matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
+    #  fail-fast: false
     #steps:
     #  - name: "CI Runner"
     #    id: ci-runner
     uses: ./.github/workflows/reusable-ci.yaml
-    permissions: write-all
+    #permissions: write-all
     with:
       environment: ${{ needs.detect.outputs.release-type }}
       rootModule: ${{ matrix.directory }}
