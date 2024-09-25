@@ -109,17 +109,17 @@ jobs:
       
 
   ci:
-    #needs: detect
+    needs: detect
     environment: ${{ needs.detect.outputs.release-type }}
     strategy:
       matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
       fail-fast: false
     uses: ./.github/workflows/reusable-ci.yaml
     permissions: write-all
-    with:
-      environment: ${{ needs.detect.outputs.release-type }}
-      rootModule: ${{ matrix.directory }}
-    secrets: inherit
+    #with:
+    #  environment: ${{ needs.detect.outputs.release-type }}
+    #  rootModule: ${{ matrix.directory }}
+    #secrets: inherit
 
       #  prod:
       #    if: contains(github.jobs.detect.outputs.release-type, 'dev')
