@@ -56,7 +56,7 @@ jobs:
     uses: ./.github/workflows/reusable-plan.yaml
     with:
       environment: ${{ inputs.environment }}
-      rootModule: ${{ inputs.rootMmodule }}
+      rootModule: ${{ inputs.rootModule }}
       #releaseType: ${{ needs.detect.outputs.release-type }}
       terraformVersion: "1.5.2"
     secrets: inherit
