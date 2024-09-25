@@ -33,9 +33,26 @@ jobs:
         if [ "$NUMBER_OF_LABELS" -eq "0" ] ; then
           echo "::error ::No release type labels found (dev/test/prod)"
           exit 1
-        else
-          echo "release-type=${LABELS}" >> $GITHUB_OUTPUT
         fi
+        case "$LABELS" in
+          *prod*)
+            echo "release-type=prod" >> $GITHUB_OUTPUT
+            exit 0
+            ;;
+          *test*)
+            echo "release-type=test" >> $GITHUB_OUTPUT
+            exit 0
+            ;;
+          *dev*)
+            echo "release-type=dev" >> $GITHUB_OUTPUT
+            exit 0
+            ;;
+        esac
+
+         
+        #else
+        #  echo "release-type=${LABELS}" >> $GITHUB_OUTPUT
+        #fi
 
 
     - name: Get changed files
@@ -87,20 +104,22 @@ jobs:
       #  with:
       #    environment: dev 
       #    rootModule: ${{ matrix.directory }}
-      
-
-  test:
     #if: contains(fromJson('["test"]'), github.jobs.detect.outputs.release-type) 
     #if: toJson(needs.jobs.outputs.directories) != '{}'
-    needs: detect
+      
+
+  ci:
+    #needs: detect
+    environment: ${{ needs.detect.outputs.release-type }}
     strategy:
       matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
       fail-fast: false
     uses: ./.github/workflows/reusable-ci.yaml
     permissions: write-all
     with:
-      environment: test 
+      environment: ${{ needs.detect.outputs.release-type }}
       rootModule: ${{ matrix.directory }}
+    secrets: inherit
 
       #  prod:
       #    if: contains(github.jobs.detect.outputs.release-type, 'dev')
