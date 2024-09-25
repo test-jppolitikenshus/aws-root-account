@@ -102,7 +102,7 @@ jobs:
 
   ci:
     name: "CI"
-    #needs: detect
+    needs: detect
     #runs-on: ubuntu-latest
     #environment: ${{ needs.detect.outputs.release-type }}
     strategy:
