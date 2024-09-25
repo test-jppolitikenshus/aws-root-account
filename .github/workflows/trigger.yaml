@@ -103,7 +103,7 @@ jobs:
     #if: toJson(needs.jobs.outputs.directories) != '{}'
 
   ci:
-    #name: "CI"
+    name: "CI"
     #needs: detect
     #runs-on: ubuntu-latest
     #environment: ${{ needs.detect.outputs.release-type }}
