@@ -18,7 +18,7 @@ on:
 jobs:
   validate:
     #environment: ${{ inputs.environment }}
-    #permissions: write-all
+    permissions: write-all
     #if: ${{ needs.detect.outputs.directories != '{}' && github.event.action != 'closed' }}
     uses: ./.github/workflows/reusable-validate.yaml
     with:

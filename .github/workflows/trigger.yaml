@@ -112,7 +112,7 @@ jobs:
     #  - name: "CI Runner"
     #    id: ci-runner
     uses: ./.github/workflows/reusable-ci.yaml
-    #permissions: write-all
+    permissions: write-all
     with:
       environment: ${{ needs.detect.outputs.release-type }}
       rootModule: ${{ matrix.directory }}
