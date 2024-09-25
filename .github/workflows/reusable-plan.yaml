@@ -62,7 +62,8 @@ jobs:
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     permissions: write-all # try if 'Resource not accessible by integration' is fixed
-    name: "Root Module: ${{ inputs.rootModule }}"
+    #name: "Root Module: ${{ inputs.rootModule }}"
+    name: plan
     defaults:
       run:
         working-directory: terraform/${{ inputs.rootModule }}
@@ -124,7 +125,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         id: label
         with:
-          github-token: ${{ secrets.githubToken }}
+          github-token: ${{ steps.generate_token.outputs.token }}  
           script: |
             github.rest.issues.addLabels({
               issue_number: context.issue.number,
