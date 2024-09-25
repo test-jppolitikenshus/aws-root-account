@@ -208,7 +208,7 @@ jobs:
               throw `'Changelog' section needs proper text, instead of 'TODO'`;
             const { writeFile } = require('fs').promises;
             console.log(process.cwd());
-            await writeFile("${{ inputs.rootModule }}/output/changelog.md", `
+            await writeFile("terraform/${{ inputs.rootModule }}/output/changelog.md", `
             * PR [#${ prInfo.number }](${ prInfo.html_url }) - ${ prInfo.title }
             \`\`\`
             ${changelogEntry}
