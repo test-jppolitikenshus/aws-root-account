@@ -113,7 +113,7 @@ jobs:
     #steps:
     #  - name: "CI Runner"
     #    id: ci-runner
-    uses: ./.github/workflows/ci-runner.yaml
+    uses: ./.github/workflows/reusable-ci.yaml
     permissions: write-all
     with:
       environment: ${{ needs.detect.outputs.release-type }}
