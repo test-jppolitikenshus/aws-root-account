@@ -1,43 +1,42 @@
-name: reusable-validate
+name: "reusable validate"
 on:
   workflow_call:
     #secrets:
     #  GH_APP_ID:
     #    description: "GitHub Application ID"
     #    required: false
-    # 
+    #
     #  GH_APP_PEM_FILE:
     #    description: "GitHub Application private key"
     #    required: false
-    # 
+    #
     #  GH_APP_INSTALLATION_ID:
     #    description: "GitHub Application Installation Id"
     #    required: false
-    # 
+    #
     #  S3_STATE_BUCKET:
     #    description: "S3 State Bucket"
     #    required: true
-    # 
+    #
     #  AWS_ROOT_ACCOUNT_ID:
     #    description: "Root Account ID"
     #    required: true
 
     inputs:
-      terraformVersion:
-        description: "Defines terraform version to use"
-        required: true
-        type: string
-
+      #      terraformVersion:
+      #        description: "Defines terraform version to use"
+      #        required: true
+      #        type: string
+      #
       rootModule:
         description: "Defines root module directory"
         required: true
         type: string
-      
+
       environment:
-        description: 'Environment to run tests against'
+        description: "Environment to run tests against"
         type: string
         required: true
-
 
 jobs:
   validate:
@@ -57,16 +56,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: echo stuff
-        run: | 
+        run: |
           echo "environment: ${{ inputs.environment }}"
           echo "hest: ${{ env.HEST }}"
           echo "bucket: ${{ secrets.S3_STATE_BUCKET }}"
           echo "hest2: ${{ secrets.HEST }}"
 
       - name: Generate token # Why ?
-      #env:
-      #    APP_ID: ${{ secrets.GH_APP_ID }}
-      #    PRIVATE_KEY: ${{ secrets.GH_APP_PEM_FILE }}
+        #env:
+        #    APP_ID: ${{ secrets.GH_APP_ID }}
+        #    PRIVATE_KEY: ${{ secrets.GH_APP_PEM_FILE }}
         #if: ${{ env.APP_ID != null && env.PRIVATE_KEY != null }}
         id: generate_token
         uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a #v.2.1.0
@@ -75,9 +74,9 @@ jobs:
           private_key: ${{ secrets.GH_APP_PEM_FILE }}
 
       - name: authenticate to git with app token # Why ?
-      #env:
-      #    APP_ID: ${{ secrets.GH_APP_ID }}
-      #    PRIVATE_KEY: ${{ secrets.GH_APP_PEM_FILE }}
+        #env:
+        #    APP_ID: ${{ secrets.GH_APP_ID }}
+        #    PRIVATE_KEY: ${{ secrets.GH_APP_PEM_FILE }}
         if: ${{ env.APP_ID != null && env.PRIVATE_KEY != null }}
         run: |
           echo ${{ steps.generate_token.outputs.token }} | gh auth login --with-token

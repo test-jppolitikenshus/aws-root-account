@@ -1,6 +1,4 @@
-# Entrypoint for github actions
-
-name: "trigger"
+name: "trigger" # Entrypoint for github actions
 
 on:
   pull_request:
@@ -8,7 +6,7 @@ on:
 
 jobs:
   detect:
-    # This is to identify which terraform root modules was changed (if any)
+    # Identify which terraform root module(s) was changed
     runs-on: ubuntu-latest
     name: "Detect terraform changes"
     outputs:
@@ -19,7 +17,7 @@ jobs:
          && github.event.action == 'closed'
          && github.event.pull_request.merged == true }}
     steps:
-      # I'm getting the labels from the API and not the context("contains(github.event.pull_request.labels.*.name, 'Env Promote')") as the labels
+      # Get the labels from the API and not the context("contains(github.event.pull_request.labels.*.name, 'Env Promote')") as the labels
       # are added in 2nd API call so they aren't included in the PR context
       - name: Check PR labels
         id: check_pr_label
@@ -103,13 +101,13 @@ jobs:
     #if: toJson(needs.jobs.outputs.directories) != '{}'
 
   ci:
-    #name: "CI"
+    name: "CI"
     #needs: detect
     #runs-on: ubuntu-latest
     #environment: ${{ needs.detect.outputs.release-type }}
-    #strategy:
-    #  matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
-    #  fail-fast: false
+    strategy:
+      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
+      fail-fast: false
     #steps:
     #  - name: "CI Runner"
     #    id: ci-runner
