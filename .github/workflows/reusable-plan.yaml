@@ -316,32 +316,32 @@ jobs:
 
           echo "source: ${{ steps.vars.outputs.plan_file }}"
 
-          #set -e
+          set -e
 
           cat "${TERRAFORM_OUTPUT_FILE}"
 
           echo "here"
 
-          if grep -E '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
+          if grep -P '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
             echo "also here 1"
           fi
           
-          if grep -E '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
+          if grep -P '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
             echo "also here 2"
           fi
-          if grep -E '0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
+          if grep -P '0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
             echo "also here 3"
           fi
-          if grep -E '\d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
+          if grep -P '\d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
             echo "also here 4"
           fi
-          if grep -E 'Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
+          if grep -P 'Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
             echo "also here 5"
           fi
-          if grep -E 'kristoffer' ${TERRAFORM_OUTPUT_FILE}; then 
+          if grep -P 'kristoffer' ${TERRAFORM_OUTPUT_FILE}; then 
             echo "also here 6"
           fi
-          if grep -E '^Plan' ${TERRAFORM_OUTPUT_FILE}; then 
+          if grep -P '^Plan' ${TERRAFORM_OUTPUT_FILE}; then 
             echo "also here 7"
           fi
           
@@ -363,13 +363,13 @@ jobs:
             HAS_NO_CHANGES=true
             ((control_count++))
             PLAN_STATUS="has_no_changes"
-          elif grep -qE '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE} ; then
+          elif grep -qP '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE} ; then
             #elif [[ "${TERRAFORM_RESULT}" == "2" ]]; then  # terraform changes
             echo "Found changes (no resources will be destroyed)"
             HAS_CHANGES=true
             ((control_count++))
             PLAN_STATUS="has_changes"
-          elif grep -qE '^Plan: \d+ to add, \d+ to change, [1-9]{1}\d* to destroy.' ${TERRAFORM_OUTPUT_FILE} ; then
+          elif grep -qP '^Plan: \d+ to add, \d+ to change, [1-9]{1}\d* to destroy.' ${TERRAFORM_OUTPUT_FILE} ; then
             HAS_DESTROY=true
             echo "Found changes (resources will be destroyed)"
             ((control_count++))
