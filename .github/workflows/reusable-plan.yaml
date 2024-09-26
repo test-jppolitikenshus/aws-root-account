@@ -312,6 +312,7 @@ jobs:
           &> ${TERRAFORM_OUTPUT_FILE}
 
           TERRAFORM_RESULT=$?
+          echo "Terraform exitcode: $TERRAFORM_RESULT"
 
           echo "source: ${{ steps.vars.outputs.plan_file }}"
 
@@ -331,28 +332,32 @@ jobs:
               HAS_NO_CHANGES=true
               ((control_count++))
               PLAN_STATUS="has_no_changes"
+              echo "control_count=$control_count"
             fi
-          elif [[ "${TERRAFORM_RESULT}" == "1" ]]; then
+          elif [[ "${TERRAFORM_RESULT}" == "2" ]]; then
             if  grep -qE '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE} ; then
               echo "Found changes (no resources will be destroyed)"
               HAS_CHANGES=true
               ((control_count++))
               PLAN_STATUS="has_changes"
+            echo "control_count=$control_count"
             elif  grep -qE '^Plan: \d+ to add, \d+ to change, [1-9]{1}\d* to destroy.' ${TERRAFORM_OUTPUT_FILE} ; then
               HAS_DESTROY=true
               echo "Found changes (resources will be destroyed)"
               ((control_count++))
               PLAN_STATUS="has_destroy"
+            echo "control_count=$control_count"
             fi
           else
             HAS_ERROR=true
             echo "Error appears"
             ((control_count++))
             PLAN_STATUS="has_error"
+            echo "control_count=$control_count"
           fi
 
           if [[ ! $control_count -eq 1 ]]; then
-            echo "Bad coding"
+            echo "Bad coding - control_count=$control_count"
             exit 1
           fi
 
