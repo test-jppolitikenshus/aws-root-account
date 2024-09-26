@@ -37,7 +37,7 @@ variable "TF_repo" {
   description = "GitHub repository"
 }
 
-variable "TF_team" {
+variable "TF_pull_request" {
   type        = string
   description = "The name of the team"
   default     = "Cloud Team"
