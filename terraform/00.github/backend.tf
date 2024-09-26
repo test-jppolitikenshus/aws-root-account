@@ -3,9 +3,9 @@ terraform {
   backend "s3" {
     region         = "eu-north-1"
     encrypt        = "true"
-    bucket         = "jppol-${var.TF_aws_account_name}-${var.TF_stage}-terraform-state"
-    dynamodb_table = "jppol-${var.TF_aws_account_name}-${var.TF_stage}-terraform-state-lock"
-    key            = "aws-${var.TF_aws_account_name}-account/${var.TF_module}"
+    bucket         = "jppol-${var.tf_aws_account_name}-${var.tf_stage}-terraform-state"
+    dynamodb_table = "jppol-${var.tf_aws_account_name}-${var.tf_stage}-terraform-state-lock"
+    key            = "aws-${var.tf_aws_account_name}-account/${var.tf_module}"
   }
 
   required_providers {

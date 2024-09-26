@@ -1,38 +1,38 @@
-variable "TF_aws_account_name" {
+variable "tf_aws_account_name" {
   type        = string
-  description = "gets the account name from TF_VAR_TF_aws_account_name (for the s3 backend)"
+  description = "gets the account name from TF_VAR_tf_aws_account_name (for the s3 backend)"
 }
 
-variable "TF_stage" {
+variable "tf_stage" {
   type        = string
-  description = "gets the stage from TF_VAR_TF_stage (also for the s3 backend)"
+  description = "gets the stage from TF_VAR_tf_stage (also for the s3 backend)"
   validation {
-    condition     = var.TF_stage == "test" || var.TF_stage == "prod"
+    condition     = var.tf_stage == "test" || var.tf_stage == "prod"
     error_message = "stage must be either test or prod"
   }
 }
 
-variable "TF_module" {
+variable "tf_module" {
   type        = string
-  description = "gets the root module from TF_VAR_TF_module (for the s3 backend)"
+  description = "gets the root module from TF_VAR_tf_module (for the s3 backend)"
 }
 
-variable "TF_aws_account_number" {
+variable "tf_aws_account_number" {
   type        = number
   description = "AWS account number"
 }
 
-variable "TF_cost_center" {
+variable "tf_cost_center" {
   type        = string
   description = "Cost center"
 }
 
-variable "TF_github_org" {
+variable "tf_github_org" {
   type        = string
   description = "GitHub organization"
 }
 
-variable "TF_repo" {
+variable "tf_repo" {
   type        = string
   description = "GitHub repository"
 }
