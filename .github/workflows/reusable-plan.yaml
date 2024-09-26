@@ -260,7 +260,17 @@ jobs:
         run: |
           tofu init -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.root_module }} \
           -backend-config bucket=${{ secrets.S3_STATE_BUCKET }} \
-          -backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock #-compact-warnings
+          -backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock \
+          -var TF_github_org=${{ secrets.GH_ORG }} \
+          -var TF_cost_center=${{ secrets.COST_CENTER }} \
+          -var TF_stage=${{ inputs.environment }} \
+          -var TF_repo=${{ github.event.repository.name }} \
+          -var TF_module=${{ inputs.rootModule }} \
+          -var TF_aws_account_number=${{ secrets.AWS_ACCOUNT_NUMBER }} \
+          -var TF_aws_account_name=${{ secrets.AWS_ACCOUNT_NAME }} \
+          -var TF_pull_request=${{ github.event.pull_request.url }} \
+          -compact-warnings
+ 
 
       - name: Terraform Plan
         env:
