@@ -343,7 +343,7 @@ jobs:
             echo "Found changes (resources will be destroyed)"
             ((control_count++))
             PLAN_STATUS="has_destroy"
-          fi
+            #fi
           else
             HAS_ERROR=true
             echo "Error appears"
