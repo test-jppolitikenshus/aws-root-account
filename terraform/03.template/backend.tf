@@ -29,7 +29,7 @@ provider "aws" {
       "aws_account_number" = var.TF_aws_account_number,
       "aws_account_name"   = var.TF_aws_account_name,
       "github_org"         = var.TF_github_org,
-      "team"               = var.TF_team,
+      "pull_request"       = var.TF_pull_request,
     }
   }
 }
