@@ -74,10 +74,10 @@ jobs:
           terraform_version: ${{ inputs.terraformVersion }}
 
       - name: Checkout
-        uses:
-          actions/checkout@v4
+        uses: actions/checkout@v4
 
-      - name: Generate token  # Why ?
+      - name:
+          Generate token # Why ?
           #  env:
           #    APP_ID: ${{ secrets.GH_APP_ID }}
           #    PRIVATE_KEY: ${{ secrets.GH_APP_PEM_FILE }}
@@ -88,7 +88,8 @@ jobs:
           app_id: ${{ secrets.GH_APP_ID }}
           private_key: ${{ secrets.GH_APP_PEM_FILE }}
 
-      - name: authenticate to git with app token  # Why ?
+      - name:
+          authenticate to git with app token # Why ?
           #  env:
           #    APP_ID: ${{ secrets.GH_APP_ID }}
           #    PRIVATE_KEY: ${{ secrets.GH_APP_PEM_FILE }}
@@ -125,7 +126,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         id: label
         with:
-          github-token: ${{ steps.generate_token.outputs.token }}  
+          github-token: ${{ steps.generate_token.outputs.token }}
           script: |
             github.rest.issues.addLabels({
               issue_number: context.issue.number,
@@ -179,9 +180,9 @@ jobs:
           result-encoding: string
 
       - name: Store version numbers
-      #env:
-      #    PR_URL: ${{github.event.pull_request.html_url}}
-      #    GITHUB_TOKEN: ${{secrets.githubToken}}
+        #env:
+        #    PR_URL: ${{github.event.pull_request.html_url}}
+        #    GITHUB_TOKEN: ${{secrets.githubToken}}
         run: |
           mkdir output
           echo 'v${{ steps.prev-version.outputs.result }}' > output/previous-version.txt
@@ -285,8 +286,14 @@ jobs:
           --log-level $([[ "asdf" == "true" ]] && echo "DEBUG" || echo "INFO") \
           plan -- \
             terraform plan \
-            -var github_org=${{ secrets.GH_ORG }} \
-            -var cost_center="9910" \
+            -var TF_github_org=${{ secrets.GH_ORG }} \
+            -var TF_cost_center=${{ secrets.COST_CENTER }} \
+            -var TF_stage=${{ inputs.environment }} \
+            -var TF_repo=${{ github.event.repository.name }} \
+            -var TF_module=${{ inputs.rootModule }} \
+            -var TF_aws_account_number=${{ secrets.AWS_ACCOUNT_NUMBER }} \
+            -var TF_aws_account_name=${{ secrets.AWS_ACCOUNT_NAME }} \
+            -var TF_pull_request=${{ github.event.pull_request.title }} \
             -out=${{ steps.vars.outputs.plan_file }} \
             -lock=false \
             -input=false \
