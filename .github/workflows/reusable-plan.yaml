@@ -323,11 +323,30 @@ jobs:
           echo "here"
 
           if grep -E '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
-            echo "also here"
+            echo "also here 1"
+          fi
+          
+          if grep -E '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
+            echo "also here 2"
+          fi
+          if grep -E '0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
+            echo "also here 3"
+          fi
+          if grep -E '\d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
+            echo "also here 4"
+          fi
+          if grep -E 'Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
+            echo "also here 5"
+          fi
+          if grep -E 'kristoffer' ${TERRAFORM_OUTPUT_FILE}; then 
+            echo "also here 6"
+          fi
+          if grep -E '^Plan' ${TERRAFORM_OUTPUT_FILE}; then 
+            echo "also here 7"
           fi
           
           if grep 'kristoffer' ${TERRAFORM_OUTPUT_FILE}; then 
-            echo "also here"
+            echo "also here 8"
           fi
 
           echo "done"
