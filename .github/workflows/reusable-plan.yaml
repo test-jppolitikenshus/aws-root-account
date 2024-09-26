@@ -327,18 +327,18 @@ jobs:
           HAS_NO_CHANGES=false
           HAS_ERROR=false
           #if [[ "${TERRAFORM_RESULT}" == "0" ]]; then
-          if grep -q '^No changes. Your infrastructure matches the configuration.' ${TERRAFORM_OUTPUT_FILE} ; then
+          if grep -q '^No changes. Your infrastructure matches the configuration.' "${TERRAFORM_OUTPUT_FILE}" ; then
             echo "No changes found"
             HAS_NO_CHANGES=true
             ((control_count++))
             PLAN_STATUS="has_no_changes"
-          elif grep -qE '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE} ; then
+          elif grep -qE '^Plan: \d+ to add, \d+ to change, 0 to destroy.' "${TERRAFORM_OUTPUT_FILE}" ; then
             #elif [[ "${TERRAFORM_RESULT}" == "2" ]]; then
             echo "Found changes (no resources will be destroyed)"
             HAS_CHANGES=true
             ((control_count++))
             PLAN_STATUS="has_changes"
-          elif grep -qE '^Plan: \d+ to add, \d+ to change, [1-9]{1}\d* to destroy.' ${TERRAFORM_OUTPUT_FILE} ; then
+          elif grep -qE '^Plan: \d+ to add, \d+ to change, [1-9]{1}\d* to destroy.' "${TERRAFORM_OUTPUT_FILE}" ; then
             HAS_DESTROY=true
             echo "Found changes (resources will be destroyed)"
             ((control_count++))
@@ -346,15 +346,10 @@ jobs:
             #fi
           else
             HAS_ERROR=true
-            echo "Error appearsasfd"
+            echo "Error appears"
             ((control_count++))
-            echo "blabla"
             PLAN_STATUS="has_error"
-            echo "blablaba"
           fi
-
-          echo "blablablabla"
-
 
           if [[ ! $control_count -eq 1 ]]; then
             echo "Control_count=$control_count - Bad coding"
