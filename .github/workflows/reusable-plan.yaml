@@ -316,40 +316,8 @@ jobs:
 
           echo "source: ${{ steps.vars.outputs.plan_file }}"
 
-          set -e
 
           cat "${TERRAFORM_OUTPUT_FILE}"
-
-          echo "here"
-
-          if grep -P '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
-            echo "also here 1"
-          fi
-          
-          if grep -P '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
-            echo "also here 2"
-          fi
-          if grep -P '0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
-            echo "also here 3"
-          fi
-          if grep -P '\d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
-            echo "also here 4"
-          fi
-          if grep -P 'Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
-            echo "also here 5"
-          fi
-          if grep -P 'kristoffer' ${TERRAFORM_OUTPUT_FILE}; then 
-            echo "also here 6"
-          fi
-          if grep -P '^Plan' ${TERRAFORM_OUTPUT_FILE}; then 
-            echo "also here 7"
-          fi
-          
-          if grep 'kristoffer' ${TERRAFORM_OUTPUT_FILE}; then 
-            echo "also here 8"
-          fi
-
-          echo "done"
 
           control_count=0
 
@@ -381,6 +349,8 @@ jobs:
             ((control_count++))
             PLAN_STATUS="has_error"
           fi
+
+          set -e
 
           if [[ ! $control_count -eq 1 ]]; then
             echo "Control_count=$control_count - Bad coding"
