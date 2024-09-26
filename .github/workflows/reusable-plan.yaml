@@ -320,25 +320,33 @@ jobs:
 
           cat "${TERRAFORM_OUTPUT_FILE}"
 
+          echo "here"
+
+          if grep -qE '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE}; then 
+            echo "also here"
+          fi
+
+          echo "done"
+
           control_count=0
 
           HAS_DESTROY=false
           HAS_CHANGES=false
           HAS_NO_CHANGES=false
           HAS_ERROR=false
-          #if [[ "${TERRAFORM_RESULT}" == "0" ]]; then
-          if grep -q '^No changes. Your infrastructure matches the configuration.' "${TERRAFORM_OUTPUT_FILE}" ; then
+          #if [[ "${TERRAFORM_RESULT}" == "0" ]]; then  # no terraform changes
+          if grep -q '^No changes. Your infrastructure matches the configuration.' ${TERRAFORM_OUTPUT_FILE} ; then
             echo "No changes found"
             HAS_NO_CHANGES=true
             ((control_count++))
             PLAN_STATUS="has_no_changes"
-          elif grep -qE '^Plan: \d+ to add, \d+ to change, 0 to destroy.' "${TERRAFORM_OUTPUT_FILE}" ; then
-            #elif [[ "${TERRAFORM_RESULT}" == "2" ]]; then
+          elif grep -qE '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE} ; then
+            #elif [[ "${TERRAFORM_RESULT}" == "2" ]]; then  # terraform changes
             echo "Found changes (no resources will be destroyed)"
             HAS_CHANGES=true
             ((control_count++))
             PLAN_STATUS="has_changes"
-          elif grep -qE '^Plan: \d+ to add, \d+ to change, [1-9]{1}\d* to destroy.' "${TERRAFORM_OUTPUT_FILE}" ; then
+          elif grep -qE '^Plan: \d+ to add, \d+ to change, [1-9]{1}\d* to destroy.' ${TERRAFORM_OUTPUT_FILE} ; then
             HAS_DESTROY=true
             echo "Found changes (resources will be destroyed)"
             ((control_count++))
