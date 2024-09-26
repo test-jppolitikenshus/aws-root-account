@@ -50,7 +50,7 @@ jobs:
       - name: Terraform-Setup
         uses: opentofu/setup-opentofu@12f4debbf681675350b6cd1f0ff8ecfbda62027b # v1.0.4
         with:
-          terraform_version: ${{ inputs.terraformVersion }}
+          #terraform_version: ${{ inputs.terraformVersion }}
 
       - name: Checkout
         uses: actions/checkout@v4
