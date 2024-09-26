@@ -338,7 +338,7 @@ jobs:
             HAS_CHANGES=true
             ((control_count++))
             PLAN_STATUS="has_changes"
-          elif  grep -qE '^Plan: \d+ to add, \d+ to change, [1-9]{1}\d* to destroy.' ${TERRAFORM_OUTPUT_FILE} ; then
+          elif grep -qE '^Plan: \d+ to add, \d+ to change, [1-9]{1}\d* to destroy.' ${TERRAFORM_OUTPUT_FILE} ; then
             HAS_DESTROY=true
             echo "Found changes (resources will be destroyed)"
             ((control_count++))
@@ -350,6 +350,9 @@ jobs:
             ((control_count++))
             PLAN_STATUS="has_error"
           fi
+
+          echo "blablablabla"
+
 
           if [[ ! $control_count -eq 1 ]]; then
             echo "Control_count=$control_count - Bad coding"
