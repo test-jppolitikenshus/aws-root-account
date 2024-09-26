@@ -375,7 +375,7 @@ jobs:
         with:
           name: "${{ steps.vars.outputs.root_module_metadata }}-${{ github.event.pull_request.head.sha }}"
           path:
-            "${{ inputs.rootModule }}/output/"
+            "terraform/${{ inputs.rootModule }}/output/"
             #retention-days: ${{ inputs.artifactsRetentionDays }}
 
       - name: Store plan
