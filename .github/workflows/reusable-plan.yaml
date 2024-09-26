@@ -69,7 +69,7 @@ jobs:
         working-directory: terraform/${{ inputs.rootModule }}
     steps:
       - name: Terraform-Setup
-        uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
+        uses: opentofu/setup-opentofu@12f4debbf681675350b6cd1f0ff8ecfbda62027b # v1.0.4
         with:
           terraform_version: ${{ inputs.terraformVersion }}
 
