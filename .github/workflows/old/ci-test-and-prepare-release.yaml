@@ -84,7 +84,7 @@ jobs:
       GH_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
       GH_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
       s3StateBucket: ${{ secrets.S3_STATE_BUCKET }}
-      awsRootAccountId: ${{ secrets.AWS_ROOT_ACCOUNT_ID }}
+      awsRootAccountId: ${{ secrets.AWS_ACCOUNT_NUMBER }}
 
   lint:
     needs: detect
@@ -129,7 +129,7 @@ jobs:
       GH_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
       GH_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
       s3StateBucket: ${{ secrets.S3_STATE_BUCKET }}
-      awsRootAccountId: ${{ secrets.AWS_ROOT_ACCOUNT_ID }}
+      awsRootAccountId: ${{ secrets.AWS_ACCOUNT_NUMBER }}
 
   comment:
     permissions: write-all

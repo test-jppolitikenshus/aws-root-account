@@ -30,7 +30,7 @@ jobs:
     #  GH_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
     #  GH_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
     #  S3_STATE_BUCKET: ${{ secrets.S3_STATE_BUCKET }}
-    #  AWS_ROOT_ACCOUNT_ID: ${{ secrets.AWS_ROOT_ACCOUNT_ID }}
+    #  AWS_ACCOUNT_NUMBER: ${{ secrets.AWS_ACCOUNT_NUMBER }}
   lint:
     #if: ${{ needs.detect.outputs.directories != '{}' && github.event.action != 'closed' }}
     uses: ./.github/workflows/reusable-lint.yaml
@@ -65,6 +65,6 @@ jobs:
 #       GH_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
 #       GH_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
 #       s3StateBucket: ${{ secrets.S3_STATE_BUCKET }}
-#       awsRootAccountId: ${{ secrets.AWS_ROOT_ACCOUNT_ID }}
+#       awsRootAccountId: ${{ secrets.AWS_ACCOUNT_NUMBER }}
 #       GH_ORG: ${{ secrets.GH_ORG }}
 #
