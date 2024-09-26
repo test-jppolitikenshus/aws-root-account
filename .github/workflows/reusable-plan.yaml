@@ -71,7 +71,7 @@ jobs:
       - name: Terraform-Setup
         uses: opentofu/setup-opentofu@12f4debbf681675350b6cd1f0ff8ecfbda62027b # v1.0.4
         #with:
-          #terraform_version: ${{ inputs.terraformVersion }}
+        #terraform_version: ${{ inputs.terraformVersion }}
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -258,7 +258,7 @@ jobs:
 
       - name: Init
         run: |
-          terraform init -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.root_module }} \
+          tofu init -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.root_module }} \
           -backend-config bucket=${{ secrets.S3_STATE_BUCKET }} \
           -backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock #-compact-warnings
 
@@ -285,7 +285,7 @@ jobs:
           --output ${{ steps.vars.outputs.summary_file }} \
           --log-level $([[ "asdf" == "true" ]] && echo "DEBUG" || echo "INFO") \
           plan -- \
-            terraform plan \
+            tofu plan \
             -var TF_github_org=${{ secrets.GH_ORG }} \
             -var TF_cost_center=${{ secrets.COST_CENTER }} \
             -var TF_stage=${{ inputs.environment }} \
@@ -293,7 +293,7 @@ jobs:
             -var TF_module=${{ inputs.rootModule }} \
             -var TF_aws_account_number=${{ secrets.AWS_ACCOUNT_NUMBER }} \
             -var TF_aws_account_name=${{ secrets.AWS_ACCOUNT_NAME }} \
-            -var TF_pull_request=${{ github.event.pull_request.title }} \
+            -var TF_pull_request=${{ github.event.pull_request.url }} \
             -out=${{ steps.vars.outputs.plan_file }} \
             -lock=false \
             -input=false \
