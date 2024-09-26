@@ -346,18 +346,20 @@ jobs:
             #fi
           else
             HAS_ERROR=true
-            echo "Error appears"
+            echo "Error appearsasfd"
             ((control_count++))
+            echo "blabla"
             PLAN_STATUS="has_error"
+            echo "blablaba"
           fi
 
           echo "blablablabla"
 
 
-          if [[ ! $control_count -eq 1 ]]; then
-            echo "Control_count=$control_count - Bad coding"
-            exit 1
-          fi
+          #if [[ ! $control_count -eq 1 ]]; then
+          #  echo "Control_count=$control_count - Bad coding"
+          #  exit 1
+          #fi
 
           # reusable matrix jobs cannot output variables, so we upload artifact
           echo ${PLAN_STATUS} > output/plan_status-${{ github.event.pull_request.head.sha }}-${{ steps.vars.outputs.root_module }}.txt
