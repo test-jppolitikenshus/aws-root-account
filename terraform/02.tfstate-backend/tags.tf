@@ -2,10 +2,10 @@
 module "tags" {
   source = "../modules/aws-tags/"
 
-  TF_repo    = var.TF_repo
+  tf_repo    = var.tf_repo
   repository = "repository2value2"
-  #module      = var.TF_module
-  #cost_center = var.TF_cost_center
-  #stage       = var.TF_stage
+  #module      = var.tf_module
+  #cost_center = var.tf_cost_center
+  #stage       = var.tf_stage
 }
 

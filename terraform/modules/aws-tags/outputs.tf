@@ -1,6 +1,6 @@
 #output "github_org" {
 #  description = "Which github organisation is configured"
-#  value       = var.TF_github_org
+#  value       = var.tf_github_org
 #}
 
 #output "aws_account" {
@@ -16,7 +16,7 @@
 #
 output "repository" {
   description = "gets the repository name from TF_VAR_repos"
-  value       = var.TF_repo
+  value       = var.tf_repo
 }
 
 #output "module" {

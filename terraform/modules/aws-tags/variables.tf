@@ -1,23 +1,23 @@
-#variable "TF_aws_account_number" {
+#variable "tf_aws_account_number" {
 #  type        = number
 #  description = "AWS account number"
 #}
 #
-#variable "TF_aws_account_name" {
+#variable "tf_aws_account_name" {
 #  type        = string
 #  description = "AWS account name"
 #}
 #
-#variable "TF_github_org" {
+#variable "tf_github_org" {
 #  type        = string
 #  description = "github_organisation"
 #}
 #
-#variable "TF_stage" {
+#variable "tf_stage" {
 #  type        = string
-#  description = "get the stage from TF_VAR_TF_stage"
+#  description = "get the stage from TF_VAR_tf_stage"
 #  validation {
-#    condition     = var.TF_stage == "test" || var.TF_stage == "prod"
+#    condition     = var.tf_stage == "test" || var.tf_stage == "prod"
 #    error_message = "stage must be either test or prod"
 #  }
 #}
@@ -25,22 +25,22 @@
 variable "repository" {
   type        = string
   default     = "asdfasdfasdf"
-  description = "get the repository name from TF_VAR_TF_repo"
+  description = "get the repository name from TF_VAR_tf_repo"
 }
-variable "TF_repo" {
+variable "tf_repo" {
   type        = string
   default     = "asdfasdf"
-  description = "get the repository name from TF_VAR_TF_repo"
+  description = "get the repository name from TF_VAR_tf_repo"
 }
 
-variable "TF_module" {
+variable "tf_module" {
   type        = string
   default     = "asdf"
-  description = "get the root module from TF_VAR_TF_module"
+  description = "get the root module from TF_VAR_tf_module"
 }
 
-#variable "TF_cost_center" {
+#variable "tf_cost_center" {
 #  type        = number
-#  description = "cost center code from TF_VAR_TF_cost_center"
+#  description = "cost center code from TF_VAR_tf_cost_center"
 #}
 
