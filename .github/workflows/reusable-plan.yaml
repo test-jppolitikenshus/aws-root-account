@@ -332,7 +332,7 @@ jobs:
               ((control_count++))
               PLAN_STATUS="has_no_changes"
             fi
-          elif [[ "${TERRAFORM_RESULT}" == "2" ]]; then
+          elif [[ "${TERRAFORM_RESULT}" == "1" ]]; then
             if  grep -qE '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${TERRAFORM_OUTPUT_FILE} ; then
               echo "Found changes (no resources will be destroyed)"
               HAS_CHANGES=true

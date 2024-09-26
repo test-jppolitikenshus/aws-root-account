@@ -97,7 +97,16 @@ jobs:
         run: |
           tofu init -backend-config key=${{ github.event.repository.name }}/${{ inputs.rootModule }} \
           -backend-config bucket=${{ secrets.S3_STATE_BUCKET }} \
-          -backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock #-compact-warnings
+          -backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock \
+          -var TF_github_org=${{ secrets.GH_ORG }} \
+          -var TF_cost_center=${{ secrets.COST_CENTER }} \
+          -var TF_stage=${{ inputs.environment }} \
+          -var TF_repo=${{ github.event.repository.name }} \
+          -var TF_module=${{ inputs.rootModule }} \
+          -var TF_aws_account_number=${{ secrets.AWS_ACCOUNT_NUMBER }} \
+          -var TF_aws_account_name=${{ secrets.AWS_ACCOUNT_NAME }} \
+          -var TF_pull_request=${{ github.event.pull_request.url }} \
+          -compact-warnings
           # consider backup hcl.lock to make sure providers from init is the same
           # remember to apply retention policy to state/plan bucket
 
