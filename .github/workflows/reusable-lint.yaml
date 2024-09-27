@@ -1,24 +1,24 @@
-name: reusable/lint
+name: "reusable lint"
 on:
   workflow_call:
     secrets:
       githubToken:
-        description: 'GitHub Token value'
+        description: "GitHub Token value"
         required: true
 
     inputs:
       tflintVersion:
-        description: 'Defines TFLint version to use'
+        description: "Defines TFLint version to use"
         required: true
         type: string
 
       rootModule:
-        description: 'Defines root module directory'
+        description: "Defines root module directory"
         required: true
         type: string
 
       environment:
-        description: 'Environment to run tests against'
+        description: "Environment to run tests against"
         type: string
         required: true
 

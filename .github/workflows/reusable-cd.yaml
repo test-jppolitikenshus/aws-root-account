@@ -1,0 +1,65 @@
+name: "reusable cd"
+concurrency: #avoid concurrent runs on label events, might cause issues on super fast commits  ¯\_(ツ)_/¯
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "Environment to run tests against"
+        type: string
+        required: true
+      rootModule:
+        description: "Terraform Root Module"
+        type: string
+        required: true
+
+jobs:
+  apply:
+    permissions: write-all
+    strategy:
+      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
+      fail-fast: false
+    uses: ./.github/workflows/reusable-apply.yaml
+    with:
+      environment: ${{ inputs.environment }}
+      rootModule: ${{ inputs.rootModule }}
+      #moduleRootDirectory: ${{ matrix.directory }}
+      #releaseType: ${{ needs.detect.outputs.release-type }}
+      #terraformVersion: "1.5.2"
+    secrets: inherit
+    #  githubToken: ${{ secrets.GITHUB_TOKEN }}
+    #  GH_APP_ID: ${{ secrets.GH_APP_ID }}
+    #  GH_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
+    #  GH_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
+    #  s3StateBucket: ${{ secrets.S3_STATE_BUCKET }}
+    #  awsRootAccountId: ${{ secrets.AWS_ROOT_ACCOUNT_ID }}
+    #  GH_ORG: ${{ secrets.GH_ORG }}
+
+  comment:
+    permissions: write-all
+    needs: [apply]
+    uses: ./.github/workflows/reusable-comment.yaml
+    with:
+      environment: ${{ inputs.environment }}
+      rootModule: ${{ inputs.rootModule }}
+    secrets: inherit
+
+  release:
+    permissions: write-all
+    needs: [apply]
+    uses: ./.github/workflows/reusable-release.yaml
+    with:
+      environment: ${{ inputs.environment }}
+      rootModule: ${{ inputs.rootModule }}
+    secrets: inherit
+
+  wiki:
+    permissions: write-all
+    needs: [apply]
+    uses: ./.github/workflows/reusable-wiki.yaml
+    with:
+      environment: ${{ inputs.environment }}
+      rootModule: ${{ inputs.rootModule }}
+    secrets: inherit

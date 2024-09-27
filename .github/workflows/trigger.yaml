@@ -118,14 +118,15 @@ jobs:
       rootModule: ${{ matrix.directory }}
     secrets: inherit
 
-    #  prod:
-    #    if: contains(github.jobs.detect.outputs.release-type, 'dev')
-    #    needs: detect
-    #    strategy:
-    #      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
-    #      fail-fast: false
-    #    uses: ./.github/workflows/ci-runner.yaml
-    #    permissions: write-all
-    #    with:
-    #      environment: prod
-    #      rootModule: ${{ matrix.directory }}
+  cd:
+    name: "CD"
+    needs: ci
+    strategy:
+      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
+      fail-fast: false
+    uses: ./.github/workflows/cd-runner.yaml
+    permissions: write-all
+    with:
+      environment: ${{ needs.detect.outputs.release-type }}
+      rootModule: ${{ matrix.directory }}
+    secrets: inherit
