@@ -1,7 +1,8 @@
 name: 'dispatch/Release new versions'
 on:
-  repository_dispatch:
-    types: [monorepo_release]
+  #repository_dispatch:
+  #  types: [monorepo_release]
+  workflow_call:
 
 jobs:
   tag:

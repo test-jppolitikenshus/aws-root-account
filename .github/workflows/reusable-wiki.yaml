@@ -1,7 +1,8 @@
 name: 'dispatch/Update wiki'
 on:
-  repository_dispatch:
-    types: [monorepo_release]
+  workflow_call:
+  #repository_dispatch:
+  #  types: [monorepo_release]
 
 jobs:
   update-wiki:
