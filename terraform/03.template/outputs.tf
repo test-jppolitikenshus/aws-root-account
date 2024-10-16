@@ -12,5 +12,5 @@ output "caller_arn" {
 
 output "caller_user" {
   value       = data.aws_caller_identity.current.user_id
-  description = "who is calling"
+  description = "which user is calling"
 }
