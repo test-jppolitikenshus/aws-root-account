@@ -129,13 +129,13 @@ jobs:
 
       - name: Init
         run: |
-          terraform init -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.root_module }} \
+          tofu init -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.root_module }} \
           -backend-config bucket=${{ secrets.S3_STATE_BUCKET }} \
           -backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock #-compact-warnings
 
       - name: Determine if apply is appropriate
         run: |
-          terraform show ${{ steps.vars.outputs.plan_file }} -no-color > ${{ steps.vars.outputs.plan_file_txt }}
+          tofu show ${{ steps.vars.outputs.plan_file }} -no-color > ${{ steps.vars.outputs.plan_file_txt }}
           HAS_DESTROY=false
           HAS_CHANGES=false
           HAS_NO_CHANGES=false
@@ -193,7 +193,7 @@ jobs:
           --output ${{ steps.vars.outputs.summary_file }} \
           --log-level $([[ "asdf" == "true" ]] && echo "DEBUG" || echo "INFO") \
           apply -- \
-            terraform apply \
+            tofu apply \
             -no-color \
             ${{ steps.vars.outputs.plan_file }} \
           &> ${TERRAFORM_OUTPUT_FILE}
