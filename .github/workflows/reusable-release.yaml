@@ -7,7 +7,7 @@ on:
 jobs:
   tag:
     runs-on: ubuntu-latest
-    name: 'Tag Releases'
+    #name: 'Tag Releases'
     defaults:
       run:
         shell: pwsh

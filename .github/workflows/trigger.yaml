@@ -136,17 +136,17 @@ jobs:
     needs: [cd]
     uses: ./.github/workflows/reusable-release.yaml
     with:
-      environment: ${{ inputs.environment }}
+      #environment: ${{ inputs.environment }}
       #rootModule: ${{ inputs.rootModule }}
-    secrets: inherit
+    #secrets: inherit
 
   wiki:
      permissions: write-all
      needs: [release]
      uses: ./.github/workflows/reusable-wiki.yaml
      with:
-       environment: ${{ inputs.environment }}
+      #environment: ${{ inputs.environment }}
       #rootModule: ${{ inputs.rootModule }}
-     secrets: inherit
+    #secrets: inherit
 
   #  merge:
