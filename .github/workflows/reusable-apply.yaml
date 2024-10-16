@@ -2,7 +2,7 @@ name: reusable-apply
 on:
   workflow_call:
     inputs:
-      RootModule:
+      rootModule:
         description: "Defines root module directory"
         required: true
         type: string
@@ -62,11 +62,11 @@ jobs:
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     permissions: write-all # try if 'Resource not accessible by integration' is fixed
-    #name: "Module: ${{ inputs.moduleRootDirectory }}"
+    #name: "Module: ${{ inputs.rootModule }}"
     name: apply
     defaults:
       run:
-        working-directory: ${{ inputs.moduleRootDirectory }}
+        working-directory: ${{ inputs.rootModule }}
     steps:
       - name: Terraform-Setup
         uses: opentofu/setup-opentofu@12f4debbf681675350b6cd1f0ff8ecfbda62027b # v1.0.4
@@ -110,7 +110,7 @@ jobs:
           echo "plan_file_txt=${PLAN_FILE_TXT}" >> $GITHUB_OUTPUT
           echo "summary_file=${SUMMARY_FILE}" >> $GITHUB_OUTPUT
 
-          MODULE_DIR="${{ inputs.moduleRootDirectory }}"
+          MODULE_DIR="${{ inputs.rootModule }}"
           ROOT_MODULE=${MODULE_DIR##*/} ##*/ splits terraform/<module> to <module>
 
           echo "root_module=${ROOT_MODULE}" >> $GITHUB_OUTPUT
@@ -183,7 +183,7 @@ jobs:
           --config ../../config/summary.yaml \
           -owner "${{ github.repository_owner }}" \
           -repo "${{ github.event.repository.name }}" \
-          -var "target:${{ inputs.moduleRootDirectory }}" \
+          -var "target:${{ inputs.rootModule }}" \
           -var "commitSHA:${{ github.event.pull_request.head.sha }}" \
           -var "job:${{ github.job }}" \
           -var "logoImage:'https://itoc.dk/_img/hellpoundercorp.png'" \
