@@ -18,9 +18,9 @@ on:
 jobs:
   apply:
     permissions: write-all
-    strategy:
-      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
-      fail-fast: false
+    #strategy:
+    #  matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
+    #  fail-fast: false
     uses: ./.github/workflows/reusable-apply.yaml
     with:
       environment: ${{ inputs.environment }}
