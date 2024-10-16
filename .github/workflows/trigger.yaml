@@ -101,7 +101,7 @@ jobs:
     #if: toJson(needs.jobs.outputs.directories) != '{}'
 
   ci:
-    name: "CI"
+    #name: "ci"
     needs: detect
     #runs-on: ubuntu-latest
     #environment: ${{ needs.detect.outputs.release-type }}
@@ -119,7 +119,7 @@ jobs:
     secrets: inherit
 
   cd:
-    name: "CD"
+    #name: "CD"
     needs: [detect, ci]
     strategy:
       matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
@@ -135,7 +135,7 @@ jobs:
     permissions: write-all
     needs: [cd]
     uses: ./.github/workflows/reusable-release.yaml
-    with:
+    #with:
       #environment: ${{ inputs.environment }}
       #rootModule: ${{ inputs.rootModule }}
     #secrets: inherit
@@ -144,7 +144,7 @@ jobs:
      permissions: write-all
      needs: [release]
      uses: ./.github/workflows/reusable-wiki.yaml
-     with:
+    #with:
       #environment: ${{ inputs.environment }}
       #rootModule: ${{ inputs.rootModule }}
     #secrets: inherit
