@@ -18,10 +18,10 @@ on:
         type: number
         default: 5
 
-      terraformVersion:
-        description: "Defines terraform version to use"
-        required: true
-        type: string
+      #terraformVersion:
+      #  description: "Defines terraform version to use"
+      #  required: true
+      #  type: string
 
       environment:
         description: "Environment to run tests against"
