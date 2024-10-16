@@ -55,11 +55,11 @@ jobs:
   #    rootModule: ${{ inputs.rootModule }}
   #  secrets: inherit
 
-  wiki:
-    permissions: write-all
-    needs: [apply]
-    uses: ./.github/workflows/reusable-wiki.yaml
-    with:
-      environment: ${{ inputs.environment }}
-      rootModule: ${{ inputs.rootModule }}
-    secrets: inherit
+  # wiki:
+  #   permissions: write-all
+  #   needs: [apply]
+  #   uses: ./.github/workflows/reusable-wiki.yaml
+  #   with:
+  #     environment: ${{ inputs.environment }}
+  #     rootModule: ${{ inputs.rootModule }}
+  #   secrets: inherit
