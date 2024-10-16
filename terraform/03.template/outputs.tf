@@ -7,7 +7,7 @@ output "account_id" {
 
 output "caller_arn" {
   value       = data.aws_caller_identity.current.arn
-  description = "who is calling"
+  description = "which arn is calling"
 }
 
 output "caller_user" {
