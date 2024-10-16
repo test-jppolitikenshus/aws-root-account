@@ -66,7 +66,7 @@ jobs:
     name: apply
     defaults:
       run:
-        working-directory: ${{ inputs.rootModule }}
+        working-directory: terraform/${{ inputs.rootModule }}
     steps:
       - name: Terraform-Setup
         uses: opentofu/setup-opentofu@12f4debbf681675350b6cd1f0ff8ecfbda62027b # v1.0.4
