@@ -15,7 +15,7 @@ on:
 jobs:
   comment:
     permissions: write-all
-    needs: [apply]
+    #needs: [apply]
     if: github.event.action != 'closed'
     #strategy:
     #  matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
