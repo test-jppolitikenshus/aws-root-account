@@ -55,7 +55,7 @@ jobs:
       rootModule: ${{ inputs.rootModule }}
     secrets: inherit
 
-   wiki:
+  wiki:
      permissions: write-all
      needs: [release]
      uses: ./.github/workflows/reusable-wiki.yaml
