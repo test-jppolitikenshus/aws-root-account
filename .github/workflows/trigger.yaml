@@ -120,7 +120,7 @@ jobs:
 
   cd:
     name: "CD"
-    needs: ci
+    needs: [detect, ci]
     strategy:
       matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
       fail-fast: false
