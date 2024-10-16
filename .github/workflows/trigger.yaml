@@ -124,7 +124,7 @@ jobs:
     strategy:
       matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
       fail-fast: false
-    uses: ./.github/workflows/cd-runner.yaml
+    uses: ./.github/workflows/reusable-cd.yaml
     permissions: write-all
     with:
       environment: ${{ needs.detect.outputs.release-type }}
