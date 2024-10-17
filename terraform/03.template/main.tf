@@ -8,3 +8,11 @@ resource "aws_route53_zone" "example_zone" {
   #checkov:skip=CKV2_AWS_38:"very good explanation here"
   name = "hest.test"
 }
+
+resource "aws_account_alternate_contact" "testing123" {
+  alternate_contact_type = "OPERATIONS"
+  name                   = "blabla"
+  title                  = "asdf"
+  phone_number           = "234234"
+  email_address          = "asdf@asdf.df"
+}
