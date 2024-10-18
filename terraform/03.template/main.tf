@@ -16,3 +16,19 @@ resource "aws_account_alternate_contact" "testing123" {
   phone_number           = "234234"
   email_address          = "asdf@asdf.df"
 }
+
+resource "aws_account_alternate_contact" "testing1234" {
+  alternate_contact_type = "BILLING"
+  name                   = "blabla"
+  title                  = "asdf"
+  phone_number           = "234234"
+  email_address          = "asfd@asdf.dk"
+}
+
+resource "aws_account_alternate_contact" "testing12345" {
+  alternate_contact_type = "TECHNICAL_SUPPORT"
+  name                   = "blabla"
+  title                  = "asdf"
+  phone_number           = "234234"
+  email_address          = "adsfas@asdf.dk"
+}

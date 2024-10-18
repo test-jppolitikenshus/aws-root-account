@@ -160,7 +160,7 @@ jobs:
           HAS_NO_CHANGES=false
           HAS_ERROR=false
           if grep -q '^No changes. Your infrastructure matches the configuration.' ${{ steps.vars.outputs.plan_file_txt }} ; then
-            echo "No changes found"
+            echo "Exiting, no changes found"
             HAS_NO_CHANGES=true
             exit 1
           elif grep -qE '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${{ steps.vars.outputs.plan_file_txt }} ; then
