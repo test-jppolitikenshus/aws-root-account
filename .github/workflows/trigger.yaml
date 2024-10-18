@@ -122,8 +122,7 @@ jobs:
       rootModule: ${{ matrix.directory }}
     secrets: inherit
   wiki:
+    if: ${{ needs.detect.output.release-type == "prod" }}
     permissions: write-all
     needs: [cd]
     uses: ./.github/workflows/reusable-wiki.yaml
-    if: ${{ needs.detect.output.release-type }} == "prod"
-# merge:
