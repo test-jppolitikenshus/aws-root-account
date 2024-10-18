@@ -26,7 +26,7 @@ resource "aws_account_alternate_contact" "testing1234" {
 }
 
 resource "aws_account_alternate_contact" "testing12345" {
-  alternate_contact_type = "TECHNICAL_SUPPORT"
+  alternate_contact_type = "SECURITY"
   name                   = "blabla"
   title                  = "asdf"
   phone_number           = "234234"
