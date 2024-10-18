@@ -30,5 +30,5 @@ resource "aws_account_alternate_contact" "testing12345" {
   name                   = "blabla"
   title                  = "asdf"
   phone_number           = "234234"
-  email_address          = "adsfasasasdadasdsdsdsdffffdf@asdf.dk"
+  email_address          = "adsfasasasdadasdsdsddsdffffdf@asdf.dk"
 }

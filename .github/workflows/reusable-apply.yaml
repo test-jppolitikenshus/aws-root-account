@@ -204,12 +204,12 @@ jobs:
         run: |-
           case "${{ inputs.environment }}" in
             prod)
-              gh pr edit ${{ github.event.pull_request.url }} --add-label prod-deployed --remove-label prod
+              # gh pr edit ${{ github.event.pull_request.url }} --add-label prod-deployed --remove-label prod
               gh pr view ${{ github.event.pull_request.url }} --json labels  --jq '.labels[]| select ((.name=="dev") or (.name=="test") or (.name=="prod")) |.name'
               # exit 0
               ;;
             test)
-              gh pr edit ${{ github.event.pull_request.url }} --add-label test-deployed --remove-label test
+              # gh pr edit ${{ github.event.pull_request.url }} --add-label test-deployed --remove-label test
               gh pr view ${{ github.event.pull_request.url }} --json labels  --jq '.labels[]| select ((.name=="dev") or (.name=="test") or (.name=="prod")) |.name'
               # exit 0
               ;;
