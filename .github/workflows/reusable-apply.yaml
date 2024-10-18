@@ -115,12 +115,6 @@ jobs:
       - name: Determine if apply is appropriate
         run: |
           tofu show ${{ steps.vars.outputs.plan_file }} -no-color > ${{ steps.vars.outputs.plan_file_txt }}
-          echo ${{ steps.vars.outputs.plan_file_txt }}
-          echo bla
-          tofu show ${{ steps.vars.outputs.plan_file }} -no-color
-          echo bla
-          cat ${{ steps.vars.outputs.plan_file_txt }}
-          echo bla
           HAS_DESTROY=false
           HAS_CHANGES=false
           HAS_NO_CHANGES=false
