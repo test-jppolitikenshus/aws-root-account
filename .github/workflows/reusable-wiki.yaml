@@ -10,8 +10,8 @@ jobs:
     steps:
       - uses: dawidd6/action-download-artifact@v3
         with:
-          workflow: unused
-          run_id: ${{ github.event.client_payload.run_id }}
+          # workflow: unused
+          # run_id: ${{ github.event.client_payload.run_id }}
           path: outputs
       - name: Checkout wiki
         uses: actions/checkout@v4
