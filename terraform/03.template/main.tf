@@ -27,7 +27,7 @@ resource "aws_account_alternate_contact" "alt-billing" {
 
 resource "aws_account_alternate_contact" "alt-security" {
   alternate_contact_type = "SECURITY"
-  name                   = "no"
+  name                   = "nos"
   title                  = ""
   phone_number           = ""
   email_address          = ""

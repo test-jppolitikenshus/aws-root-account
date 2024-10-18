@@ -29,7 +29,7 @@ jobs:
           NUMBER_OF_LABELS=$(echo "$LABELS" |wc -w)
           if [ "$NUMBER_OF_LABELS" -eq "0" ] ; then
             echo "::error ::No release type labels found (dev/test/prod)"
-          # exit 1
+            exit 1
           fi
           case "$LABELS" in
             *prod*)
