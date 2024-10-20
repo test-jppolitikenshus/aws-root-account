@@ -1,47 +1,42 @@
-name: "reusable lint"
+---
+name: reusable lint
 on:
   workflow_call:
     secrets:
       githubToken:
-        description: "GitHub Token value"
+        description: GitHub Token value
         required: true
-
     inputs:
       tflintVersion:
-        description: "Defines TFLint version to use"
+        description: Defines TFLint version to use
         required: true
         type: string
-
       rootModule:
-        description: "Defines root module directory"
+        description: Defines root module directory
         required: true
         type: string
-
-      environment:
-        description: "Environment to run tests against"
-        type: string
-        required: true
-
+        # environment:
+        #  description: "Environment to run tests against"
+        #  type: string
+        #  required: true
 jobs:
   lint:
-    environment: ${{ inputs.environment }}
+    # environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: terraform/${{ inputs.rootModule }}
     steps:
       - name: Install TFLint
-        uses: terraform-linters/setup-tflint@19a52fbac37dacb22a09518e4ef6ee234f2d4987 # v4.0.0
+        uses: terraform-linters/setup-tflint@19a52fbac37dacb22a09518e4ef6ee234f2d4987  # v4.0.0
         with:
           tflint_version: ${{ inputs.tflintVersion }}
           github_token: ${{ secrets.githubToken }}
-
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Lint
         env:
           GITHUB_TOKEN: ${{ secrets.githubToken }}
-        run: |
+        run: |-
           tflint -c ${{ github.workspace }}/.tflint.hcl --init && \
           tflint -c ${{ github.workspace }}/.tflint.hcl

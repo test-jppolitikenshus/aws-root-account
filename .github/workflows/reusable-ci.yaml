@@ -34,7 +34,7 @@ jobs:
     uses: ./.github/workflows/reusable-lint.yaml
     with:
       tflintVersion: v0.48.0
-      environment: ${{ inputs.environment }}
+      # environment: ${{ inputs.environment }}
       rootModule: ${{ inputs.rootModule }}
     secrets:
       githubToken: ${{ secrets.GITHUB_TOKEN }}
@@ -43,7 +43,7 @@ jobs:
     uses: ./.github/workflows/reusable-analysis.yaml
     with:
       rootModule: ${{ inputs.rootModule }}
-      environment: ${{ inputs.environment }}
+      # environment: ${{ inputs.environment }}
     secrets:
       githubToken: ${{ secrets.GITHUB_TOKEN }}
   plan:
@@ -69,6 +69,11 @@ jobs:
     needs: [plan]
     uses: ./.github/workflows/reusable-comment.yaml
     with:
-      environment: ${{ inputs.environment }}
+      # environment: ${{ inputs.environment }}
       rootModule: ${{ inputs.rootModule }}
     secrets: inherit
+  #  auto-approve:
+  #    uses: ./.github/workflows/reusable-auto-approve.yaml
+  #    with:
+  #      environment: ${{ inputs.environment }}
+  #    secrets: inherit
