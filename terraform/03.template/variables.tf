@@ -24,7 +24,7 @@ variable "tf_aws_account_number" {
 
 variable "tf_cost_center" {
   type        = string
-  description = "Cost center"
+  description = "Cost center testing 123"
 }
 
 variable "tf_github_org" {
