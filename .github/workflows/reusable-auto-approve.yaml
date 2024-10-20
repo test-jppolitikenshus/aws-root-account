@@ -7,6 +7,8 @@ jobs:
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     permissions: write-all
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       #  - name: Generate token  # Why ?
       #  id: generate_token
