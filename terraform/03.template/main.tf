@@ -9,7 +9,7 @@
 #  name = "hest.test"
 #}
 
-resource "aws_account_alternate_contact" "alt-operations" {
+resource "aws_account_alternate_contact" "alt_operations" {
   alternate_contact_type = "OPERATIONS"
   name                   = "asdfasdf"
   title                  = "asdfasdsf"
@@ -17,7 +17,7 @@ resource "aws_account_alternate_contact" "alt-operations" {
   email_address          = "asdf@sdf.dk"
 }
 
-resource "aws_account_alternate_contact" "alt-billing" {
+resource "aws_account_alternate_contact" "alt_billing" {
   alternate_contact_type = "BILLING"
   name                   = "Finanace department"
   title                  = "Group Controller"
@@ -25,7 +25,7 @@ resource "aws_account_alternate_contact" "alt-billing" {
   email_address          = "koncernokonomi@jppol.dk"
 }
 
-resource "aws_account_alternate_contact" "alt-security" {
+resource "aws_account_alternate_contact" "alt_security" {
   alternate_contact_type = "SECURITY"
   name                   = "nods"
   title                  = "agaiasdfn"
