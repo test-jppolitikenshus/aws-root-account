@@ -72,8 +72,9 @@ jobs:
       # environment: ${{ inputs.environment }}
       rootModule: ${{ inputs.rootModule }}
     secrets: inherit
-  #  auto-approve:
-  #    uses: ./.github/workflows/reusable-auto-approve.yaml
-  #    with:
-  #      environment: ${{ inputs.environment }}
-  #    secrets: inherit
+  auto-approve:
+    permissions: write-all
+    uses: ./.github/workflows/reusable-auto-approve.yaml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets: inherit
