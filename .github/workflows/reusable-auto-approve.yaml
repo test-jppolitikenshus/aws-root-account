@@ -22,6 +22,18 @@ jobs:
         run: |
           echo ${{ steps.generate_token.outputs.token }} | gh auth login --with-token
           gh auth setup-git
-      - name: approve workflow run
+      - name: approve workflow run only if
         run: |-
-          gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments
+          RUN_ID=$(gh api -H \"Accept: application/vnd.github+json\" -H \"X-GitHub-Api-Version: 2022-11-28\" repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --jq '.[].environment.id')
+          echo "RUN_ID: ${RUN_ID}"
+          ENV_NAME=$(gh api -H \"Accept: application/vnd.github+json\" -H \"X-GitHub-Api-Version: 2022-11-28\" repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --jq '.[].environment.name')
+          echo "ENV_NAME: ${ENV_NAME}"
+          JOB_NAME=$(gh api -H \"Accept: application/vnd.github+json\" -H \"X-GitHub-Api-Version: 2022-11-28\" repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs --jq '.jobs[] | select(.status == \"waiting\").name'
+          echo "JOB_NAME: ${JOB_NAME}"
+          if [[ \"$JOB_NAME\" == *\"plan / plan\" ]] ; then
+            echo "auto approving this job, since its a plan (I hope!) "
+            RESULT=$(gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F "environment_ids[]=2144332046" -f "state=approved" -f "comment=Kristoffer says yes")
+            echo "done, this is how it went: $RESULT"
+          else
+            echo \"auto approve will not run, since job name does not end with 'plan / plan'\"
+          fi

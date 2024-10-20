@@ -11,10 +11,10 @@
 
 resource "aws_account_alternate_contact" "alt-operations" {
   alternate_contact_type = "OPERATIONS"
-  name                   = ""
-  title                  = ""
-  phone_number           = ""
-  email_address          = ""
+  name                   = "asdfasdf"
+  title                  = "asdfasdf"
+  phone_number           = "234243"
+  email_address          = "asdf@sdf.dk"
 }
 
 resource "aws_account_alternate_contact" "alt-billing" {
@@ -29,6 +29,6 @@ resource "aws_account_alternate_contact" "alt-security" {
   alternate_contact_type = "SECURITY"
   name                   = "nods"
   title                  = "agaiasdfn"
-  phone_number           = ""
-  email_address          = ""
+  phone_number           = "23434"
+  email_address          = "asdf@asdf.dk"
 }
