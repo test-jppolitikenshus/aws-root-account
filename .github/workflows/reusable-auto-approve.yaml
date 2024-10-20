@@ -1,11 +1,6 @@
 name: reusable-auto-approve
 on:
   workflow_call:
-    inputs:
-      environment:
-        description: Environment to run tests against
-        type: string
-        required: true
 jobs:
   auto-approve:
     environment: ${{ inputs.environment }}
