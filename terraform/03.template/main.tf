@@ -29,6 +29,6 @@ resource "aws_account_alternate_contact" "alt_security" {
   alternate_contact_type = "SECURITY"
   name                   = "nods"
   title                  = "agaiasdfn"
-  phone_number           = "23434"
+  phone_number           = "234s34"
   email_address          = "asdf@asdf.dk"
 }
