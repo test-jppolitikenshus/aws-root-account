@@ -12,7 +12,7 @@
 resource "aws_account_alternate_contact" "alt-operations" {
   alternate_contact_type = "OPERATIONS"
   name                   = "asdfasdf"
-  title                  = "asdfasdf"
+  title                  = "asdfasdsf"
   phone_number           = "234243"
   email_address          = "asdf@sdf.dk"
 }
