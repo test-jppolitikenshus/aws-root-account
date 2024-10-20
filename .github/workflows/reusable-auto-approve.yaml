@@ -27,7 +27,7 @@ jobs:
           echo "ENV_NAME: ${ENV_NAME}"
           JOB_NAME=$(gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs --jq '.jobs[] | select(.status == "waiting").name')
           echo "JOB_NAME: ${JOB_NAME}"
-          if [[ \"$JOB_NAME\" == *\"plan / plan\" ]] ; then
+          if [[ "$JOB_NAME" == *"plan / plan" ]] ; then
             echo "auto approving this job, since its a plan (I hope!) "
             RESULT=$(gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F "environment_ids[]=${ENV_ID}" -f "state=approved" -f "comment=Autoapproved since its a plan")
             echo "done, this is how it went: $RESULT"
