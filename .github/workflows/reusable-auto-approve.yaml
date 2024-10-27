@@ -43,6 +43,7 @@ jobs:
           echo "JOB_NAME: ${JOB_NAME}"
           if [[ "$JOB_NAME" == *"plan / plan" ]] ; then
             echo "auto approving this job, since it looks like a plan "
+            echo "gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F \"environment_ids[]=${ENV_ID}\" -f \"state=approved\" -f \"comment=Autoapproved since its a plan\""
             RESULT=$(gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F "environment_ids[]=${ENV_ID}" -f "state=approved" -f "comment=Autoapproved since its a plan")
             echo "done, this is how it went: $RESULT"
           else
