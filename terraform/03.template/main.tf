@@ -28,7 +28,7 @@ resource "aws_account_alternate_contact" "alt_billing" {
 resource "aws_account_alternate_contact" "alt_security" {
   alternate_contact_type = "SECURITY"
   name                   = "nods"
-  title                  = "agaddddddddddddddfdddiasdfn"
+  title                  = "agadddddddddddddddfdddiasdfn"
   phone_number           = "23434"
   email_address          = "asdf@asdf.dk"
 }
