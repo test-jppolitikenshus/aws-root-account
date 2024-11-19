@@ -5,8 +5,8 @@ jobs:
   auto-approve-plan:
     runs-on: ubuntu-latest
     permissions: write-all
-    #env:
-    # GH_TOKEN: ${{ secrets.GH_AUTO_APPROVE_PAT }}
+    env:
+     GH_TOKEN: ${{ secrets.GH_AUTO_APPROVE_PAT }}
     steps:
       #- name: Generate token
       #  id: generate_token
@@ -17,7 +17,7 @@ jobs:
       - name: authenticate to git with app token
         run: |
           #echo ${{ steps.generate_token.outputs.token }} | gh auth login --with-token
-          echo ${{ secrets.GH_AUTO_APPROVE_PAT }} | gh auth login --with-token
+          #echo ${{ secrets.GH_AUTO_APPROVE_PAT }} | gh auth login --with-token
           gh auth setup-git
       - name: approve workflow run only if
         run: |-
