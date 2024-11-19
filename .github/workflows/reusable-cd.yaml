@@ -65,3 +65,8 @@ jobs:
   #   secrets: inherit
 
   #merge:
+  auto-approve-plan:
+    # needs: [lint, analysis]
+    permissions: write-all
+    uses: ./.github/workflows/reusable-auto-approve.yaml
+    secrets: inherit
