@@ -284,7 +284,6 @@ jobs:
           echo "Terraform exitcode: $TERRAFORM_RESULT"
           echo "source: ${{ steps.vars.outputs.plan_file }}"
           cat "${TERRAFORM_OUTPUT_FILE}"
-	        cat "${{ steps.vars.outputs.summary_file }}" >> $GITHUB_STEP_SUMMARY
           control_count=0
           HAS_DESTROY=false
           HAS_CHANGES=false
