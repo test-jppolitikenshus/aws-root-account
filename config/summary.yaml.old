@@ -1,0 +1,124 @@
+# tfcmt Configuration used for posting Terraform GitHub Summaries
+# https://suzuki-shunsuke.github.io/tfcmt/config
+embedded_var_names: []
+ci:
+  owner: []
+  repo: []
+  sha: []
+  link: []
+  vars: {}
+templates:
+  issue_plan_title: |
+    {{ if eq .ExitCode 1 }}
+    ## Drift Detection Failed for `{{.Vars.component}}` in `{{.Vars.stack}}`!
+    {{ end }}
+    {{- if eq .ExitCode 0 }}
+    ## Drift Detected for `{{.Vars.component}}` in `{{.Vars.stack}}`
+    {{ end }}
+  summary_plan_title: |
+    {{- if eq .ExitCode 1 }}
+    ## Plan Failed for `{{.Vars.component}}` in `{{.Vars.stack}}`
+    {{- end }}
+    {{- if eq .ExitCode 0 }}
+    ## Changes Found for `{{.Vars.component}}` in `{{.Vars.stack}}`
+    {{- end }}
+  badge: |
+    {{- if eq .ExitCode 0 }}
+    {{- if .CreatedResources}}[![create](https://shields.io/badge/PLAN-CREATE-success?style=for-the-badge)](#user-content-create-{{.Vars.target}}){{ end }}
+    {{- if .UpdatedResources }} [![change](https://shields.io/badge/PLAN-CHANGE-important?style=for-the-badge)](#user-content-change-{{.Vars.target}}){{ end }}
+    {{- if .ReplacedResources }} [![replace](https://shields.io/badge/PLAN-REPLACE-critical?style=for-the-badge)](#user-content-replace-{{.Vars.target}}){{ end }}
+    {{- if .DeletedResources }} [![destroy](https://shields.io/badge/PLAN-DESTROY-critical?style=for-the-badge)](#user-content-destroy-{{.Vars.target}}){{ end }}
+    {{- if not (or .CreatedResources .UpdatedResources .ReplacedResources .DeletedResources) }} [![no changes](https://shields.io/badge/-NO_CHANGE-inactive?style=for-the-badge)](#user-content-{{.Vars.target}}){{ end }}
+    {{ end }}
+    {{- if eq .ExitCode 1 }}
+    [![failed](https://shields.io/badge/PLAN-FAILED-ff0000?style=for-the-badge)](#user-content-result-{{.Vars.target}})
+    {{ end }}
+  result: "{{- if eq .ExitCode 0 }}\n<details><summary><a id=\"result-{{.Vars.target}}\" />{{if .Result}}{{ .Result }}{{end}}</summary>\n{{- end }}\n{{- if eq .ExitCode 1 }}\n<details><summary><a id=\"result-{{.Vars.target}}\" />:warning: Error summary</summary>\n{{- end }}\n<br/>      \nTo reproduce this locally, run:<br/><br/>\n```shell\ntofu plan {{.Vars.component}} -s {{.Vars.stack}}\n```\n{{ template \"error_messages\" .}}\n{{ if eq .ExitCode 0 }}    \n{{ template \"updated_resources\" .}}\n{{- end }}    \n</details>\n"
+  updated_resources: |
+    ---
+    {{- if .CreatedResources}}
+    ### <a id="create-{{.Vars.target}}" />Create
+    ```diff
+    {{- range .CreatedResources}}
+    + {{.}}
+    {{- end}}
+    ```
+    {{- end}}
+    {{- if .UpdatedResources}}
+    ### <a id="change-{{.Vars.target}}" />Change
+    ```diff
+    {{- range .UpdatedResources}}
+    ~ {{.}}
+    {{- end}}
+    ```
+    {{- end}}
+    {{- if .ReplacedResources}}
+    ### <a id="replace-{{.Vars.target}}" />Replace
+    ```diff
+    {{- range .ReplacedResources}}
+    - {{.}}
+    + {{.}}
+    {{- end}}
+    ```
+    {{- end}}
+    {{- if .DeletedResources}}
+    ### <a id="destroy-{{.Vars.target}}" />Destroy
+    ```diff
+    {{- range .DeletedResources}}
+    - {{.}}
+    {{- end}}
+    ```
+    {{ end}}
+  deletion_warning: "{{if .HasDestroy}}\n> [!CAUTION]\n**Terraform will delete resources!** \nThis plan contains resource delete operations. Please check the plan result very carefully.\n{{end}}\n"
+  change_inside_terraform: |
+    {{- if .ChangedResult}}
+    <details><summary>Terraform <strong>Plan</strong> Summary</summary>
+    {{wrapCode .ChangedResult}}
+    </details>
+    {{- end}}
+  change_outside_terraform: |
+    {{if .ChangeOutsideTerraform}}
+    <details><summary>:information_source: Objects have changed outside of Terraform</summary>
+    _This feature was introduced from [Terraform v0.15.4](https://github.com/hashicorp/terraform/releases/tag/v0.15.4)._
+    {{wrapCode .ChangeOutsideTerraform}}
+    </details>
+    {{end}}
+  warning: |
+    {{if .Warning}}
+    ## :warning: Warnings :warning:
+    {{wrapCode .Warning}}
+    {{end}}
+  error_messages: "{{ if eq .ExitCode 1 }}\n---\n{{wrapCode .Result }}\n{{end}}    \n{{if .ErrorMessages}}\n## :warning: Errors\n{{range .ErrorMessages}}\n* {{. -}}\n{{- end}}{{end}}\n"
+  infracost: "{{- if eq .ExitCode 0 }}\n{{- if eq .Vars.infracost_enabled \"true\" }}    \n<details><summary>%INFRACOST_SUMMARY%</summary>\n  ```\n  %INFRACOST_DIFF%\n  ```\n</details>\n{{- end}}\n{{- end}}\n"
+  metadata: |
+    <details><summary>Metadata</summary>
+    ```json
+    {
+      "component": "{{.Vars.component}}",
+      "stack": "{{.Vars.stack}}",
+      "componentPath": "{{.Vars.componentPath}}",
+      "commitSHA": "{{.Vars.commitSHA}}"
+    }
+    ```
+    </details>
+  branding: |
+    {{- if ne .Vars.logoImage "" }}
+    <a href="{{.Vars.logoUrl}}"><img src="{{.Vars.logoImage}}" width="100px" align="right"/></a>
+    {{- end }}
+terraform:
+  plan:
+    disable_label: false
+    template: "{{- template \"summary_plan_title\" .}}\n{{- template \"branding\" .}}\n{{- template \"badge\" .}}\n{{- template \"deletion_warning\" .}}\n{{- template \"result\" .}}\n{{- template \"change_inside_terraform\" .}}\n{{- template \"change_outside_terraform\" .}}\n{{- template \"warning\" .}}\n{{- template \"infracost\" .}}\n{{- if eq .Vars.driftModeEnabled \"true\" }}      \n_______________ISSUE-MARKDOWN_______________\n{{template \"issue_plan_title\" .}}\n{{template \"branding\" .}}\n{{template \"badge\" .}}\n{{template \"deletion_warning\" .}}\n{{template \"result\" .}}\n{{template \"change_inside_terraform\" .}}      \n{{template \"change_outside_terraform\" .}}\n{{template \"warning\" .}}\n{{template \"metadata\" .}}\n{{- end }}\n"
+    when_parse_error:
+      template: |-
+        {{template "plan_title" .}}
+        <details><summary>Result</summary>
+        {{wrapCode .CombinedOutput}}
+        </details>
+        {{- if eq .Vars.driftModeEnabled "true" }}
+        _______________ISSUE-MARKDOWN_______________
+        {{template "plan_title" .}}
+        <details><summary>Result</summary>
+        {{wrapCode .CombinedOutput}}
+        </details>
+        {{- end }}

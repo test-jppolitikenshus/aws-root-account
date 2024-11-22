@@ -1,81 +1,45 @@
-# tfcmt Configuration used for posting Terraform GitHub Summaries
-# https://suzuki-shunsuke.github.io/tfcmt/config
 embedded_var_names: []
-ci:
-  owner: []
-  repo: []
-  sha: []
-  link: []
-  vars: {}
 templates:
-  issue_plan_title: |
-    {{ if eq .ExitCode 1 }}
-    ## Drift Detection Failed for `{{.Vars.component}}` in `{{.Vars.stack}}`!
-    {{ end }}
-    {{- if eq .ExitCode 0 }}
-    ## Drift Detected for `{{.Vars.component}}` in `{{.Vars.stack}}`
-    {{ end }}
-  summary_plan_title: |
-    {{- if eq .ExitCode 1 }}
-    ## Plan Failed for `{{.Vars.component}}` in `{{.Vars.stack}}`
-    {{- end }}
-    {{- if eq .ExitCode 0 }}
-    ## Changes Found for `{{.Vars.component}}` in `{{.Vars.stack}}`
-    {{- end }}
-  badge: |
-    {{- if eq .ExitCode 0 }}
-    {{- if .CreatedResources}}[![create](https://shields.io/badge/PLAN-CREATE-success?style=for-the-badge)](#user-content-create-{{.Vars.target}}){{ end }}
-    {{- if .UpdatedResources }} [![change](https://shields.io/badge/PLAN-CHANGE-important?style=for-the-badge)](#user-content-change-{{.Vars.target}}){{ end }}
-    {{- if .ReplacedResources }} [![replace](https://shields.io/badge/PLAN-REPLACE-critical?style=for-the-badge)](#user-content-replace-{{.Vars.target}}){{ end }}
-    {{- if .DeletedResources }} [![destroy](https://shields.io/badge/PLAN-DESTROY-critical?style=for-the-badge)](#user-content-destroy-{{.Vars.target}}){{ end }}
-    {{- if not (or .CreatedResources .UpdatedResources .ReplacedResources .DeletedResources) }} [![no changes](https://shields.io/badge/-NO_CHANGE-inactive?style=for-the-badge)](#user-content-{{.Vars.target}}){{ end }}
-    {{ end }}
-    {{- if eq .ExitCode 1 }}
-    [![failed](https://shields.io/badge/PLAN-FAILED-ff0000?style=for-the-badge)](#user-content-result-{{.Vars.target}})
-    {{ end }}
-  result: "{{- if eq .ExitCode 0 }}\n<details><summary><a id=\"result-{{.Vars.target}}\" />{{if .Result}}{{ .Result }}{{end}}</summary>\n{{- end }}\n{{- if eq .ExitCode 1 }}\n<details><summary><a id=\"result-{{.Vars.target}}\" />:warning: Error summary</summary>\n{{- end }}\n<br/>      \nTo reproduce this locally, run:<br/><br/>\n```shell\ntofu plan {{.Vars.component}} -s {{.Vars.stack}}\n```\n{{ template \"error_messages\" .}}\n{{ if eq .ExitCode 0 }}    \n{{ template \"updated_resources\" .}}\n{{- end }}    \n</details>\n"
+  plan_title: '## {{if eq .ExitCode 1}}:x: {{end}}Plan Result{{if .Vars.target}} ({{.Vars.target}}){{end}}'
+  apply_title: '## :{{if eq .ExitCode 0}}white_check_mark{{else}}x{{end}}: Apply Result{{if .Vars.target}} ({{.Vars.target}}){{end}}'
+  result: '{{if .Result}}<pre><code>{{ .Result }}</code></pre>{{end}}'
   updated_resources: |
-    ---
-    {{- if .CreatedResources}}
-    ### <a id="create-{{.Vars.target}}" />Create
-    ```diff
+    {{if .CreatedResources}}
+    * Create
     {{- range .CreatedResources}}
-    + {{.}}
-    {{- end}}
-    ```
-    {{- end}}
-    {{- if .UpdatedResources}}
-    ### <a id="change-{{.Vars.target}}" />Change
-    ```diff
+      * {{.}}
+    {{- end}}{{end}}{{if .UpdatedResources}}
+    * Update
     {{- range .UpdatedResources}}
-    ~ {{.}}
-    {{- end}}
-    ```
-    {{- end}}
-    {{- if .ReplacedResources}}
-    ### <a id="replace-{{.Vars.target}}" />Replace
-    ```diff
-    {{- range .ReplacedResources}}
-    - {{.}}
-    + {{.}}
-    {{- end}}
-    ```
-    {{- end}}
-    {{- if .DeletedResources}}
-    ### <a id="destroy-{{.Vars.target}}" />Destroy
-    ```diff
+      * {{.}}
+    {{- end}}{{end}}{{if .DeletedResources}}
+    * Delete
     {{- range .DeletedResources}}
-    - {{.}}
-    {{- end}}
-    ```
-    {{ end}}
-  deletion_warning: "{{if .HasDestroy}}\n> [!CAUTION]\n**Terraform will delete resources!** \nThis plan contains resource delete operations. Please check the plan result very carefully.\n{{end}}\n"
-  change_inside_terraform: |
-    {{- if .ChangedResult}}
-    <details><summary>Terraform <strong>Plan</strong> Summary</summary>
+      * {{.}}
+    {{- end}}{{end}}{{if .ReplacedResources}}
+    * Replace
+    {{- range .ReplacedResources}}
+      * {{.}}
+    {{- end}}{{end}}{{if .ImportedResources}}
+    * Import
+    {{- range .ImportedResources}}
+      * {{.}}
+    {{- end}}{{end}}{{if .MovedResources}}
+    * Move
+    {{- range .MovedResources}}
+      * {{.Before}} => {{.After}}
+    {{- end}}{{end}}
+  deletion_warning: |
+    {{if .HasDestroy}}
+    ### :warning: Resource Deletion will happen :warning:
+    This plan contains resource delete operation. Please check the plan result very carefully!
+    {{end}}
+  changed_result: |
+    {{if .ChangedResult}}
+    <details><summary>Change Result (Click me)</summary>
     {{wrapCode .ChangedResult}}
     </details>
-    {{- end}}
+    {{end}}
   change_outside_terraform: |
     {{if .ChangeOutsideTerraform}}
     <details><summary>:information_source: Objects have changed outside of Terraform</summary>
@@ -88,37 +52,69 @@ templates:
     ## :warning: Warnings :warning:
     {{wrapCode .Warning}}
     {{end}}
-  error_messages: "{{ if eq .ExitCode 1 }}\n---\n{{wrapCode .Result }}\n{{end}}    \n{{if .ErrorMessages}}\n## :warning: Errors\n{{range .ErrorMessages}}\n* {{. -}}\n{{- end}}{{end}}\n"
-  infracost: "{{- if eq .ExitCode 0 }}\n{{- if eq .Vars.infracost_enabled \"true\" }}    \n<details><summary>%INFRACOST_SUMMARY%</summary>\n  ```\n  %INFRACOST_DIFF%\n  ```\n</details>\n{{- end}}\n{{- end}}\n"
-  metadata: |
-    <details><summary>Metadata</summary>
-    ```json
-    {
-      "component": "{{.Vars.component}}",
-      "stack": "{{.Vars.stack}}",
-      "componentPath": "{{.Vars.componentPath}}",
-      "commitSHA": "{{.Vars.commitSHA}}"
-    }
-    ```
-    </details>
-  branding: |
-    {{- if ne .Vars.logoImage "" }}
-    <a href="{{.Vars.logoUrl}}"><img src="{{.Vars.logoImage}}" width="100px" align="right"/></a>
-    {{- end }}
+  error_messages: |
+    {{if .ErrorMessages}}
+    ## :warning: Errors
+    {{range .ErrorMessages}}
+    * {{. -}}
+    {{- end}}{{end}}
+  guide_apply_failure: ''
+  guide_apply_parse_error: ''
 terraform:
   plan:
     disable_label: false
-    template: "{{- template \"summary_plan_title\" .}}\n{{- template \"branding\" .}}\n{{- template \"badge\" .}}\n{{- template \"deletion_warning\" .}}\n{{- template \"result\" .}}\n{{- template \"change_inside_terraform\" .}}\n{{- template \"change_outside_terraform\" .}}\n{{- template \"warning\" .}}\n{{- template \"infracost\" .}}\n{{- if eq .Vars.driftModeEnabled \"true\" }}      \n_______________ISSUE-MARKDOWN_______________\n{{template \"issue_plan_title\" .}}\n{{template \"branding\" .}}\n{{template \"badge\" .}}\n{{template \"deletion_warning\" .}}\n{{template \"result\" .}}\n{{template \"change_inside_terraform\" .}}      \n{{template \"change_outside_terraform\" .}}\n{{template \"warning\" .}}\n{{template \"metadata\" .}}\n{{- end }}\n"
+    ignore_warning: false # tfcmt >= v4.14.0
+    template: |
+      {{template "plan_title" .}}
+      {{if .Link}}[CI link]({{.Link}}){{end}}
+      {{template "deletion_warning" .}}
+      {{template "result" .}}
+      {{template "updated_resources" .}}
+      {{template "changed_result" .}}
+      {{template "change_outside_terraform" .}}
+      {{template "warning" .}}
+      {{template "error_messages" .}}
+    when_add_or_update_only:
+      label: '{{if .Vars.target}}{{.Vars.target}}/{{end}}add-or-update'
+      label_color: 1d76db # blue
+      # disable_label: false
+    when_destroy:
+      label: '{{if .Vars.target}}{{.Vars.target}}/{{end}}destroy'
+      label_color: d93f0b # red
+      # disable_label: false
+    when_no_changes:
+      label: '{{if .Vars.target}}{{.Vars.target}}/{{end}}no-changes'
+      label_color: 0e8a16 # green
+      # disable_label: false
+      # disable_comment: false
+    when_plan_error:
+      label:
+      label_color:
+      # disable_label: false
+    when_parse_error:
+      template: |
+        {{template "plan_title" .}}
+        {{if .Link}}[CI link]({{.Link}}){{end}}
+        It failed to parse the result.
+        <details><summary>Details (Click me)</summary>
+        {{wrapCode .CombinedOutput}}
+        </details>
+  apply:
+    template: |
+      {{template "apply_title" .}}
+      {{if .Link}}[CI link]({{.Link}}){{end}}
+      {{if ne .ExitCode 0}}{{template "guide_apply_failure" .}}{{end}}
+      {{template "result" .}}
+      <details><summary>Details (Click me)</summary>
+      {{wrapCode .CombinedOutput}}
+      </details>
+      {{template "error_messages" .}}
     when_parse_error:
       template: |-
-        {{template "plan_title" .}}
-        <details><summary>Result</summary>
+        {{template "apply_title" .}}
+        {{if .Link}}[CI link]({{.Link}}){{end}}
+        {{template "guide_apply_parse_error" .}}
+        It failed to parse the result.
+        <details><summary>Details (Click me)</summary>
         {{wrapCode .CombinedOutput}}
         </details>
-        {{- if eq .Vars.driftModeEnabled "true" }}
-        _______________ISSUE-MARKDOWN_______________
-        {{template "plan_title" .}}
-        <details><summary>Result</summary>
-        {{wrapCode .CombinedOutput}}
-        </details>
-        {{- end }}
