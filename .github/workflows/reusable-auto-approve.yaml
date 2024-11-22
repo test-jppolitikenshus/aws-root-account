@@ -47,7 +47,7 @@ jobs:
           #  Autoapprove plan
           if [[ "$JOB_NAME" == *"plan / plan" ]] ; then
             echo "auto approving this job, since it looks like a plan "
-            echo "gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F \"environment_ids[]=${ENV_ID}\" -f \"state=approved\" -f \"comment=Autoapproved since its a plan\""
+            # echo "gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F \"environment_ids[]=${ENV_ID}\" -f \"state=approved\" -f \"comment=Autoapproved since its a plan\""
             RESULT=$(gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F "environment_ids[]=${ENV_ID}" -f "state=approved" -f "comment=Autoapproved since its a plan")
             echo "done, this is how it went: $RESULT"
           else
@@ -57,7 +57,7 @@ jobs:
           #  Autoapprove label
           if [[ "$JOB_NAME" == *"apply / label" ]] ; then
             echo "auto approving this job, since it looks like a label "
-            echo "gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F \"environment_ids[]=${ENV_ID}\" -f \"state=approved\" -f \"comment=Autoapproved since its a label\""
+            # echo "gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F \"environment_ids[]=${ENV_ID}\" -f \"state=approved\" -f \"comment=Autoapproved since its a label\""
             RESULT=$(gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F "environment_ids[]=${ENV_ID}" -f "state=approved" -f "comment=Autoapproved since its a label")
             echo "done, this is how it went: $RESULT"
           else
@@ -67,8 +67,8 @@ jobs:
           #  Autoapprove apply
           if [[ "$JOB_NAME" == *"apply / apply" ]] && [[ "$ENV_NAME" == "TEST" ]]; then
             echo "auto approving this job, since it looks like a TEST apply "
-            echo "gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F \"environment_ids[]=TEST" -f \"state=approved\" -f \"comment=Autoapproved since its a label\""
-            RESULT=$(gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F "environment_ids[]=TEST" -f "state=approved" -f "comment=Autoapproved since its a label")
+            # echo "gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F \"environment_ids[]=TEST" -f \"state=approved\" -f \"comment=Autoapproved since its a label\""
+            RESULT=$(gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F "environment_ids[]=TEST" -f "state=approved" -f "comment=Autoapproved since its apply in TEST ")
             echo "done, this is how it went: $RESULT"
           else
             echo "auto approve \"apply\" will not run, since job name does not end with 'apply / apply'"
