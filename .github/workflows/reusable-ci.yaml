@@ -74,7 +74,7 @@ jobs:
       rootModule: ${{ inputs.rootModule }}
     secrets: inherit
   auto-approve-action:
-    # needs: [lint, analysis]
+    needs: [lint, analysis]
     permissions: write-all
     uses: ./.github/workflows/reusable-auto-approve.yaml
     secrets: inherit
