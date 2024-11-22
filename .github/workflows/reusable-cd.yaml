@@ -67,8 +67,3 @@ jobs:
     permissions: write-all
     uses: ./.github/workflows/reusable-auto-approve.yaml
     secrets: inherit
-  auto-approve-label:
-    needs: apply
-    permissions: write-all
-    uses: ./.github/workflows/reusable-auto-approve-label.yaml
-    secrets: inherit
