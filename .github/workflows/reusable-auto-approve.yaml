@@ -1,3 +1,4 @@
+---
 name: reusable-auto-approve
 on:
   workflow_call:
@@ -6,18 +7,18 @@ jobs:
     runs-on: ubuntu-latest
     permissions: write-all
     env:
-     GH_TOKEN: ${{ secrets.GH_AUTO_APPROVE_PAT }}
+      GH_TOKEN: ${{ secrets.GH_AUTO_APPROVE_PAT }}
     steps:
       #- name: Generate token
       #  id: generate_token
-      #  uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v.2.1.0
+      #  uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a  # v.2.1.0
       #  with:
       #    app_id: ${{ secrets.GH_APP_ID }}
       #    private_key: ${{ secrets.GH_APP_PEM_FILE }}
       - name: authenticate to git with app token
         run: |
-          #echo ${{ steps.generate_token.outputs.token }} | gh auth login --with-token
-          #echo ${{ secrets.GH_AUTO_APPROVE_PAT }} | gh auth login --with-token
+          # echo ${{ steps.generate_token.outputs.token }} | gh auth login --with-token
+          # echo ${{ secrets.GH_AUTO_APPROVE_PAT }} | gh auth login --with-token
           gh auth setup-git
       - name: approve workflow run only if
         run: |-
@@ -25,7 +26,7 @@ jobs:
           i=0
           for (( i=0; i<3; ++i )); do
             echo "$i, looking for job to autoapprove"
-            if [[ "$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs --jq '.jobs[] | select(.status == "waiting").name')" == *"plan / plan" ]] ; then
+            if [[ "$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs --jq '.jobs[] | select(.status == "waiting")' ]] ; then
               break
             else
               echo "sleeping"
@@ -50,7 +51,7 @@ jobs:
             RESULT=$(gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F "environment_ids[]=${ENV_ID}" -f "state=approved" -f "comment=Autoapproved since its a plan")
             echo "done, this is how it went: $RESULT"
           else
-            echo "auto approve will not run, since job name does not end with 'plan / plan'"
+            echo "auto approve \"plan\" will not run, since job name does not end with 'plan / plan'"
           fi
 
           #  Autoapprove label
@@ -60,5 +61,15 @@ jobs:
             RESULT=$(gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F "environment_ids[]=${ENV_ID}" -f "state=approved" -f "comment=Autoapproved since its a label")
             echo "done, this is how it went: $RESULT"
           else
-            echo "auto approve will not run, since job name does not end with 'apply / label'"
+            echo "auto approve \"label\" will not run, since job name does not end with 'apply / label'"
+          fi
+
+          #  Autoapprove apply
+          if [[ "$JOB_NAME" == *"apply / apply" ]] && [[ "$ENV_NAME" == "TEST" ]]; then
+            echo "auto approving this job, since it looks like a TEST apply "
+            echo "gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F \"environment_ids[]=TEST" -f \"state=approved\" -f \"comment=Autoapproved since its a label\""
+            RESULT=$(gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F "environment_ids[]=TEST" -f "state=approved" -f "comment=Autoapproved since its a label")
+            echo "done, this is how it went: $RESULT"
+          else
+            echo "auto approve \"apply\" will not run, since job name does not end with 'apply / apply'"
           fi
