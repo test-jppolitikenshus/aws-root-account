@@ -5,7 +5,7 @@ on:
 jobs:
   detect:
     # Identify which terraform root module(s) was changed
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Detect terraform changes
     outputs:
       directories: ${{ steps.condense.outputs.result }}
@@ -95,7 +95,7 @@ jobs:
   ci:
     # name: "ci"
     needs: detect
-    # runs-on: ubuntu-latest
+    # runs-on: self-hosted
     # environment: ${{ needs.detect.outputs.release-type }}
     strategy:
       matrix: ${{ fromJson(needs.detect.outputs.directories) }}

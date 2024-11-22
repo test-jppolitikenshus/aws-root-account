@@ -55,7 +55,7 @@ on:
 jobs:
   apply:
     environment: ${{ inputs.environment }}
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     permissions: write-all  # try if 'Resource not accessible by integration' is fixed
     # name: "Module: ${{ inputs.rootModule }}"
     name: apply
@@ -203,7 +203,7 @@ jobs:
   label:
     environment: ${{ inputs.environment }}
     needs: [apply]
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     permissions: write-all
     # name: update_label
     steps:
