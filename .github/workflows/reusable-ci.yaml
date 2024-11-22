@@ -1,6 +1,5 @@
----
 name: reusable ci
-concurrency:  # avoid concurrent runs on label events, might cause issues on super fast commits  ¯\_(ツ)_/¯
+concurrency: # avoid concurrent runs on label events, might cause issues on super fast commits  ¯\_(ツ)_/¯
   group: ${{ github.head_ref }}
   cancel-in-progress: true
 on:
@@ -51,7 +50,7 @@ jobs:
     permissions: write-all
     # if: ${{ needs.detect.outputs.directories != '{}' && ( needs.detect.outputs.is-merge-event == 'true' || github.event.action != 'closed' )}}
     uses: ./.github/workflows/reusable-plan.yaml
-    needs: lint, analysis
+    needs: [lint, analysis]
     with:
       environment: ${{ inputs.environment }}
       rootModule: ${{ inputs.rootModule }}
@@ -74,7 +73,7 @@ jobs:
       # environment: ${{ inputs.environment }}
       rootModule: ${{ inputs.rootModule }}
     secrets: inherit
-  auto-approve-plan:
+  auto-approve-action:
     # needs: [lint, analysis]
     permissions: write-all
     uses: ./.github/workflows/reusable-auto-approve.yaml
