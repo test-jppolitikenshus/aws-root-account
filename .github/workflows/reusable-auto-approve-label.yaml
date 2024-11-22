@@ -1,4 +1,4 @@
-name: reusable-auto-approve
+name: reusable-auto-approve-label
 on:
   workflow_call:
 jobs:

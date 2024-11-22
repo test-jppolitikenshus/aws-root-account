@@ -232,3 +232,8 @@ jobs:
               echo "bad coding - label not found"
               exit 1
           esac
+  auto-approve-label2:
+    needs: apply
+    permissions: write-all
+    uses: ./.github/workflows/reusable-auto-approve-label.yaml
+    secrets: inherit
