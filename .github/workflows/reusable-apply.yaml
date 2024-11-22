@@ -1,3 +1,4 @@
+---
 name: reusable-apply
 on:
   workflow_call:
@@ -55,7 +56,7 @@ jobs:
   apply:
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
-    permissions: write-all # try if 'Resource not accessible by integration' is fixed
+    permissions: write-all  # try if 'Resource not accessible by integration' is fixed
     # name: "Module: ${{ inputs.rootModule }}"
     name: apply
     defaults:
@@ -63,7 +64,7 @@ jobs:
         working-directory: terraform/${{ inputs.rootModule }}
     steps:
       - name: Terraform-Setup
-        uses: opentofu/setup-opentofu@12f4debbf681675350b6cd1f0ff8ecfbda62027b # v1.0.4
+        uses: opentofu/setup-opentofu@12f4debbf681675350b6cd1f0ff8ecfbda62027b  # v1.0.4
         # uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36  #  v3.0.0
         # with:
         #  terraform_version: ${{ inputs.terraformVersion }}
@@ -100,10 +101,10 @@ jobs:
           MODULE_DIR="${{ inputs.rootModule }}"
           ROOT_MODULE=${MODULE_DIR##*/}  ##*/ splits terraform/<module> to <module>
           echo "root_module=${ROOT_MODULE}" >> $GITHUB_OUTPUT
-      - name: Authenticate to AWS # to access S3 bucket in init step
-        uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a # v4.0.1
+      - name: Authenticate to AWS  # to access S3 bucket in init step
+        uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a  # v4.0.1
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/AWS-GitHubActions-OIDC_role # FIX ROLE NAME role-to-assume: arn:aws:iam::${{secrets.AWS_ROOT_ACCOUNT_ID}}:role/github-actions-plan
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/AWS-GitHubActions-OIDC_role  # FIX ROLE NAME role-to-assume: arn:aws:iam::${{secrets.AWS_ROOT_ACCOUNT_ID}}:role/github-actions-plan
           role-session-name: GitHubActions
           aws-region: eu-north-1
       - name: Retrieve Plan
@@ -111,7 +112,17 @@ jobs:
           echo "aws s3 cp s3://${{ secrets.S3_STATE_BUCKET }}/${{ github.event.repository.name }}/metadata/${{ steps.vars.outputs.plan_file }} ."
           aws s3 cp s3://${{ secrets.S3_STATE_BUCKET }}/${{ github.event.repository.name }}/metadata/${{ steps.vars.outputs.plan_file }} .
       - name: Init
-        run: "# tofu init -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.root_module }} \\\n#-backend-config bucket=${{ secrets.S3_STATE_BUCKET }} \\\n#-backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock  #-compact-warnings\n# \ntofu init -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.root_module }} \\\n-backend-config bucket=${{ secrets.S3_STATE_BUCKET }} \\\n-backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock \\\n-var tf_github_org=${{ secrets.GH_ORG }} \\\n-var tf_cost_center=${{ secrets.COST_CENTER }} \\\n-var tf_stage=${{ inputs.environment }} \\\n-var tf_repo=${{ github.event.repository.name }} \\\n-var tf_module=${{ inputs.rootModule }} \\\n-var tf_aws_account_number=${{ secrets.AWS_ACCOUNT_NUMBER }} \\\n-var tf_aws_account_name=${{ secrets.AWS_ACCOUNT_NAME }} \\\n-var tf_pull_request=${{ github.event.pull_request.url }} \\\n-compact-warnings\n"
+        run: "# tofu init -backend-config key=${{ github.event.repository.name }}/${{\
+          \ steps.vars.outputs.root_module }} \\\n#-backend-config bucket=${{ secrets.S3_STATE_BUCKET }}\
+          \ \\\n#-backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock\
+          \  #-compact-warnings\n# \ntofu init -backend-config key=${{ github.event.repository.name }}/${{\
+          \ steps.vars.outputs.root_module }} \\\n-backend-config bucket=${{ secrets.S3_STATE_BUCKET }}\
+          \ \\\n-backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock\
+          \ \\\n-var tf_github_org=${{ secrets.GH_ORG }} \\\n-var tf_cost_center=${{ secrets.COST_CENTER }}\
+          \ \\\n-var tf_stage=${{ inputs.environment }} \\\n-var tf_repo=${{ github.event.repository.name }}\
+          \ \\\n-var tf_module=${{ inputs.rootModule }} \\\n-var tf_aws_account_number=${{ secrets.AWS_ACCOUNT_NUMBER }}\
+          \ \\\n-var tf_aws_account_name=${{ secrets.AWS_ACCOUNT_NAME }} \\\n-var\
+          \ tf_pull_request=${{ github.event.pull_request.url }} \\\n-compact-warnings\n"
       - name: Determine if apply is appropriate
         run: |
           tofu show ${{ steps.vars.outputs.plan_file }} -no-color > ${{ steps.vars.outputs.plan_file_txt }}
@@ -140,13 +151,13 @@ jobs:
           echo "no-changes=${HAS_NO_CHANGES}" >> $GITHUB_OUTPUT
           echo "error=${HAS_ERROR}" >> $GITHUB_OUTPUT
       - name: Install tfcmt
-        uses: jaxxstorm/action-install-gh-release@71d17cb091aa850acb2a1a4cf87258d183eb941b # v1.11.0
+        uses: jaxxstorm/action-install-gh-release@71d17cb091aa850acb2a1a4cf87258d183eb941b  # v1.11.0
         with:
           repo: suzuki-shunsuke/tfcmt
           tag: v4.6.0
       - name: Terraform Apply
         env:
-          GITHUB_APP_ID: ${{ secrets.GH_APP_ID }} # TODO: only include these in the github root module
+          GITHUB_APP_ID: ${{ secrets.GH_APP_ID }}  # TODO: only include these in the github root module
           GITHUB_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
           GITHUB_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
         run: |

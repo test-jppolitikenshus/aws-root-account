@@ -62,7 +62,7 @@ jobs:
   #   secrets: inherit
 
   # merge:
-  auto-approve-apply:
+  auto-approve-test-apply:
     permissions: write-all
     uses: ./.github/workflows/reusable-auto-approve.yaml
     secrets: inherit
