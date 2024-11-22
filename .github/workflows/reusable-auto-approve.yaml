@@ -1,4 +1,3 @@
----
 name: reusable-auto-approve
 on:
   workflow_call:
@@ -69,8 +68,8 @@ jobs:
           #  Autoapprove apply
           if [[ "$JOB_NAME" == *"apply / apply" ]] && [[ "$ENV_NAME" == "test" ]]; then
             echo "auto approving this job, since it looks like a test apply "
-            # echo "gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F \"environment_ids[]=test" -f \"state=approved\" -f \"comment=Autoapproved since its a label\""
-            RESULT=$(gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F "environment_ids[]=test" -f "state=approved" -f "comment=Autoapproved since its apply in test ")
+            # echo "gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F \"environment_ids[]=${ENV_ID}" -f \"state=approved\" -f \"comment=Autoapproved since its a label\""
+            RESULT=$(gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F "environment_ids[]=${ENV_ID}" -f "state=approved" -f "comment=Autoapproved since its apply in test ")
             echo "done, this is how it went: $RESULT"
           else
             echo "auto approve \"apply\" will not run, since job name does not end with 'apply / apply'"
