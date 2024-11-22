@@ -2,7 +2,7 @@ name: reusable-auto-approve
 on:
   workflow_call:
 jobs:
-  auto-approve-plan:
+  auto-approve-action:
     runs-on: ubuntu-latest
     permissions: write-all
     env:

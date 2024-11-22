@@ -1,5 +1,6 @@
+---
 name: reusable ci
-concurrency: # avoid concurrent runs on label events, might cause issues on super fast commits  ¯\_(ツ)_/¯
+concurrency:  # avoid concurrent runs on label events, might cause issues on super fast commits  ¯\_(ツ)_/¯
   group: ${{ github.head_ref }}
   cancel-in-progress: true
 on:
@@ -73,7 +74,7 @@ jobs:
       # environment: ${{ inputs.environment }}
       rootModule: ${{ inputs.rootModule }}
     secrets: inherit
-  auto-approve-action:
+  auto-approve-plan:
     needs: [lint, analysis]
     permissions: write-all
     uses: ./.github/workflows/reusable-auto-approve.yaml

@@ -1,33 +1,32 @@
-name: "reusable cd"
-concurrency: #avoid concurrent runs on label events, might cause issues on super fast commits  ¯\_(ツ)_/¯
+---
+name: reusable cd
+concurrency:  # avoid concurrent runs on label events, might cause issues on super fast commits  ¯\_(ツ)_/¯
   group: ${{ github.head_ref }}
   cancel-in-progress: true
-
 on:
   workflow_call:
     inputs:
       environment:
-        description: "Environment to run tests against"
+        description: Environment to run tests against
         type: string
         required: true
       rootModule:
-        description: "Terraform Root Module"
+        description: Terraform Root Module
         type: string
         required: true
-
 jobs:
   apply:
     permissions: write-all
-    #strategy:
+    # strategy:
     #  matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
     #  fail-fast: false
     uses: ./.github/workflows/reusable-apply.yaml
     with:
       environment: ${{ inputs.environment }}
       rootModule: ${{ inputs.rootModule }}
-      #moduleRootDirectory: ${{ matrix.directory }}
-      #releaseType: ${{ needs.detect.outputs.release-type }}
-      #terraformVersion: "1.5.2"
+      # moduleRootDirectory: ${{ matrix.directory }}
+      # releaseType: ${{ needs.detect.outputs.release-type }}
+      # terraformVersion: "1.5.2"
     secrets: inherit
     #  githubToken: ${{ secrets.GITHUB_TOKEN }}
     #  GH_APP_ID: ${{ secrets.GH_APP_ID }}
@@ -36,8 +35,7 @@ jobs:
     #  s3StateBucket: ${{ secrets.S3_STATE_BUCKET }}
     #  awsRootAccountId: ${{ secrets.AWS_ROOT_ACCOUNT_ID }}
     #  GH_ORG: ${{ secrets.GH_ORG }}
-
-  #comment:
+  # comment:
   #  permissions: write-all
   #  needs: [apply]
   #  uses: ./.github/workflows/reusable-comment.yaml
@@ -46,7 +44,7 @@ jobs:
   #    rootModule: ${{ inputs.rootModule }}
   #  secrets: inherit
 
-  #release:
+  # release:
   #  permissions: write-all
   #  needs: [apply]
   #  uses: ./.github/workflows/reusable-release.yaml
@@ -55,7 +53,7 @@ jobs:
   #    rootModule: ${{ inputs.rootModule }}
   #  secrets: inherit
 
-  #wiki:
+  # wiki:
   #   permissions: write-all
   #   needs: [release]
   #   uses: ./.github/workflows/reusable-wiki.yaml
@@ -64,9 +62,13 @@ jobs:
   #     rootModule: ${{ inputs.rootModule }}
   #   secrets: inherit
 
-  #merge:
-  auto-approve-plan:
-    # needs: [lint, analysis]
+  # merge:
+  auto-approve-apply:
+    permissions: write-all
+    uses: ./.github/workflows/reusable-auto-approve.yaml
+    secrets: inherit
+  auto-approve-label:
+    needs: [apply]
     permissions: write-all
     uses: ./.github/workflows/reusable-auto-approve.yaml
     secrets: inherit
