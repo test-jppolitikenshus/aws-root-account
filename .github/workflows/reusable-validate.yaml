@@ -39,7 +39,7 @@ jobs:
   validate:
     environment: ${{ inputs.environment }}
     permissions: write-all
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: terraform/${{ inputs.rootModule }}
