@@ -1,4 +1,5 @@
-name: trigger # Entrypoint for github actions
+---
+name: trigger  # Entrypoint for github actions
 on:
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
@@ -12,7 +13,6 @@ jobs:
       release-type: ${{ steps.check_pr_label.outputs.release-type}}
       is-merge-event: >-
         ${{ github.event_name == 'pull_request_target'
-
          && github.event.action == 'closed'
          && github.event.pull_request.merged == true }}
     steps:
@@ -25,7 +25,7 @@ jobs:
           # GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           GH_TOKEN: ${{ github.token }}
         run: |
-          LABELS=$(gh pr view $PR_URL --json labels  --jq '.labels[]| select ((.name=="dev") or (.name=="test") or (.name=="prod")) |.name')
+          LABELS=$(gh pr view $PR_URL --json labels  --jq '.labels[]| select ((.name=="test-deployed") or (.name=="test") or (.name=="prod")) |.name')
           NUMBER_OF_LABELS=$(echo "$LABELS" |wc -w)
           if [ "$NUMBER_OF_LABELS" -eq "0" ] ; then
             echo "::error ::No release type labels found (dev/test/prod)"
@@ -40,18 +40,19 @@ jobs:
               echo "release-type=test" >> $GITHUB_OUTPUT
           #    exit 0
               ;;
-            *dev*)
-              echo "release-type=dev" >> $GITHUB_OUTPUT
+            *test-deployed*)
+              echo "release-type=test-deployed" >> $GITHUB_OUTPUT
           #    exit 0
               ;;
           esac
       - name: Get changed files
-        uses: Ana06/get-changed-files@25f79e676e7ea1868813e21465014798211fad8c # v2.3.0
+        uses: Ana06/get-changed-files@25f79e676e7ea1868813e21465014798211fad8c  # v2.3.0
         id: raw-files
         with:
           format: json
-      - name: Condense to directory list and match terraform directories (00.main, 01.network, 02.whatever etc..)
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+      - name: Condense to directory list and match terraform directories (00.main,
+          01.network, 02.whatever etc..)
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7.0.1
         id: condense
         env:
           RAW_FILES: ${{ steps.raw-files.outputs.all }}
