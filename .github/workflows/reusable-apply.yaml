@@ -143,7 +143,7 @@ jobs:
         uses: jaxxstorm/action-install-gh-release@71d17cb091aa850acb2a1a4cf87258d183eb941b # v1.11.0
         with:
           repo: suzuki-shunsuke/tfcmt
-          tag: v4.6.0
+          tag: v4.14.0
       - name: Terraform Apply
         env:
           GITHUB_APP_ID: ${{ secrets.GH_APP_ID }} # TODO: only include these in the github root module
@@ -156,18 +156,18 @@ jobs:
           # echo "terraform apply {{ steps.vars.outputs.plan_file }}"
           # terraform apply {{ steps.vars.outputs.plan_file }}
           tfcmt \
-          --config ../../config/summary.yaml \
-          -owner "${{ github.repository_owner }}" \
-          -repo "${{ github.event.repository.name }}" \
-          -var "target:${{ inputs.rootModule }}" \
-          -var "commitSHA:${{ github.event.pull_request.head.sha }}" \
-          -var "job:${{ github.job }}" \
-          -var "logoImage:'https://itoc.dk/_img/hellpoundercorp.png'" \
-          -var "logoUrl:https://jppol.dk'" \
-          -var "infracost_enabled: true" \
-          -var "driftModeEnabled: true" \
+          #--config ../../config/summary.yaml \
+          #-owner "${{ github.repository_owner }}" \
+          #-repo "${{ github.event.repository.name }}" \
+          #-var "target:${{ inputs.rootModule }}" \
+          #-var "commitSHA:${{ github.event.pull_request.head.sha }}" \
+          #-var "job:${{ github.job }}" \
+          #-var "logoImage:'https://itoc.dk/_img/hellpoundercorp.png'" \
+          #-var "logoUrl:https://jppol.dk'" \
+          #-var "infracost_enabled: true" \
+          #-var "driftModeEnabled: true" \
           --output ${{ steps.vars.outputs.summary_file }} \
-          --log-level $([[ "asdf" == "true" ]] && echo "DEBUG" || echo "INFO") \
+          #--log-level $([[ "asdf" == "true" ]] && echo "DEBUG" || echo "INFO") \
           apply -- \
             tofu apply \
             -no-color \
@@ -215,6 +215,7 @@ jobs:
               ;;
             test)
               gh pr edit ${{ github.event.pull_request.number }} --add-label test-deployed
+              gh pr edit ${{ github.event.pull_request.number }} --add-label prod
               gh pr edit ${{ github.event.pull_request.number }} --remove-label test
               ;;
             *)
