@@ -26,7 +26,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           # LABELS=$(gh pr view $PR_URL --json labels  --jq '.labels[]| select ((.name=="test-deployed") or (.name=="test") or (.name=="prod")) |.name')
-          LABELS=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository.owner }}/${{ github.event.repository.name }}/pulls/${{ github.event.pull_request.number }}/labels | jq '[.[].name]')
+          LABELS=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/issues/${{ github.event.pull_request.number }}/labels | jq -r '.[]| select ((.name=="test-deployed") or (.name=="test") or (.name=="prod")) |.name')
           NUMBER_OF_LABELS=$(echo "$LABELS" |wc -w)
           if [ "$NUMBER_OF_LABELS" -eq "0" ] ; then
             echo "::error ::No release type labels found (dev/test/prod)"
