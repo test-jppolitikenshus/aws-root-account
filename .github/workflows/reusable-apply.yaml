@@ -214,7 +214,7 @@ jobs:
               gh pr edit ${{ github.event.pull_request.number }} --add-label prod
               gh pr edit ${{ github.event.pull_request.number }} --remove-label test
               # ref name is branch in which to execute the workflow run (which is not main when testing workflows)
-              gh workflow run --ref ${{ github.ref_name }} trigger.yaml
+              gh workflow run --ref ${{ github.head_ref }} trigger.yaml
               ;;
             *)
               echo "bad coding - label not found"
