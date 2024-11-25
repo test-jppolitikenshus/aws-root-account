@@ -163,10 +163,6 @@ jobs:
         run: |
           set +e  # don't exit on error
           TERRAFORM_OUTPUT_FILE="./terraform-${GITHUB_RUN_ID}-output.txt"
-
-          # echo "terraform apply {{ steps.vars.outputs.plan_file }}"
-          # terraform apply {{ steps.vars.outputs.plan_file }}
-          #--config ../../config/summary.yaml \
           #-owner "${{ github.repository_owner }}" \
           #-repo "${{ github.event.repository.name }}" \
           #-var "target:${{ inputs.rootModule }}" \
@@ -178,6 +174,7 @@ jobs:
           #-var "driftModeEnabled: true" \
           #--log-level $([[ "asdf" == "true" ]] && echo "DEBUG" || echo "INFO") \
           tfcmt \
+          --config ../../config/summary.yaml \
           --output ${{ steps.vars.outputs.summary_file }} \
           apply -- \
             tofu apply \
@@ -205,7 +202,6 @@ jobs:
     needs: [apply]
     runs-on: ubuntu-latest
     permissions: write-all
-    # name: update_label
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -228,6 +224,7 @@ jobs:
               gh pr edit ${{ github.event.pull_request.number }} --add-label test-deployed
               gh pr edit ${{ github.event.pull_request.number }} --add-label prod
               gh pr edit ${{ github.event.pull_request.number }} --remove-label test
+              gh workflow run trigger.yaml
               ;;
             *)
               echo "bad coding - label not found"

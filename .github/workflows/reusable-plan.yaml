@@ -251,7 +251,6 @@ jobs:
         run: |
           set +e  # don't exit on error
           TERRAFORM_OUTPUT_FILE="./terraform-${GITHUB_RUN_ID}-output.txt"
-          #--config ../../config/summary.yaml \
           #-owner "${{ github.repository_owner }}" \
           #-repo "${{ github.event.repository.name }}" \
           #-var "target:${{ inputs.rootModule }}" \
@@ -263,6 +262,7 @@ jobs:
           #-var "driftModeEnabled: true" \
           # --log-level $([[ "asdf" == "true" ]] && echo "DEBUG" || echo "INFO") \
           tfcmt \
+          --config ../../config/summary.yaml \
           --output ${{ steps.vars.outputs.summary_file }} \
           plan -- \
             tofu plan \
