@@ -1,9 +1,8 @@
----
-name: trigger  # Entrypoint for github actions
+name: trigger # Entrypoint for github actions
 on:
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
-  workflow_call:
+  workflow_dispatch:
 jobs:
   detect:
     # Identify which terraform root module(s) was changed
@@ -14,6 +13,7 @@ jobs:
       release-type: ${{ steps.check_pr_label.outputs.release-type}}
       is-merge-event: >-
         ${{ github.event_name == 'pull_request_target'
+
          && github.event.action == 'closed'
          && github.event.pull_request.merged == true }}
     steps:
@@ -48,13 +48,12 @@ jobs:
               ;;
           esac
       - name: Get changed files
-        uses: Ana06/get-changed-files@25f79e676e7ea1868813e21465014798211fad8c  # v2.3.0
+        uses: Ana06/get-changed-files@25f79e676e7ea1868813e21465014798211fad8c # v2.3.0
         id: raw-files
         with:
           format: json
-      - name: Condense to directory list and match terraform directories (00.main,
-          01.network, 02.whatever etc..)
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7.0.1
+      - name: Condense to directory list and match terraform directories (00.main, 01.network, 02.whatever etc..)
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         id: condense
         env:
           RAW_FILES: ${{ steps.raw-files.outputs.all }}
