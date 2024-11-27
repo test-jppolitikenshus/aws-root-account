@@ -231,6 +231,7 @@ jobs:
               gh pr checkout ${{ github.event.pull_request.number }} -b ${{ github.head_ref }}
               gh pr update-branch
               # gh workflow run --ref ${{ github.head_ref }} trigger.yaml
+        #     # This is problematic due to loop protection: https://github.com/actions/runner/discussions/2084 - using PAT instead
               ;;
             *)
               echo "bad coding - label not found"
