@@ -1,6 +1,5 @@
----
 name: reusable cd
-concurrency:  # avoid concurrent runs on label events, might cause issues on super fast commits  ¯\_(ツ)_/¯
+concurrency: # avoid concurrent runs on label events, might cause issues on super fast commits  ¯\_(ツ)_/¯
   group: ${{ github.head_ref }}
   cancel-in-progress: true
 on:
@@ -67,3 +66,45 @@ jobs:
     permissions: write-all
     uses: ./.github/workflows/reusable-auto-approve.yaml
     secrets: inherit
+  label:
+    needs: [apply]
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Update PR label
+        id: update_label
+        env:
+          GH_TOKEN: ${{ secrets.GH_AUTO_APPROVE_PAT }}
+        run: |-
+          if ! gh label list | grep prod-deployed; then  # make sure lables are available
+            gh label create test-deployed -c 7057ff -d "Already deployed to test"
+            gh label create prod-deployed -c b60205 -d "Already deployed to prod"
+          fi
+          case "${{ inputs.environment }}" in
+            prod)
+              gh pr edit ${{ github.event.pull_request.number }} --add-label prod-deployed
+              gh pr edit ${{ github.event.pull_request.number }} --remove-label prod
+              ;;
+            test)
+              gh pr edit ${{ github.event.pull_request.number }} --remove-label test
+              gh pr edit ${{ github.event.pull_request.number }} --add-label test-deployed
+              gh pr edit ${{ github.event.pull_request.number }} --add-label prod
+              # head_ref is branch in which to execute the workflow run (ie not main)
+              # gh workflow run --ref ${{ github.head_ref }} trigger.yaml
+              # when running workflow, pr info is not part of the action, try update branch
+              # gh workflow run --ref ${{ github.head_ref }} trigger.yaml
+              # This is problematic due to loop protection: https://github.com/actions/runner/discussions/2084 - using PAT instead
+              ### lets see if it works without this  ### gh pr checkout ${{ github.event.pull_request.number }} -b ${{ github.head_ref }}
+              ### lets see if it works without this  ### gh pr update-branch
+              ;;
+            *)
+              echo "bad coding - label not found"
+              exit 1
+          esac
+    #  auto-approve-label:
+    #  needs: apply
+    # permissions: write-all
+    # uses: ./.github/workflows/reusable-auto-approve-label.yaml
+    # secrets: inherit
