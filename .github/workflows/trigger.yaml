@@ -30,8 +30,8 @@ jobs:
           LABELS=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/issues/${{ github.event.pull_request.number }}/labels | jq -r '.[]| select ((.name=="test-deployed") or (.name=="test") or (.name=="prod")) |.name')
           NUMBER_OF_LABELS=$(echo "$LABELS" |wc -w)
           echo "pull1: ${{ github.event.number }}"
-          echo "pull2: $(echo "$GITHUB_REF" | awk -F / '{print $3}')"
-          echo "pull3: $(gh pr view --json number -q .number || echo "")"
+          echo "pull2: " $(echo "$GITHUB_REF" | awk -F / '{print $3}')
+          echo "pull3: " $(gh pr view --json number -q .number || echo "")
           echo "pull4: ${{ github.event.pull_request.number }}"
           echo "pull5: ${{ github.event.issue.number }}"
           if [ "$NUMBER_OF_LABELS" -eq "0" ] ; then
