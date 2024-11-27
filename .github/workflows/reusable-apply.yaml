@@ -224,7 +224,9 @@ jobs:
               gh pr edit ${{ github.event.pull_request.number }} --add-label test-deployed
               gh pr edit ${{ github.event.pull_request.number }} --add-label prod
               gh pr edit ${{ github.event.pull_request.number }} --remove-label test
-              # ref name is branch in which to execute the workflow run (which is not main when testing workflows)
+              # head_ref is branch in which to execute the workflow run (ie not main)
+              # gh workflow run --ref ${{ github.head_ref }} trigger.yaml
+              # when running workflow, pr info is not part of the action, try update branch
               gh pr checkout ${{ github.event.pull_request.number }} -b ${{ github.head_ref }}
               gh pr update-branch
               gh workflow run --ref ${{ github.head_ref }} trigger.yaml
