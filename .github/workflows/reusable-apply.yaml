@@ -198,7 +198,7 @@ jobs:
           rm -f ${TERRAFORM_OUTPUT_FILE}
           exit $TERRAFORM_RESULT
   label:
-    environment: ${{ inputs.environment }}
+    # environment: ${{ inputs.environment }}
     needs: [apply]
     runs-on: ubuntu-latest
     permissions: write-all
@@ -208,7 +208,8 @@ jobs:
       - name: Update PR label
         id: update_label
         env:
-          GH_TOKEN: ${{ github.token }}
+          # GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GH_AUTO_APPROVE_PAT }}
         # run: |-
         run: |-
           if ! gh label list | grep prod-deployed; then  # make sure lables are available
@@ -229,14 +230,14 @@ jobs:
               # when running workflow, pr info is not part of the action, try update branch
               gh pr checkout ${{ github.event.pull_request.number }} -b ${{ github.head_ref }}
               gh pr update-branch
-              gh workflow run --ref ${{ github.head_ref }} trigger.yaml
+              # gh workflow run --ref ${{ github.head_ref }} trigger.yaml
               ;;
             *)
               echo "bad coding - label not found"
               exit 1
           esac
-  auto-approve-label:
-    needs: apply
-    permissions: write-all
-    uses: ./.github/workflows/reusable-auto-approve-label.yaml
-    secrets: inherit
+    #  auto-approve-label:
+    #  needs: apply
+    # permissions: write-all
+    # uses: ./.github/workflows/reusable-auto-approve-label.yaml
+    # secrets: inherit
