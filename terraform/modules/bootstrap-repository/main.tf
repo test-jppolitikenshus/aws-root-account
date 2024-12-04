@@ -72,8 +72,8 @@ resource "github_repository" "default" {
 resource "github_branch_protection" "default" {
   repository_id          = github_repository.default.id
   pattern                = "main"
-  enforce_admins         = false # allow admins to override PR
-  require_signed_commits = false # true prevents terraform from provisioning
+  enforce_admins         = false # false allow admins to override PR
+  require_signed_commits = true # true prevents terraform from provisioning
 
   required_status_checks {
     strict   = false
