@@ -111,7 +111,8 @@ jobs:
     # environment: ${{ needs.detect.outputs.release-type }}
     strategy:
       matrix: ${{ fromJson(needs.detect.outputs.directories) }}
-      fail-fast: false
+      fail-fast: true  # if true, github cancels all in-progress jobs if any matrix job fails
+      max-parallel: 1
     # steps:
     #  - name: "CI Runner"
     #    id: ci-runner
