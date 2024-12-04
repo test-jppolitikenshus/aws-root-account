@@ -17,6 +17,16 @@ jobs:
          && github.event.action == 'closed'
          && github.event.pull_request.merged == true }}
     steps:
+      #  TODO: create checks for variables 
+      #  AWS_ACCOUNT_NAME=
+      #  AWS_ACCOUNT_NUMBER=
+      #  COST_CENTER=
+      #  GH_APP_ID=
+      #  GH_APP_INSTALLATION_ID=
+      #  GH_APP_PEM_FILE
+      #  GH_ORG=
+      #  S3_STATE_BUCKET=
+      #  Github Environment = PROD/TEST
       - name: Check PR labels
         id: check_pr_label
         env:

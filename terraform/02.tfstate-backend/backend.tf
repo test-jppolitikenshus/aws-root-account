@@ -3,11 +3,11 @@ terraform {
 
   backend "s3" {
     region  = "eu-north-1"
-    bucket  = "jppol-root-test-terraform-state"
-    key     = "aws-root-account/02.tfstate-backend"
+    bucket  = "jppol-${var.tf_aws_account_name}-${var.tf_stage}-terraform-state"
+    key     = "aws-${var.tf_aws_account_name}-account/02.tfstate-backend"
     profile = ""
     encrypt = "true"
 
-    dynamodb_table = "jppol-root-test-terraform-state-lock"
+    dynamodb_table = "jppol-${var.tf_aws_account_name}-${var.tf_stage}-terraform-state-lock"
   }
 }
