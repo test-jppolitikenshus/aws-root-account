@@ -20,8 +20,8 @@ locals {
   security = [
   ]
 
-  # Members of the long-term-storage account team to acccess that account
-  long-term-storage = [
+  # Members of the long_term_storage account team to acccess that account
+  long_term_storage = [
   ]
 
   # All members

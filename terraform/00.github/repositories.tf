@@ -1,5 +1,5 @@
 # Repositories
-module "aws-root-account" {
+module "aws_root_account" {
   source      = "./../modules/bootstrap-repository"
   name        = "aws-root-account"
   type        = "core"
@@ -13,7 +13,7 @@ module "aws-root-account" {
   github_org = "commercial-tech"
 }
 
-module "template-repository" {
+module "template_repository" {
   source      = "./../modules/bootstrap-repository"
   name        = "template-repository"
   type        = "template"
@@ -25,7 +25,7 @@ module "template-repository" {
   github_org = "commercial-tech"
 }
 
-module "template-cloudv2-platform-terraform-module" {
+module "template_cloudv2_platform_terraform_module" {
   source      = "./../modules/bootstrap-repository"
   name        = "template-cloudv2-platform-terraform-module"
   type        = "template"
@@ -42,7 +42,7 @@ module "template-cloudv2-platform-terraform-module" {
 #  value = module.template-cloudv2-platform-terraform-module.repository.name
 #}
 
-module "cloudv2-platform" {
+module "cloudv2_platform" {
   source       = "./../modules/repository"
   name         = "cloudv2-platform"
   type         = "core"
@@ -56,7 +56,7 @@ module "cloudv2-platform" {
   template_name = module.template-repository.repository.name
 }
 
-module "cloudv2-platform-terraform-module-baseline" {
+module "cloudv2_platform_terraform_module_baseline" {
   source      = "./../modules/repository"
   name        = "cloudv2-platform-terraform-baseline"
   type        = "module"

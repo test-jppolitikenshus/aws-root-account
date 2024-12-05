@@ -1,8 +1,8 @@
 # Everyone
-module "core-team" {
+module "idp_team" {
   source      = "./../modules/team"
-  name        = "cloudv2-platform"
-  description = "Cloudv2 Platform Team"
+  name        = "idp"
+  description = "Platform Team"
   repositories = [
     module.aws-root-account.repository.name,
     #module.template-repository.repository.name,
@@ -16,10 +16,10 @@ module "core-team" {
 }
 
 # People who need full AWS access
-module "aws-team" {
+module "cloud_team" {
   source      = "./../modules/team"
-  name        = "cloudv2-platform-engineers"
-  description = "Cloudv2 Platform Team: people who require AWS access"
+  name        = "platform-engineers"
+  description = "Platform Team: people who require AWS access"
 
   maintainers = local.maintainers
   members     = local.engineers
@@ -27,22 +27,22 @@ module "aws-team" {
   parent_team_id = module.core-team.team_id
 }
 
-module "security-team" {
+module "security_team" {
   source      = "./../modules/team"
-  name        = "cloudv2-platform-security"
-  description = "Cloudv2 Platform security review team"
+  name        = "platform-security"
+  description = "Platform security review team"
 
   maintainers = local.maintainers
   members     = local.security
 }
 
-module "long-term-storage" {
+module "long_term_storage" {
   source      = "./../modules/team"
-  name        = "cloudv2-platform-long-term-storage"
-  description = "Cloudv2 Platform long-term-storage team"
+  name        = "platform-long_term_storage"
+  description = "Platform long_term_storage team"
 
   maintainers = local.maintainers
-  members     = local.long-term-storage
+  members     = local.long_term_storage
 }
 
 # Allow github users to contribute to our repos
