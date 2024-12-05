@@ -8,10 +8,10 @@
 #  description = "AWS account name"
 #}
 #
-#variable "tf_github_org" {
-#  type        = string
-#  description = "github_organisation"
-#}
+variable "tf_github_org" {
+  type        = string
+  description = "github_organisation"
+}
 #
 #variable "tf_stage" {
 #  type        = string
