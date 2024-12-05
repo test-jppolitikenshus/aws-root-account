@@ -30,13 +30,6 @@ locals {
   # Everyone
   everyone = concat(local.maintainers, local.all_members)
 
-  tf_aws_account_name = var.tf_aws_account_name
-  tf_stage = var.tf_stage
-  tf_module = var.tf_module
-  tf_aws_account_number = var.tf_aws_account_number
-  tf_cost_center = var.tf_cost_center
-  tf_github_org = var.tf_github_org
-  tf_repo = var.tf_repo
 }
 
 
