@@ -40,6 +40,8 @@ variable "tf_github_org" {
   description = "GitHub organization"
 }
 
+# used in gh action
+# tflint-ignore: terraform_unused_declarations
 variable "tf_repo" {
   type        = string
   description = "GitHub repository"
