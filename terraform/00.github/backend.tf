@@ -17,7 +17,7 @@ terraform {
 }
 
 provider "github" {
-  #owner = var.github_org # `GITHUB_OWNER`
+  owner = var.tf_github_org # `GITHUB_OWNER`
   app_auth { # GHA uses github app to perform changes to github, since GHA runner only have permissions to current repository
     #id              = var.app_id              # or `GITHUB_APP_ID`
     #installation_id = var.app_installation_id # or `GITHUB_APP_INSTALLATION_ID`

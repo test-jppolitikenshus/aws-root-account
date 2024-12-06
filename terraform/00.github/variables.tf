@@ -31,8 +31,6 @@ variable "tf_cost_center" {
   description = "Cost center testing 123"
 }
 
-# used in gh action
-# tflint-ignore: terraform_unused_declarations
 variable "tf_github_org" {
   type        = string
   description = "GitHub organization"
