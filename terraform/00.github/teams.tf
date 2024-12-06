@@ -4,7 +4,7 @@ module "idp_team" {
   name        = "idp"
   description = "Platform Team"
   repositories = [
-    module.aws-root-account.repository.name,
+    module.aws_root_account.repository.name,
     #module.template-repository.repository.name,
     #module.cloudv2-platform-terraform-module-template.repository.name,
     #module.cloudv2-platform.repository.name,
@@ -24,7 +24,7 @@ module "cloud_team" {
   maintainers = local.maintainers
   members     = local.engineers
 
-  parent_team_id = module.core-team.team_id
+  parent_team_id = module.core_team.team_id
 }
 
 module "security_team" {

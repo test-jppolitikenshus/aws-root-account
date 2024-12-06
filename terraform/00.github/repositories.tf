@@ -53,7 +53,7 @@ module "cloudv2_platform" {
     "architecture-decisions",
     "documentation"
   ]
-  template_name = module.template-repository.repository.name
+  template_name = module.template_repository.repository.name
 }
 
 module "cloudv2_platform_terraform_module_baseline" {
@@ -66,5 +66,5 @@ module "cloudv2_platform_terraform_module_baseline" {
     "aws-baseline",
     "security"
   ]
-  template_name = module.template-cloudv2-platform-terraform-module.repository.name
+  template_name = module.template_cloudv2_platform_terraform_module.repository.name
 }
