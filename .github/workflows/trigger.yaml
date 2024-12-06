@@ -130,7 +130,8 @@ jobs:
     needs: [detect, ci]
     strategy:
       matrix: ${{ fromJson(needs.detect.outputs.directories) }}
-      fail-fast: false
+      fail-fast: true  # if true, github cancels all in-progress jobs if any matrix job fails
+      max-parallel: 1
     uses: ./.github/workflows/reusable-cd.yaml
     permissions: write-all
     with:
