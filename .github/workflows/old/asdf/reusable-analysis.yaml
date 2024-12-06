@@ -20,7 +20,7 @@ on:
 jobs:
   checkov:
     environment: ${{ inputs.environment }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: terraform/${{ inputs.rootModule }}
@@ -46,7 +46,7 @@ jobs:
 
   tfsec:
     environment: ${{ inputs.environments }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: terraform/${{ inputs.rootModule }}

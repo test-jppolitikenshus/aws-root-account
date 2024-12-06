@@ -24,7 +24,7 @@ jobs:
   AssumeRoleAndCallIdentity:
     environment: test
     #if: github.event.review.state == 'approved'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Git clone the repository
@@ -57,7 +57,7 @@ jobs:
         run: aws sts get-caller-identity
 
           # testing:
-          #   runs-on: ubuntu-latest
+          #   runs-on: ubuntu-22.04
           #   steps:
           #     - uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
           #       with:
@@ -67,7 +67,7 @@ jobs:
           #       run: aws sts get-caller-identity
 
   greeting:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Say hello

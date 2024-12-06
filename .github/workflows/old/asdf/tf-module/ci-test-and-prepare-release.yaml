@@ -11,7 +11,7 @@ on:
 
 jobs:
   detect:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: 'Detect pull request context'
     outputs:
       directories: ${{ steps.condense.outputs.result }}
@@ -123,7 +123,7 @@ jobs:
     permissions: write-all
     needs: [detect, plan]
     if: github.event.action != 'closed'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: 'Comment on PR'
     steps:
       - uses: actions/download-artifact@v4
@@ -180,7 +180,7 @@ jobs:
     permissions: write-all
     needs: [detect, plan]
     if: needs.detect.outputs.is-merge-event == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: 'Dispatch release event'
     steps:
       - uses: actions/download-artifact@v4

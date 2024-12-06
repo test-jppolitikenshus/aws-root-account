@@ -22,7 +22,7 @@ env:          # Note: these are available inside matrix runs
 jobs:
   detect:
     environment: test  # https://github.com/orgs/community/discussions/26594 (TODO: fix github env here - issue with matrix jobs and env)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       RESULT: ${{ env.RESULT }}
 
@@ -78,7 +78,7 @@ jobs:
 
   terraform_plan:
     environment: test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: detect
     permissions: write-all
       #permissions:
