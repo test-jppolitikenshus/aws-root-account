@@ -231,7 +231,8 @@ jobs:
           tag: v4.14.0
       - name: Init
         run: |
-          tofu init -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.root_module }} \
+          tofu init -upgrade \
+          -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.root_module }} \
           -backend-config bucket=${{ secrets.S3_STATE_BUCKET }} \
           -backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock \
           -var tf_github_org=${{ secrets.GH_ORG }} \
