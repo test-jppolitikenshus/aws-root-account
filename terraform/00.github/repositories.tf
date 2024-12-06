@@ -25,11 +25,11 @@ module "template_repository" {
   github_org = "commercial-tech"
 }
 
-module "template_cloudv2_platform_terraform_module" {
+module "template_cloud_platform_terraform_module" {
   source      = "./../modules/bootstrap-repository"
-  name        = "template-cloudv2-platform-terraform-module"
+  name        = "template-cloud-platform-terraform-module"
   type        = "template"
-  description = "Template repository for creating Terraform modules for use with the Cloudv2 Platform"
+  description = "Template repository for creating Terraform modules for use with the Cloud Platform"
   topics = [
     "aws",
     "terraform",
@@ -39,15 +39,15 @@ module "template_cloudv2_platform_terraform_module" {
 }
 
 #output "bla" {
-#  value = module.template-cloudv2-platform-terraform-module.repository.name
+#  value = module.template-cloud-platform-terraform-module.repository.name
 #}
 
-module "cloudv2_platform" {
+module "cloud_platform" {
   source       = "./../modules/repository"
-  name         = "cloudv2-platform"
+  name         = "cloud-platform"
   type         = "core"
-  description  = "A place for the Cloudv2 Platform core"
-  homepage_url = "https://user-guide.cloudv2-platform.jppol.dk"
+  description  = "A place for the idp Platform core"
+  homepage_url = "https://user-guide.idp-platform.jppol.dk"
   topics = [
     "aws",
     "architecture-decisions",
@@ -56,9 +56,9 @@ module "cloudv2_platform" {
   template_name = module.template_repository.repository.name
 }
 
-module "cloudv2_platform_terraform_module_baseline" {
+module "cloud_platform_terraform_module_baseline" {
   source      = "./../modules/repository"
-  name        = "cloudv2-platform-terraform-baseline"
+  name        = "cloud-platform-terraform-baseline"
   type        = "module"
   description = "Module for enabling and configuring common baseline services such as SecurityHub"
   topics = [
@@ -66,5 +66,5 @@ module "cloudv2_platform_terraform_module_baseline" {
     "aws-baseline",
     "security"
   ]
-  template_name = module.template_cloudv2_platform_terraform_module.repository.name
+  template_name = module.template_cloud_platform_terraform_module.repository.name
 }

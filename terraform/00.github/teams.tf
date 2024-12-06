@@ -6,9 +6,9 @@ module "idp_team" {
   repositories = [
     module.aws_root_account.repository.name,
     #module.template-repository.repository.name,
-    #module.cloudv2-platform-terraform-module-template.repository.name,
-    #module.cloudv2-platform.repository.name,
-    #module.cloudv2-platform-terraform-baseline.repository.name,
+    #module.cloud-platform-terraform-module-template.repository.name,
+    #module.cloud-platform.repository.name,
+    #module.cloud-platform-terraform-baseline.repository.name,
   ]
 
   maintainers = local.maintainers
@@ -47,7 +47,7 @@ module "long_term_storage" {
 
 # Allow github users to contribute to our repos
 #module "contributor-access" {
-#  for_each          = toset(local.cloudv2_platform_repositories)
+#  for_each          = toset(local.cloud_platform_repositories)
 #  source            = "./../modules/contributor"
 #  application_teams = local.application_github_slugs
 #  repository_id     = each.key
