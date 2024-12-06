@@ -111,7 +111,20 @@ jobs:
           echo "aws s3 cp s3://${{ secrets.S3_STATE_BUCKET }}/${{ github.event.repository.name }}/metadata/${{ steps.vars.outputs.plan_file }} ."
           aws s3 cp s3://${{ secrets.S3_STATE_BUCKET }}/${{ github.event.repository.name }}/metadata/${{ steps.vars.outputs.plan_file }} .
       - name: Init
-        run: "# tofu init -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.root_module }} \\\n#-backend-config bucket=${{ secrets.S3_STATE_BUCKET }} \\\n#-backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock  #-compact-warnings\n# \ntofu init -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.root_module }} \\\n-backend-config bucket=${{ secrets.S3_STATE_BUCKET }} \\\n-backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock \\\n-var tf_github_org=${{ secrets.GH_ORG }} \\\n-var tf_cost_center=${{ secrets.COST_CENTER }} \\\n-var tf_stage=${{ inputs.environment }} \\\n-var tf_repo=${{ github.event.repository.name }} \\\n-var tf_module=${{ inputs.rootModule }} \\\n-var tf_aws_account_number=${{ secrets.AWS_ACCOUNT_NUMBER }} \\\n-var tf_aws_account_name=${{ secrets.AWS_ACCOUNT_NAME }} \\\n-var tf_pull_request=${{ github.event.pull_request.url }} \\\n-compact-warnings\n"
+        run: |
+              tofu init -upgrade \ 
+              -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.root_module }} \
+              -backend-config bucket=${{ secrets.S3_STATE_BUCKET }} \
+              -backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock \
+              -var tf_github_org=${{ secrets.GH_ORG }} \
+              -var tf_cost_center=${{ secrets.COST_CENTER }} \
+              -var tf_stage=${{ inputs.environment }} \
+              -var tf_repo=${{ github.event.repository.name }} \
+              -var tf_module=${{ inputs.rootModule }} \
+              -var tf_aws_account_number=${{ secrets.AWS_ACCOUNT_NUMBER }} \
+              -var tf_aws_account_name=${{ secrets.AWS_ACCOUNT_NAME }} \
+              -var tf_pull_request=${{ github.event.pull_request.url }} \
+              -compact-warnings
       - name: Determine if apply is appropriate
         run: |
           tofu show ${{ steps.vars.outputs.plan_file }} -no-color > ${{ steps.vars.outputs.plan_file_txt }}
