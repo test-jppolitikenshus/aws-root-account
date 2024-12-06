@@ -24,7 +24,7 @@ module "cloud_team" {
   maintainers = local.maintainers
   members     = local.engineers
 
-  parent_team_id = module.core_team.team_id
+  parent_team_id = module.idp_team.team_id
 }
 
 module "security_team" {
