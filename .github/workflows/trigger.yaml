@@ -1,5 +1,7 @@
 ---
 name: trigger  # Entrypoint for github actions
+concurrency:  # avoid concurrent runs on label events, might cause issues on super fast commits  ¯\_(ツ)_/¯
+  cancel-in-progress: true
 on:
   pull_request:
     types: [opened, synchronize, reopened, labeled]
