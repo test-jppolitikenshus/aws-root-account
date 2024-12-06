@@ -37,6 +37,8 @@ variable "tf_repo" {
   description = "GitHub repository"
 }
 
+# used in gh action
+# tflint-ignore: terraform_unused_declarations
 variable "tf_pull_request" {
   type        = string
   description = "The name of the team"
