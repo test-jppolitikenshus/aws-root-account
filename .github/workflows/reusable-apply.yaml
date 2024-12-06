@@ -112,7 +112,7 @@ jobs:
           aws s3 cp s3://${{ secrets.S3_STATE_BUCKET }}/${{ github.event.repository.name }}/metadata/${{ steps.vars.outputs.plan_file }} .
       - name: Init
         run: |
-          tofu init -upgrade \ 
+          tofu init -upgrade \
           -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.root_module }} \
           -backend-config bucket=${{ secrets.S3_STATE_BUCKET }} \
           -backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock \
