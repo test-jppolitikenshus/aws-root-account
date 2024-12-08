@@ -4,7 +4,7 @@ module "idp_team" {
   name        = "idp"
   description = "Platform Team"
   repositories = [
-    module.aws_root_account.repository.name,
+    #module.aws_root_account.repository.name,
     #module.template-repository.repository.name,
     #module.cloud-platform-terraform-module-template.repository.name,
     #module.cloud-platform.repository.name,
