@@ -173,19 +173,25 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const { data: prInfo } = await github.rest.pulls.get({
-              owner, repo,
+              owner,
+              repo,
               pull_number: context.issue.number,
             });
+            // Check if the PR body is empty
+            if (!prInfo.body || prInfo.body.trim() === "") {
+              console.log('PR body is empty. Adding default changelog message.');
+              prInfo.body = 'Changelog: Please provide a changelog entry for this PR.';
+            }
+            if (!changelogEntry)
+              throw `'Changelog' section not found in PR body! Please add it back.`;
+            if (changelogEntry.match(/^TODO:/m))
+              throw `'Changelog' section needs proper text, instead of 'TODO'`;
             console.log('Found PR body:|');
             console.log(prInfo.body);
             const changelogEntry = ((prInfo.body
               .split(/^#+ ?/m)
               .find(x => x.startsWith('Changelog'))
               || '').split(/^```/m)[1] || '').trim();
-            if (!changelogEntry)
-              throw `'Changelog' section not found in PR body! Please add it back.`;
-            if (changelogEntry.match(/^TODO:/m))
-              throw `'Changelog' section needs proper text, instead of 'TODO'`;
             const { writeFile } = require('fs').promises;
             console.log(process.cwd());
             await writeFile("terraform/${{ inputs.rootModule }}/output/changelog.md", `
