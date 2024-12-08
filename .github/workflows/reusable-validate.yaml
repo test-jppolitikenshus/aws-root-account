@@ -1,7 +1,7 @@
-name: "reusable validate"
+name: reusable validate
 on:
   workflow_call:
-    #secrets:
+    # secrets:
     #  GH_APP_ID:
     #    description: "GitHub Application ID"
     #    required: false
@@ -21,7 +21,6 @@ on:
     #  AWS_ACCOUNT_NUMBER:
     #    description: "Root Account ID"
     #    required: true
-
     inputs:
       #      terraformVersion:
       #        description: "Defines terraform version to use"
@@ -29,70 +28,61 @@ on:
       #        type: string
       #
       rootModule:
-        description: "Defines root module directory"
+        description: Defines root module directory
         required: true
         type: string
-
       environment:
-        description: "Environment to run tests against"
+        description: Environment to run tests against
         type: string
         required: true
-
 jobs:
   validate:
     environment: ${{ inputs.environment }}
     permissions: write-all
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: terraform/${{ inputs.rootModule }}
     steps:
       - name: Terraform-Setup
         uses: opentofu/setup-opentofu@12f4debbf681675350b6cd1f0ff8ecfbda62027b # v1.0.4
-        #with:
-          #terraform_version: ${{ inputs.terraformVersion }}
-
+        # with:
+        # terraform_version: ${{ inputs.terraformVersion }}
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: echo stuff
         run: |
           echo "environment: ${{ inputs.environment }}"
           echo "hest: ${{ env.HEST }}"
           echo "bucket: ${{ secrets.S3_STATE_BUCKET }}"
           echo "hest2: ${{ secrets.HEST }}"
-
       - name: Generate token # Why ?
-        #env:
+        # env:
         #    APP_ID: ${{ secrets.GH_APP_ID }}
         #    PRIVATE_KEY: ${{ secrets.GH_APP_PEM_FILE }}
-        #if: ${{ env.APP_ID != null && env.PRIVATE_KEY != null }}
+        # if: ${{ env.APP_ID != null && env.PRIVATE_KEY != null }}
         id: generate_token
-        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a #v.2.1.0
+        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v.2.1.0
         with:
           app_id: ${{ secrets.GH_APP_ID }}
           private_key: ${{ secrets.GH_APP_PEM_FILE }}
-
       - name: authenticate to git with app token # Why ?
-        #env:
+        # env:
         #    APP_ID: ${{ secrets.GH_APP_ID }}
         #    PRIVATE_KEY: ${{ secrets.GH_APP_PEM_FILE }}
         # if: ${{ env.APP_ID != null && env.PRIVATE_KEY != null }}
         run: |
           echo ${{ steps.generate_token.outputs.token }} | gh auth login --with-token
           gh auth setup-git
-
       - name: Format
         run: |
           terraform fmt -write=false -diff -check
-
       - name: Authenticate # to access S3 bucket in init step
         uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a # v4.0.1
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/AWS-GitHubActions-OIDC_role # FIX ROLE NAME role-to-assume: arn:aws:iam::${{secrets.AWS_ACCOUNT_NUMBER}}:role/github-actions-plan
           role-session-name: GitHubActions
           aws-region: eu-north-1
-
       - name: Init
         run: |
           tofu init -backend-config key=${{ github.event.repository.name }}/${{ inputs.rootModule }} \
@@ -109,11 +99,10 @@ jobs:
           -compact-warnings
           # consider backup hcl.lock to make sure providers from init is the same
           # remember to apply retention policy to state/plan bucket
-
       - name: Validate
         env:
           GITHUB_APP_ID: ${{ secrets.GH_APP_ID }} # TODO: only include these in the github root module
           GITHUB_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
           GITHUB_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
-        run: |
+        run: |-
           tofu validate -no-color

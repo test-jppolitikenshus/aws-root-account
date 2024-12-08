@@ -1,0 +1,56 @@
+name: reusable-auto-approve-label
+on:
+  workflow_call:
+jobs:
+  auto-approve-action:
+    runs-on: ubuntu-22.04
+    permissions: write-all
+    env:
+      GH_TOKEN: ${{ secrets.GH_AUTO_APPROVE_PAT }}
+    steps:
+      #- name: Generate token
+      #  id: generate_token
+      #  uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a  # v.2.1.0
+      #  with:
+      #    app_id: ${{ secrets.GH_APP_ID }}
+      #    private_key: ${{ secrets.GH_APP_PEM_FILE }}
+      - name: authenticate to git with app token
+        run: |
+          # echo ${{ steps.generate_token.outputs.token }} | gh auth login --with-token
+          # echo ${{ secrets.GH_AUTO_APPROVE_PAT }} | gh auth login --with-token
+          gh auth setup-git
+      - name: approve workflow run only if
+        run: |-
+          #  loop to wait for jobs to start
+          i=0
+          for (( i=0; i<3; ++i )); do
+            echo "$i, looking for job to autoapprove"
+            # if [[ "$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs --jq '.jobs[] | select(.status == "waiting")') ]] ; then
+            #  This beautiful shit checks if there are waiting jobs names matching currently label
+            if [[ "$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs --jq '.jobs[] | select(.status == "waiting").name')" =~ label$ ]]; then
+              break
+            else
+              echo "sleeping"
+              sleep 5
+            fi
+          done
+          if [[ "$i" == "3" ]]; then
+            echo "::error:: autoapproval timed out"
+            exit 1
+          fi
+          ENV_ID=$(gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --jq '.[].environment.id')
+          echo "ENV_ID: ${ENV_ID}"
+          ENV_NAME=$(gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --jq '.[].environment.name')
+          echo "ENV_NAME: ${ENV_NAME}"
+          JOB_NAME=$(gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs --jq '.jobs[] | select(.status == "waiting").name')
+          echo "JOB_NAME: ${JOB_NAME}"
+
+          #  Autoapprove label
+          if [[ "$JOB_NAME" == *"apply / label" ]] ; then
+            echo "auto approving this job, since it looks like a label "
+            # echo "gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F \"environment_ids[]=${ENV_ID}\" -f \"state=approved\" -f \"comment=Autoapproved since its a label\""
+            RESULT=$(gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F "environment_ids[]=${ENV_ID}" -f "state=approved" -f "comment=Autoapproved since its a label")
+            echo "done, this is how it went: $RESULT"
+          else
+            echo "auto approve \"label\" will not run, since job name does not end with 'apply / label'"
+          fi

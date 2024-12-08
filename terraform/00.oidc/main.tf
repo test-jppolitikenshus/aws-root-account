@@ -27,7 +27,7 @@ resource "aws_iam_role" "oidc_role" {
             "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
           },
           StringLike = { # wildcard ok
-            "token.actions.githubusercontent.com:sub" = "repo:${var.tf_github_org}/aws-root-account:*"
+            "token.actions.githubusercontent.com:sub" = "repo:${var.tf_github_org}/aws-${var.tf_aws_account_name}-account:*"
             #"token.actions.githubusercontent.com:sub" = "repo:test-jppolitikenshus/aws-root-account:ref:refs/heads/main" # Main
             #"token.actions.githubusercontent.com:sub" = "repo:${local.github_org}/aws-root-account:pull_request" # PR
           }

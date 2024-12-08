@@ -13,7 +13,7 @@ on:
 jobs:
   detect:
     environment: test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: 'Detect pull request context'
     outputs:
       directories: ${{ steps.condense.outputs.result }}
@@ -135,7 +135,7 @@ jobs:
     permissions: write-all
     needs: [detect, plan]
     if: github.event.action != 'closed'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: 'Comment on PR'
     steps:
       - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1

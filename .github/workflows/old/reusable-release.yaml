@@ -1,12 +1,13 @@
 name: 'dispatch/Release new versions'
 on:
-  repository_dispatch:
-    types: [monorepo_release]
+  #repository_dispatch:
+  #  types: [monorepo_release]
+  workflow_call:
 
 jobs:
   tag:
     runs-on: ubuntu-22.04
-    name: 'Tag Releases'
+    #name: 'Tag Releases'
     defaults:
       run:
         shell: pwsh

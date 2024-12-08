@@ -43,7 +43,7 @@ jobs:
   validate:
     environment: ${{ inputs.environment }}
     permissions: write-all
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: terraform/${{ inputs.rootModule }}

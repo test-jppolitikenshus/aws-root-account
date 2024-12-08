@@ -1,9 +1,9 @@
 
 # Define settings for the GitHub organization
-resource "github_organization_settings" "default-org-settings" {
-  name          = "Test JP/Politikens Hus"
+resource "github_organization_settings" "default_org_settings" {
+  name          = "JP/Politikens Hus"
   billing_email = "platform@jppol.dk"
-  company       = "Test JP/Politikens Hus"
+  company       = "JP/Politikens Hus"
   blog          = "https://jppol.dk"
   location      = "Denmark"
   #advanced_security_enabled_for_new_repositories               = true # disabled, public repos automatically has advanced security enabled
@@ -58,13 +58,13 @@ resource "github_membership" "org_membership_for_kristoffer" {
 #    repository = "template-template-repository"
 #  }
 #}
-#resource "github_repository" "cloudv2-platform-terraform-module-template" {
-#  name            = "cloudv2-platform-terraform-module-template"
+#resource "github_repository" "cloud-platform-terraform-module-template" {
+#  name            = "cloud-platform-terraform-module-template"
 #  description     = "This is a terraform module template repository"
 #  is_template     = true
 #  template {
 #    owner      = "commercial-tech"
-#    repository = "template-cloudv2-platform-terraform-module-template"
+#    repository = "template-cloud-platform-terraform-module-template"
 #  }
 #}
 
@@ -72,13 +72,13 @@ resource "github_membership" "org_membership_for_kristoffer" {
 
 ## Add a teams to the organization
 #resource "github_team" "platform-team" {
-#  name        = "cloudv2-platform-team"
+#  name        = "cloud-platform-team"
 #  description = "Platform Team"
 #  privacy     = "closed"
 #}
 #
 #resource "github_team" "security-team" {
-#  name        = "cloudv2-security-team"
+#  name        = "cloud-security-team"
 #  description = "Security Team"
 #  privacy     = "closed"
 #}
@@ -99,9 +99,9 @@ resource "github_membership" "org_membership_for_kristoffer" {
 #}
 
 
-#resource "github_repository" "cloudv2-platform" {
-#  name                   = "cloudv2-platform"
-#  description            = "This is the repository for the cloudv2 Platform"
+#resource "github_repository" "cloud-platform" {
+#  name                   = "cloud-platform"
+#  description            = "This is the repository for the cloud Platform"
 #  visibility             = "public"
 #  auto_init              = true
 #  has_discussions        = true
@@ -138,7 +138,7 @@ resource "github_membership" "org_membership_for_kristoffer" {
 
 
 # resource "github_branch_protection_v3" "default_public_protection" {
-#   repository                      = "cloudv2-platform"
+#   repository                      = "cloud-platform"
 #   branch                          = "main"
 #   enforce_admins                  = true
 #   require_conversation_resolution = true
@@ -159,7 +159,7 @@ resource "github_membership" "org_membership_for_kristoffer" {
 # 
 # resource "github_repository_ruleset" "default_ruleset" {
 #   name        = "Default ruleset"
-#   repository  = github_repository.cloudv2-platform.name
+#   repository  = github_repository.cloud-platform.name
 #   target      = "branch"
 #   enforcement = "active"
 #   rules {
@@ -191,9 +191,9 @@ resource "github_membership" "org_membership_for_kristoffer" {
 # }
 # 
 # 
-# resource "github_repository_environment" "cloudv2-platform_prod_environment" {
+# resource "github_repository_environment" "cloud-platform_prod_environment" {
 #   environment  = "Production"
-#   repository   = github_repository.cloudv2-platform.name
+#   repository   = github_repository.cloud-platform.name
 #   deployment_branch_policy {
 #     protected_branches          = false
 #     custom_branch_policies = true

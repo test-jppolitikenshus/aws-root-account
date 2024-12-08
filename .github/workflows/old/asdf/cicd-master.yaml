@@ -8,7 +8,7 @@ on:
 
 jobs:
   detect:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: 'Detect root modules'
     outputs:
       directories: ${{ steps.condense.outputs.result }}

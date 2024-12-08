@@ -1,20 +1,18 @@
-name: 'dispatch/Update wiki'
+name: dispatch/Update wiki
 on:
-  repository_dispatch:
-    types: [monorepo_release]
-
+  workflow_call:
+  # repository_dispatch:
+  #  types: [monorepo_release]
 jobs:
-  update-wiki:
+  update:
     runs-on: ubuntu-22.04
-    name: 'Update Wiki'
+    # name: 'Update Wiki'
     steps:
-
       - uses: dawidd6/action-download-artifact@v3
         with:
-          workflow: unused
-          run_id: ${{ github.event.client_payload.run_id }}
+          # workflow: unused
+          # run_id: ${{ github.event.client_payload.run_id }}
           path: outputs
-
       - name: Checkout wiki
         uses: actions/checkout@v4
         with:
@@ -23,10 +21,9 @@ jobs:
           path: wiki
           fetch-depth: 0
       - name: Ensure wiki folder
-        run: "[ -d wiki/generated ] || mkdir wiki/generated"
+        run: '[ -d wiki/generated ] || mkdir wiki/generated'
       - name: Display structure of retrieved files
         run: ls -R
-
       - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         id: write-changes
         with:
@@ -70,10 +67,9 @@ jobs:
             }
             return msgParts.join(', ');
           result-encoding: string
-
       - name: Push changes to wiki
         working-directory: wiki
-        run: |
+        run: |-
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add -A

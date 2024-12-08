@@ -66,6 +66,7 @@ terraform:
     ignore_warning: false # tfcmt >= v4.14.0
     template: |
       {{template "plan_title" .}}
+      {{if .Link}}[CI link]({{.Link}}){{end}}
       {{template "deletion_warning" .}}
       {{template "result" .}}
       {{template "updated_resources" .}}
@@ -93,6 +94,7 @@ terraform:
     when_parse_error:
       template: |
         {{template "plan_title" .}}
+        {{if .Link}}[CI link]({{.Link}}){{end}}
         It failed to parse the result.
         <details><summary>Details (Click me)</summary>
         {{wrapCode .CombinedOutput}}
@@ -100,6 +102,7 @@ terraform:
   apply:
     template: |
       {{template "apply_title" .}}
+      {{if .Link}}[CI link]({{.Link}}){{end}}
       {{if ne .ExitCode 0}}{{template "guide_apply_failure" .}}{{end}}
       {{template "result" .}}
       <details><summary>Details (Click me)</summary>
@@ -109,6 +112,7 @@ terraform:
     when_parse_error:
       template: |-
         {{template "apply_title" .}}
+        {{if .Link}}[CI link]({{.Link}}){{end}}
         {{template "guide_apply_parse_error" .}}
         It failed to parse the result.
         <details><summary>Details (Click me)</summary>

@@ -1,0 +1,201 @@
+name: reusable-apply
+on:
+  workflow_call:
+    inputs:
+      rootModule:
+        description: Defines root module directory
+        required: true
+        type: string
+      # releaseType:
+      #  description: "Defines github release type"
+      #  required: true
+      #  type: string
+      artifactsRetentionDays:
+        description: How many days artifacts should be stored
+        required: false
+        type: number
+        default: 5
+      # terraformVersion:
+      #  description: "Defines terraform version to use"
+      #  required: true
+      #  type: string
+      environment:
+        description: Environment to run tests against
+        type: string
+        required: true
+#    secrets:
+#      githubToken:
+#        description: 'GitHub Token value'
+#        required: true
+#
+#      GH_APP_ID:
+#        description: 'GitHub Application ID'
+#        required: false
+#
+#      GH_APP_PEM_FILE:
+#        description: 'GitHub Application private key'
+#        required: false
+#
+#      GH_APP_INSTALLATION_ID:
+#        description: 'GitHub Application Installation Id'
+#        required: false
+#
+#      S3_STATE_BUCKET:
+#        description: "S3 State Bucket"
+#        required: true
+#
+#      awsRootAccountId:
+#        description: "Root Account ID"
+#        required: true
+#
+#      GH_ORG:
+#        description: 'GitHub Organisation'
+#        required: true
+jobs:
+  apply:
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-22.04
+    permissions: write-all # try if 'Resource not accessible by integration' is fixed
+    # name: "Module: ${{ inputs.rootModule }}"
+    name: apply
+    defaults:
+      run:
+        working-directory: terraform/${{ inputs.rootModule }}
+    steps:
+      - name: Terraform-Setup
+        uses: opentofu/setup-opentofu@12f4debbf681675350b6cd1f0ff8ecfbda62027b # v1.0.4
+        # uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36  #  v3.0.0
+        # with:
+        #  terraform_version: ${{ inputs.terraformVersion }}
+      - name: Checkout
+        uses: actions/checkout@v4
+        #- name: Generate token  # Why ?
+        #  env:
+        #    APP_ID: ${{ secrets.GH_APP_ID }}
+        #    PRIVATE_KEY: ${{ secrets.GH_APP_PEM_FILE }}
+        #  if: ${{ env.APP_ID != null && env.PRIVATE_KEY != null }}
+        #  id: generate_token
+        #   uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a  # v.2.1.0
+        #  with:
+        #    app_id: ${{ secrets.GH_APP_ID }}
+        #    private_key: ${{ secrets.GH_APP_PEM_FILE }}
+      - name: Define variables
+        #- name: authenticate to git with app token  # Why ?
+        #  env:
+        #    APP_ID: ${{ secrets.GH_APP_ID }}
+        #    PRIVATE_KEY: ${{ secrets.GH_APP_PEM_FILE }}
+        #  if: ${{ env.APP_ID != null && env.PRIVATE_KEY != null }}
+        #  run: |
+        #    echo ${{ steps.generate_token.outputs.token }} | gh auth login --with-token
+        #    gh auth setup-git
+        id: vars
+        run: |
+          mkdir metadata
+          PLAN_FILE="plan-${{ inputs.rootModule }}-${{ github.event.pull_request.head.sha }}.planfile"
+          PLAN_FILE_TXT="plan-${{ github.event.pull_request.head.sha }}.txt"
+          SUMMARY_FILE="$(realpath metadata)/summary.md"
+          echo "plan_file=${PLAN_FILE}" >> $GITHUB_OUTPUT
+          echo "plan_file_txt=${PLAN_FILE_TXT}" >> $GITHUB_OUTPUT
+          echo "summary_file=${SUMMARY_FILE}" >> $GITHUB_OUTPUT
+          MODULE_DIR="${{ inputs.rootModule }}"
+          ROOT_MODULE=${MODULE_DIR##*/}  ##*/ splits terraform/<module> to <module>
+          echo "root_module=${ROOT_MODULE}" >> $GITHUB_OUTPUT
+      - name: Authenticate to AWS # to access S3 bucket in init step
+        uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a # v4.0.1
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/AWS-GitHubActions-OIDC_role # FIX ROLE NAME role-to-assume: arn:aws:iam::${{secrets.AWS_ROOT_ACCOUNT_ID}}:role/github-actions-plan
+          role-session-name: GitHubActions
+          aws-region: eu-north-1
+      - name: Retrieve Plan
+        run: |
+          echo "aws s3 cp s3://${{ secrets.S3_STATE_BUCKET }}/${{ github.event.repository.name }}/metadata/${{ steps.vars.outputs.plan_file }} ."
+          aws s3 cp s3://${{ secrets.S3_STATE_BUCKET }}/${{ github.event.repository.name }}/metadata/${{ steps.vars.outputs.plan_file }} .
+      - name: Init
+        run: |
+          tofu init -upgrade \
+          -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.root_module }} \
+          -backend-config bucket=${{ secrets.S3_STATE_BUCKET }} \
+          -backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock \
+          -var tf_github_org=${{ secrets.GH_ORG }} \
+          -var tf_cost_center=${{ secrets.COST_CENTER }} \
+          -var tf_stage=${{ inputs.environment }} \
+          -var tf_repo=${{ github.event.repository.name }} \
+          -var tf_module=${{ inputs.rootModule }} \
+          -var tf_aws_account_number=${{ secrets.AWS_ACCOUNT_NUMBER }} \
+          -var tf_aws_account_name=${{ secrets.AWS_ACCOUNT_NAME }} \
+          -var tf_pull_request=${{ github.event.pull_request.url }} \
+          -compact-warnings
+      - name: Determine if apply is appropriate
+        run: |
+          tofu show ${{ steps.vars.outputs.plan_file }} -no-color > ${{ steps.vars.outputs.plan_file_txt }}
+          HAS_DESTROY=false
+          HAS_CHANGES=false
+          HAS_NO_CHANGES=false
+          HAS_ERROR=false
+          if grep -q '^No changes. Your infrastructure matches the configuration.' ${{ steps.vars.outputs.plan_file_txt }} ; then
+            echo "Exiting, no changes found"
+            HAS_NO_CHANGES=true
+            # exit 1  # should be skipped in apply step
+          elif grep -qE '^Plan: \d+ to add, \d+ to change, 0 to destroy.' ${{ steps.vars.outputs.plan_file_txt }} ; then
+            echo "Found non-destructive changes"
+            HAS_CHANGES=true
+          elif  grep -qE '^Plan: \d+ to add, \d+ to change, [1-9]{1}\d* to destroy.' ${{ steps.vars.outputs.plan_file_txt }} ; then
+            HAS_DESTROY=true
+            echo "Found destructive changes"
+          else
+            HAS_ERROR=true
+            echo "Error appears"
+          fi
+
+          # One of changes, no-changes, error should be true
+          echo "changes=${HAS_CHANGES}" >> $GITHUB_OUTPUT
+          echo "destroy=${HAS_DESTROY}" >> $GITHUB_OUTPUT
+          echo "no-changes=${HAS_NO_CHANGES}" >> $GITHUB_OUTPUT
+          echo "error=${HAS_ERROR}" >> $GITHUB_OUTPUT
+      - name: Install tfcmt
+        uses: jaxxstorm/action-install-gh-release@71d17cb091aa850acb2a1a4cf87258d183eb941b # v1.11.0
+        with:
+          repo: suzuki-shunsuke/tfcmt
+          tag: v4.14.0
+      - name: Terraform Apply
+        env:
+          GITHUB_APP_ID: ${{ secrets.GH_APP_ID }} # TODO: only include these in the github root module
+          GITHUB_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
+          GITHUB_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
+        run: |-
+          set +e  # don't exit on error
+          TERRAFORM_OUTPUT_FILE="./terraform-${GITHUB_RUN_ID}-output.txt"
+          #-owner "${{ github.repository_owner }}" \
+          #-repo "${{ github.event.repository.name }}" \
+          #-var "target:${{ inputs.rootModule }}" \
+          #-var "commitSHA:${{ github.event.pull_request.head.sha }}" \
+          #-var "job:${{ github.job }}" \
+          #-var "logoImage:'https://itoc.dk/_img/hellpoundercorp.png'" \
+          #-var "logoUrl:https://jppol.dk'" \
+          #-var "infracost_enabled: true" \
+          #-var "driftModeEnabled: true" \
+          #--log-level $([[ "asdf" == "true" ]] && echo "DEBUG" || echo "INFO") \
+          tfcmt \
+          --config ../../config/summary.yaml \
+          --output ${{ steps.vars.outputs.summary_file }} \
+          apply -- \
+            tofu apply \
+            -no-color \
+            ${{ steps.vars.outputs.plan_file }} \
+          &> ${TERRAFORM_OUTPUT_FILE}
+          TERRAFORM_RESULT=$?
+          set -e
+          cat "${TERRAFORM_OUTPUT_FILE}"
+          cat "${{ steps.vars.outputs.summary_file }}" >> $GITHUB_STEP_SUMMARY
+          if [[ "${TERRAFORM_RESULT}" == "0" ]]; then
+            echo "status=succeeded" >> $GITHUB_OUTPUT
+            echo "Terraform apply executed successfully"
+          else
+            echo "status=failed" >> $GITHUB_OUTPUT
+            echo "Terraform apply failed"
+          fi
+
+          # Link to a job that executed this action
+          echo "[Job](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> "${{ steps.vars.outputs.summary_file }}"
+          rm -f ${TERRAFORM_OUTPUT_FILE}
+          exit $TERRAFORM_RESULT

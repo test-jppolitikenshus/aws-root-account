@@ -5,7 +5,7 @@ on:
 
 jobs:
   tag:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: 'Tag Releases'
     defaults:
       run:

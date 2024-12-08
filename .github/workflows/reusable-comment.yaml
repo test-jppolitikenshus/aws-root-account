@@ -1,69 +1,38 @@
-name: 'reusable cd runner'
-concurrency:  #avoid concurrent runs on label events, might cause issues on super fast commits  ¯\_(ツ)_/¯
-  group: ${{ github.head_ref }}
-  cancel-in-progress: true
-
+---
+name: reusable comment
 on:
   workflow_call:
     inputs:
-      environment:
-        description: 'Environment to run tests against'
+      # environment:
+      #  description: "Environment to run tests against"
+      #  type: string
+      #  required: true
+      rootModule:
+        description: Terraform Root Module
         type: string
         required: true
-
 jobs:
-
-
-  apply-approve:
-    strategy:
-      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
-      fail-fast: false
-  
-  apply:
-    permissions: write-all
-    needs: [detect, plan]
-    if: ${{ needs.detect.outputs.directories != '{}' && ( needs.detect.outputs.is-merge-event == 'true' || github.event.action != 'closed' )}}
-    strategy:
-      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
-      fail-fast: false
-    uses: ./.github/workflows/reusable-apply.yaml
-    with:
-      moduleRootDirectory: ${{ matrix.directory }}
-      releaseType: ${{ needs.detect.outputs.release-type }}
-      terraformVersion: '1.5.2'
-      environment: ${{ inputs.environment }}
-    secrets:
-      githubToken: ${{ secrets.GITHUB_TOKEN }}
-      GH_APP_ID: ${{ secrets.GH_APP_ID }}
-      GH_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
-      GH_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
-      s3StateBucket: ${{ secrets.S3_STATE_BUCKET }}
-      awsRootAccountId: ${{ secrets.AWS_ROOT_ACCOUNT_ID }}
-      GH_ORG: ${{ secrets.GH_ORG }}
-
   comment:
     permissions: write-all
-    needs: [detect, plan]
+    # needs: [apply]
     if: github.event.action != 'closed'
-    strategy:
-      matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
-      fail-fast: false
+    # strategy:
+    #  matrix: "${{ fromJson(needs.detect.outputs.directories) }}"
+    #  fail-fast: false
     runs-on: ubuntu-22.04
-    name: 'Comment on PR'
+    name: Comment on PR
     steps:
       - uses: actions/download-artifact@v4
         with:
-          #path: ${{ matrix.directory }}/output
+          # path: ${{ matrix.directory }}/output
           path: output
-
       - name: Display structure of downloaded files
         run: ls -R
-          #working-directory: ${{ matrix.directory }}/output
+        # working-directory: ${{ matrix.directory }}/output
         working-directory: output
-
-      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7.0.1
         with:
-          script: |
+          script: |-
             const { owner, repo } = context.repo;
             const { number: issue_number } = context.issue;
             const { readdir, readFile } = require('fs').promises;
