@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">1.6"
+  required_version = "4.67.0"
   backend "s3" {
     region         = "eu-north-1"
     encrypt        = "true"
@@ -18,7 +18,7 @@ terraform {
 
 provider "github" {
   owner = var.tf_github_org # `GITHUB_OWNER`
-  app_auth { # GHA uses github app to perform changes to github, since GHA runner only have permissions to current repository
+  app_auth {                # GHA uses github app to perform changes to github, since GHA runner only have permissions to current repository
     #id              = var.app_id              # or `GITHUB_APP_ID`
     #installation_id = var.app_installation_id # or `GITHUB_APP_INSTALLATION_ID`
     #pem_file        = var.app_pem_file        # or `GITHUB_APP_PEM_FILE`
