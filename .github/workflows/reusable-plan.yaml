@@ -295,7 +295,7 @@ jobs:
           # if [[ "${TERRAFORM_RESULT}" == "0" ]]; then  #  no terraform changes
           if grep -q '^No changes. Your infrastructure matches the configuration.' ${TERRAFORM_OUTPUT_FILE} ; then
             echo "Exiting - no changes found"
-            exit 1
+            # exit 1  #  do not exit on empty configuration, apply step should skip this rootModule
             HAS_NO_CHANGES=true
             ((control_count++))
             PLAN_STATUS="has_no_changes"
