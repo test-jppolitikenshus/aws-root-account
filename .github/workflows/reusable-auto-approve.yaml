@@ -48,7 +48,7 @@ jobs:
 
           #  Autoapprove plan
           if [[ "$JOB_NAME" == *"plan / plan" ]] ; then
-            echo "auto approving this job, since it looks like a plan "
+            echo "auto approving this job, since it looks like a plan ${{ inputs.environment }}/${{ inputs.rootModule }}"
             # echo "gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F \"environment_ids[]=${ENV_ID}\" -f \"state=approved\" -f \"comment=Autoapproved since its a plan\""
             RESULT=$(gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F "environment_ids[]=${ENV_ID}" -f "state=approved" -f "comment=Autoapproved since its a plan")
             echo "done, this is how it went: $RESULT"
@@ -58,7 +58,7 @@ jobs:
 
           #  Autoapprove apply
           if [[ "$JOB_NAME" == *"apply / apply" ]] && [[ "$ENV_NAME" == "test" ]]; then
-            echo "auto approving this job, since it looks like a test apply "
+            echo "auto approving this job, since it looks like a test apply ${{ inputs.environment }}/${{ inputs.rootModule }}"
             RESULT=$(gh api --verbose repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/pending_deployments --method POST -F "environment_ids[]=${ENV_ID}" -f "state=approved" -f "comment=Autoapproved since its apply in test ")
             echo "done, this is how it went: $RESULT"
           else

@@ -1,6 +1,6 @@
 ---
 name: reusable ci
-concurrency:  
+concurrency:
   group: ${{ github.head_ref }}
   cancel-in-progress: false  # ensure root modules run in serial, 00, 01, 02 etc...
 on:
@@ -76,6 +76,9 @@ jobs:
     secrets: inherit
   auto-approve-plan:
     needs: [lint, analysis]
+    with:
+      environment: ${{ inputs.environment }}
+      rootModule: ${{ inputs.rootModule }}
     permissions: write-all
     uses: ./.github/workflows/reusable-auto-approve.yaml
     secrets: inherit
