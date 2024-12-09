@@ -1,4 +1,3 @@
----
 name: reusable-plan
 on:
   workflow_call:
@@ -56,7 +55,7 @@ jobs:
   plan:
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-22.04
-    permissions: write-all  # try if 'Resource not accessible by integration' is fixed
+    permissions: write-all # try if 'Resource not accessible by integration' is fixed
     # name: "Root Module: ${{ inputs.rootModule }}"
     name: plan
     defaults:
@@ -64,22 +63,22 @@ jobs:
         working-directory: terraform/${{ inputs.rootModule }}
     steps:
       - name: Terraform-Setup
-        uses: opentofu/setup-opentofu@12f4debbf681675350b6cd1f0ff8ecfbda62027b  # v1.0.4
+        uses: opentofu/setup-opentofu@12f4debbf681675350b6cd1f0ff8ecfbda62027b # v1.0.4
         # with:
         # terraform_version: ${{ inputs.terraformVersion }}
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Generate token  # Why ?
+      - name: Generate token # Why ?
         #  env:
         #    APP_ID: ${{ secrets.GH_APP_ID }}
         #    PRIVATE_KEY: ${{ secrets.GH_APP_PEM_FILE }}
         #  if: ${{ env.APP_ID != null && env.PRIVATE_KEY != null }}
         id: generate_token
-        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a  # v.2.1.0
+        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v.2.1.0
         with:
           app_id: ${{ secrets.GH_APP_ID }}
           private_key: ${{ secrets.GH_APP_PEM_FILE }}
-      - name: authenticate to git with app token  # Why ?
+      - name: authenticate to git with app token # Why ?
         #  env:
         #    APP_ID: ${{ secrets.GH_APP_ID }}
         #    PRIVATE_KEY: ${{ secrets.GH_APP_PEM_FILE }}
@@ -87,10 +86,10 @@ jobs:
         run: |
           echo ${{ steps.generate_token.outputs.token }} | gh auth login --with-token
           gh auth setup-git
-      - name: Authenticate  # to access S3 bucket in init step
-        uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a  # v4.0.1
+      - name: Authenticate # to access S3 bucket in init step
+        uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a # v4.0.1
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/AWS-GitHubActions-OIDC_role  # FIX ROLE NAME role-to-assume: arn:aws:iam::${{secrets.AWS_ACCOUNT_NUMBER}}:role/github-actions-plan
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/AWS-GitHubActions-OIDC_role # FIX ROLE NAME role-to-assume: arn:aws:iam::${{secrets.AWS_ACCOUNT_NUMBER}}:role/github-actions-plan
           role-session-name: GitHubActions
           aws-region: eu-north-1
       - name: Define variables
@@ -106,7 +105,7 @@ jobs:
           echo "root_module=${ROOT_MODULE}" >> $GITHUB_OUTPUT
           echo "root_module_metadata=${ROOT_MODULE_METADATA}" >> $GITHUB_OUTPUT
       - name: Label PR with module name
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7.0.1
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         if: ${{ github.event_name == 'pull_request' }}
         id: label
         with:
@@ -118,7 +117,7 @@ jobs:
               repo: context.repo.repo,
               labels: ["${{ steps.vars.outputs.root_module }}"]
             })
-      - name: Detect previous version number  # from release tags like v2.0.1
+      - name: Detect previous version number # from release tags like v2.0.1
         uses: actions/github-script@v7
         id: prev-version
         env:
@@ -183,6 +182,15 @@ jobs:
               console.log('PR body is empty. Adding default changelog message.');
               prInfo.body = 'Changelog: Please provide a changelog entry for this PR.';
             }
+            // Append the changelog entry to the PR body (instead of replacing it)
+            const updatedBody = `${prInfo.body.trim()}\n\n## Changelog\n${changelogEntry}\n\`\`\`Your changelog content here\`\`\``;
+            // Update the PR body with the appended changelog
+            await github.rest.pulls.update({
+              owner,
+              repo,
+              pull_number: context.issue.number,
+              body: updatedBody,
+            });
             // Extract the 'Changelog' section from the PR body
             const changelogEntry = ((prInfo.body
               .split(/^#+ ?/m)
@@ -194,15 +202,6 @@ jobs:
               throw `'Changelog' section needs proper text, instead of 'TODO'`;
             console.log('Found PR body:|');
             console.log(prInfo.body);
-            // Append the changelog entry to the PR body (instead of replacing it)
-            const updatedBody = `${prInfo.body.trim()}\n\n## Changelog\n${changelogEntry}\n\`\`\`Your changelog content here\`\`\``;
-            // Update the PR body with the appended changelog
-            await github.rest.pulls.update({
-              owner,
-              repo,
-              pull_number: context.issue.number,
-              body: updatedBody,
-            });
             // Write the changelog entry to a file
             const { writeFile } = require('fs').promises;
             console.log(process.cwd());
@@ -243,7 +242,7 @@ jobs:
       - name: Display files
         run: ls -R
       - name: Install tfcmt
-        uses: jaxxstorm/action-install-gh-release@71d17cb091aa850acb2a1a4cf87258d183eb941b  # v1.11.0
+        uses: jaxxstorm/action-install-gh-release@71d17cb091aa850acb2a1a4cf87258d183eb941b # v1.11.0
         with:
           repo: suzuki-shunsuke/tfcmt
           tag: v4.14.0
@@ -264,7 +263,7 @@ jobs:
           -compact-warnings
       - name: Terraform Plan
         env:
-          GITHUB_APP_ID: ${{ secrets.GH_APP_ID }}  # TODO: only include these in the github root module
+          GITHUB_APP_ID: ${{ secrets.GH_APP_ID }} # TODO: only include these in the github root module
           GITHUB_APP_INSTALLATION_ID: ${{ secrets.GH_APP_INSTALLATION_ID }}
           GITHUB_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
         run: |
@@ -355,8 +354,7 @@ jobs:
       - name: Upload result artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.vars.outputs.root_module_metadata }}-${{ github.event.pull_request.head.sha
-            }}
+          name: ${{ steps.vars.outputs.root_module_metadata }}-${{ github.event.pull_request.head.sha }}
           path: terraform/${{ inputs.rootModule }}/output/
           # retention-days: ${{ inputs.artifactsRetentionDays }}
       - name: Store plan
