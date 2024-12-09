@@ -167,50 +167,50 @@ jobs:
           mkdir output
           echo 'v${{ steps.prev-version.outputs.result }}' > output/previous-version.txt
           echo 'v${{ steps.new-version.outputs.result }}' > output/new-version.txt
-      - name: Extract changelog entry
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const { data: prInfo } = await github.rest.pulls.get({
-              owner,
-              repo,
-              pull_number: context.issue.number,
-            });
-            // Check if the PR body is empty
-            if (!prInfo.body || prInfo.body.trim() === "") {
-              console.log('PR body is empty. Adding default changelog message.');
-              prInfo.body = 'Changelog: Please provide a changelog entry for this PR.';
-              const updatedBody = `${prInfo.body.trim()}\n\n## Changelog\n\`\`\`Your changelog content here\`\`\``;
-            }
-            // Update the PR body with the appended changelog
-            await github.rest.pulls.update({
-              owner,
-              repo,
-              pull_number: context.issue.number,
-              body: updatedBody,
-            });
-            // Extract the 'Changelog' section from the PR body
-            const changelogEntry = ((prInfo.body
-              .split(/^#+ ?/m)
-              .find(x => x.startsWith('Changelog'))
-              || '').split(/^```/m)[1] || '').trim();
-            if (!changelogEntry)
-              throw `'Changelog' section not found in PR body! Please add it back.`;
-            if (changelogEntry.match(/^TODO:/m))
-              throw `'Changelog' section needs proper text, instead of 'TODO'`;
-            console.log('Found PR body:|');
-            console.log(prInfo.body);
-            // Write the changelog entry to a file
-            const { writeFile } = require('fs').promises;
-            console.log(process.cwd());
-            // this is probably not needed, unless I want rootmodule versioning (and require commmit or ... ?)
-            await writeFile("terraform/${{ inputs.rootModule }}/output/changelog.md", `
-            * PR [#${ prInfo.number }](${ prInfo.html_url }) - ${ prInfo.title }
-            \`\`\`
-            ${changelogEntry}
-            \`\`\`
-            `.trimLeft(), { encoding: 'utf-8' })
+      # - name: Extract changelog entry
+      #   // this is probably not needed, unless I want rootmodule versioning (and require commmit or ... ?)
+      #   uses: actions/github-script@v7
+      #   with:
+      #     script: |
+      #       const { owner, repo } = context.repo;
+      #       const { data: prInfo } = await github.rest.pulls.get({
+      #         owner,
+      #         repo,
+      #         pull_number: context.issue.number,
+      #       });
+      #       // Check if the PR body is empty
+      #       if (!prInfo.body || prInfo.body.trim() === "") {
+      #         console.log('PR body is empty. Adding default changelog message.');
+      #         prInfo.body = 'Changelog: Please provide a changelog entry for this PR.';
+      #         const updatedBody = `${prInfo.body.trim()}\n\n## Changelog\n\`\`\`Your changelog content here\`\`\``;
+      #       }
+      #       // Update the PR body with the appended changelog
+      #       await github.rest.pulls.update({
+      #         owner,
+      #         repo,
+      #         pull_number: context.issue.number,
+      #         body: updatedBody,
+      #       });
+      #       // Extract the 'Changelog' section from the PR body
+      #       const changelogEntry = ((prInfo.body
+      #         .split(/^#+ ?/m)
+      #         .find(x => x.startsWith('Changelog'))
+      #         || '').split(/^```/m)[1] || '').trim();
+      #       if (!changelogEntry)
+      #         throw `'Changelog' section not found in PR body! Please add it back.`;
+      #       if (changelogEntry.match(/^TODO:/m))
+      #         throw `'Changelog' section needs proper text, instead of 'TODO'`;
+      #       console.log('Found PR body:|');
+      #       console.log(prInfo.body);
+      #       // Write the changelog entry to a file
+      #       const { writeFile } = require('fs').promises;
+      #       console.log(process.cwd());
+      #       await writeFile("terraform/${{ inputs.rootModule }}/output/changelog.md", `
+      #       * PR [#${ prInfo.number }](${ prInfo.html_url }) - ${ prInfo.title }
+      #       \`\`\`
+      #       ${changelogEntry}
+      #       \`\`\`
+      #       `.trimLeft(), { encoding: 'utf-8' })
       - name: Document example 'source' line
         run: |
           cat > output/documentation.md <<'EOF'
