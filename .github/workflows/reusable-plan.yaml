@@ -181,9 +181,8 @@ jobs:
             if (!prInfo.body || prInfo.body.trim() === "") {
               console.log('PR body is empty. Adding default changelog message.');
               prInfo.body = 'Changelog: Please provide a changelog entry for this PR.';
+              const updatedBody = `${prInfo.body.trim()}\n\n## Changelog\n\`\`\`Your changelog content here\`\`\``;
             }
-            // Append the changelog entry to the PR body (instead of replacing it)
-            const updatedBody = `${prInfo.body.trim()}\n\n## Changelog\n${changelogEntry}\n\`\`\`Your changelog content here\`\`\``;
             // Update the PR body with the appended changelog
             await github.rest.pulls.update({
               owner,
@@ -205,6 +204,7 @@ jobs:
             // Write the changelog entry to a file
             const { writeFile } = require('fs').promises;
             console.log(process.cwd());
+            // this is probably not needed, unless I want rootmodule versioning (and require commmit or ... ?)
             await writeFile("terraform/${{ inputs.rootModule }}/output/changelog.md", `
             * PR [#${ prInfo.number }](${ prInfo.html_url }) - ${ prInfo.title }
             \`\`\`
