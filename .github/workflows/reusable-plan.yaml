@@ -189,18 +189,18 @@ jobs:
               repo,
               pull_number: context.issue.number,
               body: updatedBody,
-            });
             // Extract the 'Changelog' section from the PR body
-            const changelogEntry = ((prInfo.body
-              .split(/^#+ ?/m)
-              .find(x => x.startsWith('Changelog'))
-              || '').split(/^```/m)[1] || '').trim();
+            const changelogSection = prInfo.body.match(/## Changelog[\r\n]+```([\s\S]*?)```/);
+            const changelogEntry = changelogSection ? changelogSection[1].trim() : null;
+            
             if (!changelogEntry)
               throw `'Changelog' section not found in PR body! Please add it back.`;
             if (changelogEntry.match(/^TODO:/m))
               throw `'Changelog' section needs proper text, instead of 'TODO'`;
-            console.log('Found PR body:|');
+            
+            console.log('Found PR body:');
             console.log(prInfo.body);
+            console.log('Extracted Changelog Entry:', changelogEntry);});
             // Write the changelog entry to a file
             const { writeFile } = require('fs').promises;
             console.log(process.cwd());
