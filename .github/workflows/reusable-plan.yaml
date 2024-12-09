@@ -182,6 +182,7 @@ jobs:
               console.log('PR body is empty. Adding default changelog message.');
               prInfo.body = 'Changelog: Please provide a changelog entry for this PR.';
             }
+
             // Update the PR body with the appended changelog
             const updatedBody = `${prInfo.body.trim()}\n\n## Changelog\n\`\`\`Your changelog content here\`\`\``;
             await github.rest.pulls.update({
@@ -189,18 +190,22 @@ jobs:
               repo,
               pull_number: context.issue.number,
               body: updatedBody,
+            });
             // Extract the 'Changelog' section from the PR body
             const changelogSection = prInfo.body.match(/## Changelog[\r\n]+```([\s\S]*?)```/);
             const changelogEntry = changelogSection ? changelogSection[1].trim() : null;
             
-            if (!changelogEntry)
-              throw `'Changelog' section not found in PR body! Please add it back.`;
-            if (changelogEntry.match(/^TODO:/m))
-              throw `'Changelog' section needs proper text, instead of 'TODO'`;
-            
+            if (!changelogEntry) {
+              throw new Error("'Changelog' section not found in PR body! Please add it back.");
+            }
+            if (changelogEntry.match(/^TODO:/m)) {
+              throw new Error("'Changelog' section needs proper text, instead of 'TODO'");
+            } 
+
             console.log('Found PR body:');
             console.log(prInfo.body);
             console.log('Extracted Changelog Entry:', changelogEntry);});
+
             // Write the changelog entry to a file
             const { writeFile } = require('fs').promises;
             console.log(process.cwd());
