@@ -39,6 +39,6 @@ variable "tf_repo" {
 
 variable "tf_pull_request" {
   type        = string
-  description = "The name of the team"
+  description = "The name of the team - hest"
   default     = "Cloud Team"
 }

@@ -117,7 +117,7 @@ jobs:
               repo: context.repo.repo,
               labels: ["${{ steps.vars.outputs.root_module }}"]
             })
-      - name: Detect previous version number
+      - name: Detect previous version number # from release tags like v2.0.1
         uses: actions/github-script@v7
         id: prev-version
         env:
@@ -169,31 +169,10 @@ jobs:
           echo 'v${{ steps.new-version.outputs.result }}' > output/new-version.txt
       - name: Extract changelog entry
         uses: actions/github-script@v7
+        env:
+          ROOT_MODULE: ${{ inputs.rootModule }}
         with:
-          script: |
-            const { owner, repo } = context.repo;
-            const { data: prInfo } = await github.rest.pulls.get({
-              owner, repo,
-              pull_number: context.issue.number,
-            });
-            console.log('Found PR body:|');
-            console.log(prInfo.body);
-            const changelogEntry = ((prInfo.body
-              .split(/^#+ ?/m)
-              .find(x => x.startsWith('Changelog'))
-              || '').split(/^```/m)[1] || '').trim();
-            if (!changelogEntry)
-              throw `'Changelog' section not found in PR body! Please add it back.`;
-            if (changelogEntry.match(/^TODO:/m))
-              throw `'Changelog' section needs proper text, instead of 'TODO'`;
-            const { writeFile } = require('fs').promises;
-            console.log(process.cwd());
-            await writeFile("terraform/${{ inputs.rootModule }}/output/changelog.md", `
-            * PR [#${ prInfo.number }](${ prInfo.html_url }) - ${ prInfo.title }
-            \`\`\`
-            ${changelogEntry}
-            \`\`\`
-            `.trimLeft(), { encoding: 'utf-8' })
+          script: "// Define an async function\nasync function updatePRAndWriteChangelog() {\n  const rootModule = process.env.ROOT_MODULE;\n  const { owner, repo } = context.repo;\n  const { data: prInfo } = await github.rest.pulls.get({\n    owner,\n    repo,\n    pull_number: context.issue.number,\n  });\n  // Check if the PR body is empty\n  if (!prInfo.body || prInfo.body.trim() === \"\") {\n    console.log('PR body is empty. Adding default changelog message.');\n    prInfo.body = 'Changelog: Please provide a changelog entry for this PR.';\n  }\n  // Update the PR body with the appended changelog\n  const updatedBody = `${prInfo.body.trim()}\\n\\n## Changelog\\n\\`\\`\\`Your changelog content here\\`\\`\\``;\n  await github.rest.pulls.update({\n    owner,\n    repo,\n    pull_number: context.issue.number,\n    body: updatedBody,\n  });\n  // Extract the 'Changelog' section from the PR body\n  const changelogSection = prInfo.body.match(/## Changelog[\\r\\n]+```([\\s\\S]*?)```/);\n  const changelogEntry = changelogSection ? changelogSection[1].trim() : null;\n  \n  if (!changelogEntry) {\n    throw new Error(\"'Changelog' section not found in PR body! Please add it back.\");\n  }\n  if (changelogEntry.match(/^TODO:/m)) {\n    throw new Error(\"'Changelog' section needs proper text, instead of 'TODO'\");\n  }\n  console.log('Found PR body:');\n  console.log(prInfo.body);\n  console.log('Extracted Changelog Entry:', changelogEntry);\n  // Write the changelog entry to a file\n  const { writeFile } = require('fs').promises;\n  console.log(process.cwd());\n  await writeFile(`terraform/blablabla/output/changelog.md`, `\n    * PR [#${prInfo.number}](${prInfo.html_url}) - ${prInfo.title}\n    \\`\\`\\`\n    ${changelogEntry}\n    \\`\\`\\`\n  `.trimLeft(), { encoding: 'utf-8' });\n}\n// Call the async function\nupdatePRAndWriteChangelog().catch(error => {\n  console.error('Unhandled error:', error.message);\n});\n"
       - name: Document example 'source' line
         run: |
           cat > output/documentation.md <<'EOF'
@@ -235,7 +214,6 @@ jobs:
           -backend-config key=${{ github.event.repository.name }}/${{ steps.vars.outputs.root_module }} \
           -backend-config bucket=${{ secrets.S3_STATE_BUCKET }} \
           -backend-config dynamodb_table=${{ secrets.S3_STATE_BUCKET }}-lock \
-          -var tf_github_org=${{ secrets.GH_ORG }} \
           -var tf_cost_center=${{ secrets.COST_CENTER }} \
           -var tf_stage=${{ inputs.environment }} \
           -var tf_repo=${{ github.event.repository.name }} \
