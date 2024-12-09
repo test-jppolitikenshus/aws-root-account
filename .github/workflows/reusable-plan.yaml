@@ -117,7 +117,7 @@ jobs:
               repo: context.repo.repo,
               labels: ["${{ steps.vars.outputs.root_module }}"]
             })
-      - name: Detect previous version number
+      - name: Detect previous version number # from release tags like v2.0.1
         uses: actions/github-script@v7
         id: prev-version
         env:
@@ -182,16 +182,17 @@ jobs:
               console.log('PR body is empty. Adding default changelog message.');
               prInfo.body = 'Changelog: Please provide a changelog entry for this PR.';
             }
+            // Extract the 'Changelog' section from the PR body
+            const changelogEntry = ((prInfo.body
+              .split(/^#+ ?/m)
+              .find(x => x.startsWith('Changelog'))
+              || '').split(/^```/m)[1] || '').trim();
             if (!changelogEntry)
               throw `'Changelog' section not found in PR body! Please add it back.`;
             if (changelogEntry.match(/^TODO:/m))
               throw `'Changelog' section needs proper text, instead of 'TODO'`;
             console.log('Found PR body:|');
             console.log(prInfo.body);
-            const changelogEntry = ((prInfo.body
-              .split(/^#+ ?/m)
-              .find(x => x.startsWith('Changelog'))
-              || '').split(/^```/m)[1] || '').trim();
             const { writeFile } = require('fs').promises;
             console.log(process.cwd());
             await writeFile("terraform/${{ inputs.rootModule }}/output/changelog.md", `
