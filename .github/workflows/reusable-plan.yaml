@@ -169,10 +169,13 @@ jobs:
           echo 'v${{ steps.new-version.outputs.result }}' > output/new-version.txt
       - name: Extract changelog entry
         uses: actions/github-script@v7
+        env:
+          ROOT_MODULE: ${{ inputs.rootModule }}
         with:
           script: |
             // Define an async function
             async function updatePRAndWriteChangelog() {
+              const rootModule = process.env.ROOT_MODULE;
               const { owner, repo } = context.repo;
               const { data: prInfo } = await github.rest.pulls.get({
                 owner,
