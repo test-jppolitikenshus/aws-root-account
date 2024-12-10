@@ -402,3 +402,10 @@ jobs:
           s3://${{ secrets.S3_STATE_BUCKET }}/${{ github.event.repository.name }}/metadata/ --sse
       - name: Display structure of files
         run: ls -R
+      - name: display 1 below
+        run: ls ../
+      - name: dispaly 2 below
+        run: ls ../../
+      - name: dispaly 3 below
+        run: ls ../../../
+      
