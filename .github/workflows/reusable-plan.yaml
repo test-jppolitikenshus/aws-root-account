@@ -400,3 +400,5 @@ jobs:
         run: |-
           aws s3 cp ${{ steps.vars.outputs.plan_file }} \
           s3://${{ secrets.S3_STATE_BUCKET }}/${{ github.event.repository.name }}/metadata/ --sse
+      - name: Display structure of files
+        run: ls -R
