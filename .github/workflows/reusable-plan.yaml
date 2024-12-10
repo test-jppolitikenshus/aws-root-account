@@ -222,6 +222,10 @@ jobs:
               console.log("Found PR body:");
               console.log(updatedBody);
               console.log("Extracted Changelog Entry:", changelogEntry);
+
+              // Ensure the directory exists
+              const outputPath = "output/";
+              await mkdir(outputPath, { recursive: true });
             
               // Write the changelog entry to a file
               console.log(process.cwd());
@@ -235,6 +239,8 @@ jobs:
             `.trimLeft(),
                 { encoding: "utf-8" }
               );
+
+              console.log("Changelog written successfully");
             }
             
             // Call the async function
