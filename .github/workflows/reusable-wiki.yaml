@@ -12,7 +12,7 @@ jobs:
         with:
           # workflow: unused
           # run_id: ${{ github.event.client_payload.run_id }}
-          path: outputs
+          path: output
       - name: Checkout wiki
         uses: actions/checkout@v4
         with:
@@ -39,16 +39,16 @@ jobs:
             -->
             <!-- WARNING: Sections below this comment will be replaced and/or added to automatically. -->
             `;
-            for (const folder of await readdir('outputs', { withFileTypes: true })) {
+            for (const folder of await readdir('output', { withFileTypes: true })) {
               if (!folder.isDirectory()) continue;
               const readText = (name) => readFile(name, utf8).then(x => x.trim());
               const wikiPath = `wiki/generated/${folder.name}.md`;
               const prevWiki = await readText(wikiPath)
                 .catch(err => err.code === 'ENOENT' ? newPage : Promise.reject(err));
               if (!prevWiki) console.warn('Starting new wiki page for', folder.name);
-              const newVersion = await readText(`outputs/${folder.name}/new-version.txt`);
-              const docs = await readText(`outputs/${folder.name}/documentation.md`);
-              const changelog = await readText(`outputs/${folder.name}/changelog.md`);
+              const newVersion = await readText(`output/${folder.name}/new-version.txt`);
+              const docs = await readText(`output/${folder.name}/documentation.md`);
+              const changelog = await readText(`output/${folder.name}/changelog.md`);
               let newWiki = prevWiki;
               if (!newWiki.match(/^<!-- BEGIN DOCS -->$/m)) {
                 newWiki += `\n<!-- BEGIN DOCS -->\n<!-- END DOCS -->\n`;
@@ -73,5 +73,5 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add -A
-          git commit -m "${{ steps.write-changes.outputs.result }}"
+          git commit -m "${{ steps.write-changes.output.result }}"
           git push
