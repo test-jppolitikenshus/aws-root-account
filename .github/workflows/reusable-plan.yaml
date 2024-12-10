@@ -170,7 +170,7 @@ jobs:
           echo 'v${{ steps.prev-version.outputs.result }}' > output/previous-version.txt
           echo 'v${{ steps.new-version.outputs.result }}' > output/new-version.txt
       - name: Extract changelog entry
-        uses: actions/github-script@v7
+        uses: actions/github-script@v7  # version ?
         env:
           ROOT_MODULE: ${{ inputs.rootModule }}
           CHANGELOG: ${{ steps.vars.outputs.changelog_file }}
