@@ -226,7 +226,7 @@ jobs:
               // Write the changelog entry to a file
               console.log(process.cwd());
               await writeFile(
-                "terraform/blablabla/output/changelog.md",
+                "output/changelog.md",
                 `
             * PR [#${prInfo.number}](${prInfo.html_url}) - ${prInfo.title}
             \`\`\`
