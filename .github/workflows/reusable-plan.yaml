@@ -232,9 +232,10 @@ jobs:
               await mkdir(outputPath, { recursive: true });
             
               // Write the changelog entry to a file
+              //"terraform/${rootModule}/output/changelog.md",
               console.log(process.cwd());
               await writeFile(
-                "terraform/${rootModule}/output/",
+                "terraform/${{ inputs.rootModule }}/output/changelog.md"
                 `
             * PR [#${prInfo.number}](${prInfo.html_url}) - ${prInfo.title}
             \`\`\`
