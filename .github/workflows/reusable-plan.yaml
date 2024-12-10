@@ -173,7 +173,7 @@ jobs:
           ROOT_MODULE: ${{ inputs.rootModule }}
         with:
           script: | 
-            const { writeFile } = require('fs').promises;
+            const { writeFile, mkdir } = require('fs').promises;
   
             // Define an async function
             async function updatePRAndWriteChangelog() {
