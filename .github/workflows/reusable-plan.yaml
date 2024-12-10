@@ -172,7 +172,51 @@ jobs:
         env:
           ROOT_MODULE: ${{ inputs.rootModule }}
         with:
-          script: "// Define an async function\nasync function updatePRAndWriteChangelog() {\n  const rootModule = process.env.ROOT_MODULE;\n  const { owner, repo } = context.repo;\n  const { data: prInfo } = await github.rest.pulls.get({\n    owner,\n    repo,\n    pull_number: context.issue.number,\n  });\n  // Check if the PR body is empty\n  if (!prInfo.body || prInfo.body.trim() === \"\") {\n    console.log('PR body is empty. Adding default changelog message.');\n    prInfo.body = 'Changelog: Please provide a changelog entry for this PR.';\n  }\n  // Update the PR body with the appended changelog\n  const updatedBody = `${prInfo.body.trim()}\\n\\n## Changelog\\n\\`\\`\\`Your changelog content here\\`\\`\\``;\n  await github.rest.pulls.update({\n    owner,\n    repo,\n    pull_number: context.issue.number,\n    body: updatedBody,\n  });\n  // Extract the 'Changelog' section from the PR body\n  const changelogSection = prInfo.body.match(/## Changelog[\\r\\n]+```([\\s\\S]*?)```/);\n  const changelogEntry = changelogSection ? changelogSection[1].trim() : null;\n  \n  if (!changelogEntry) {\n    throw new Error(\"'Changelog' section not found in PR body! Please add it back.\");\n  }\n  if (changelogEntry.match(/^TODO:/m)) {\n    throw new Error(\"'Changelog' section needs proper text, instead of 'TODO'\");\n  }\n  console.log('Found PR body:');\n  console.log(prInfo.body);\n  console.log('Extracted Changelog Entry:', changelogEntry);\n  // Write the changelog entry to a file\n  const { writeFile } = require('fs').promises;\n  console.log(process.cwd());\n  await writeFile(`terraform/blablabla/output/changelog.md`, `\n    * PR [#${prInfo.number}](${prInfo.html_url}) - ${prInfo.title}\n    \\`\\`\\`\n    ${changelogEntry}\n    \\`\\`\\`\n  `.trimLeft(), { encoding: 'utf-8' });\n}\n// Call the async function\nupdatePRAndWriteChangelog().catch(error => {\n  console.error('Unhandled error:', error.message);\n});\n"
+          script: | 
+            // Define an async function
+            async function updatePRAndWriteChangelog() {
+              const rootModule = process.env.ROOT_MODULE;
+              const { owner, repo } = context.repo;  
+              const { data: prInfo } = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number: context.issue.number,
+              });  
+            // Check if the PR body is empty
+            if (!prInfo.body || prInfo.body.trim() === \"\") {
+              console.log('PR body is empty. Adding default changelog message.');
+              prInfo.body = 'Changelog: Please provide a changelog entry for this PR.';
+            }
+            // Update the PR body with the appended changelog
+            const updatedBody = `${prInfo.body.trim()}\\n\\n## Changelog\\n\\`\\`\\`Your changelog content here\\`\\`\\``;
+            await github.rest.pulls.update({
+              owner,
+              repo,
+              pull_number: context.issue.number,
+              body: updatedBody,
+            });
+            // Extract the 'Changelog' section from the PR body
+            const changelogSection = prInfo.body.match(/## Changelog[\\r\\n]+```([\\s\\S]*?)```/);
+            const changelogEntry = changelogSection ? changelogSection[1].trim() : null;
+            if (!changelogEntry) {
+              throw new Error(\"'Changelog' section not found in PR body! Please add it back.\");
+            }  
+            if (changelogEntry.match(/^TODO:/m)) {
+              throw new Error(\"'Changelog' section needs proper text, instead of 'TODO'\");
+            }
+            console.log('Found PR body:');
+            console.log(prInfo.body);
+            console.log('Extracted Changelog Entry:', changelogEntry);
+
+            // Write the changelog entry to a file
+            const { writeFile } = require('fs').promises;
+            console.log(process.cwd());
+            await writeFile(`terraform/blablabla/output/changelog.md`, `
+            * PR [#${prInfo.number}](${prInfo.html_url}) - ${prInfo.title}    \\`\\`\\`\n    ${changelogEntry}\n    \\`\\`\\`
+            `.trimLeft(), { encoding: 'utf-8' });
+
+            // Call the async function
+            updatePRAndWriteChangelog().catch(error => { console.error('Unhandled error:', error.message);\n});
       - name: Document example 'source' line
         run: |
           cat > output/documentation.md <<'EOF'
